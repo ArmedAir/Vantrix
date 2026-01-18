@@ -1,4 +1,4 @@
-# AURA AI / Vantrix Platform
+# Vantrix Platform
 
 Elite AI-driven platform with:
 - Auth-protected admin routes
