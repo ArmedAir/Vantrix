@@ -230,21 +230,20 @@ export function HeroAdsCarousel({ ads }: { ads: HeroAd[] }) {
  // the art already composes its own headline + tagline.
  const isCode = isPromoHeroCode(ad.image_url);
  const isActive = i === active;
+ // PURE-IMAGE FIX (2026-09-08): every prior treatment here — the
+ // blurred object-contain letterbox fill, the Ken-Burns scale-up on
+ // the active slide, the darkening gradient + duplicated title text
+ // baked on top of plain photo ads — added something between the
+ // visitor and the actual creative. The image itself (baked
+ // creatives already have their own headline/CTA/badge designed in;
+ // plain photo ads are meant to stand alone) is now the entire
+ // slide: one object-contain image, no blur layer, no zoom
+ // animation, no gradient, no overlay text, for every ad regardless
+ // of hide_overlay. isActive/AUTO_ADVANCE_MS above still drive the
+ // dot/impression logic but no longer feed any visual transform.
  const slideContent = isCode ? (
  <PromoHeroArt slug={promoHeroSlugFrom(ad.image_url)} />
- ) : ad.hide_overlay ? (
- // OBJECT-COVER-REVERTED FIX: the previous pass swapped this to a
- // single object-cover image to kill the wasted blur backdrop space
- // — but object-cover crops a baked-in creative (headline/CTA/badge
- // already designed into the image) whenever the slide box's aspect
- // ratio doesn't match the source art, which on mobile's aspect-[4/5]
- // box sliced the CTA button right off the bottom. Restored to
- // object-contain (the full, uncropped image, always 100% visible),
- // but WITHOUT reviving the blurred second-image backdrop that was
- // taking up visible space before — just a flat backdrop (the
- // `bg-black` already on this slide's wrapper, see slideClassName
- // below) behind the letterboxed image instead of a second image
- // download.
+ ) : (
  <Image
  src={resolveImageSrc(ad.image_url)}
  alt={ad.title}
@@ -254,44 +253,6 @@ export function HeroAdsCarousel({ ads }: { ads: HeroAd[] }) {
  loading={i === 0 ? undefined : "lazy"}
  className="object-contain"
  />
- ) : (
- <>
- <Image
- src={resolveImageSrc(ad.image_url)}
- alt={ad.title}
- fill
- // PERF: same fix as the baked-creative branch above — capped
- // to the carousel's real max render width (max-w-7xl/1280px)
- // instead of requesting a full-viewport-width image on every
- // screen size.
- sizes="(min-width: 1280px) 1280px, 100vw"
- priority={i === 0}
- loading={i === 0 ? undefined : "lazy"}
- style={{ transitionDuration: `${AUTO_ADVANCE_MS}ms`, willChange: isActive ? "transform" : undefined }}
- className={cn(
- "object-cover transition-transform ease-premium motion-reduce:transition-none motion-reduce:scale-100",
- isActive ? "scale-[1.12]" : "scale-100"
- )}
- />
- {/* Fully-designed creatives (headline + CTA already baked into
- the image, e.g. 20261220_seed_baked_hero_ad_creatives.sql)
- skip this — the darkening gradient and a second copy of the
- title would just muddy an image that already reads on its
- own, right on top of a CTA button that's already there. */}
- {!ad.hide_overlay && (
- <>
- <div
- className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
- aria-hidden
- />
- <div className="absolute inset-x-0 bottom-0 p-5 md:p-8">
- <div className="text-text-primary font-display text-2xl md:text-4xl leading-tight max-w-lg">
- {ad.title}
- </div>
- </div>
- </>
- )}
- </>
  );
  const slideClassName = cn(
  "relative shrink-0 w-full aspect-[4/5] sm:aspect-[21/10] md:aspect-[28/9] snap-center overflow-hidden rounded-none md:rounded-md",

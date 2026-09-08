@@ -14,7 +14,7 @@ import {
 import { resolveImageSrc } from "@/lib/utils";
 import type { DiscoverCharacter, DiscoverExperience } from "@/lib/frontend/discover";
 import { LandingCharacterGrid } from "@/components/home/landing-character-grid";
-import { PlatformFeatures } from "@/components/home/platform-features";
+import { CharacterFeatures } from "@/components/home/character-features";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { CharacterPresence } from "@/components/immersive/character-presence";
@@ -541,7 +541,7 @@ export function LandingPage({ characters, experiences }: { characters: DiscoverC
  </MotionWrapper>
 
  <MotionWrapper>
- <PlatformFeatures hrefFor={loginHref} />
+ <CharacterFeatures characters={characterPool} hrefFor={(id) => loginHref(`/characters/${id}`)} />
  </MotionWrapper>
 
  {featured.length > 0 && (
