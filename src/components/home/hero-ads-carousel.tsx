@@ -86,6 +86,23 @@ const RESUME_AFTER_INTERACTION_MS = 8000;
  * visible) over a blurred, scaled-up copy of the same image filling the
  * letterbox bars, while ordinary photo ads keep the original
  * `object-cover` full-bleed treatment unchanged.
+ *
+ * MOBILE ASPECT FIX (2026-09-09): the base (sub-640px, i.e. actual phone)
+ * slide box was `aspect-[4/5]` — a *portrait* box copy-pasted from the
+ * character-portrait heroes (hero.tsx/anon-hero.tsx/hero-carousel.tsx all
+ * legitimately use 4:5 for tall companion portraits) rather than authored
+ * for this component's own content. Every row currently in the hero
+ * position is one of the ~1.5-1.616:1 *landscape* baked creatives above,
+ * so on a real phone the object-contain image — correctly sized to the
+ * box's width — only filled roughly half the box's height, leaving a
+ * large dead band of empty background above and below the creative (most
+ * visible as a gap between the nav bar and the banner, and again between
+ * the banner and the dots). Swapped to `aspect-[8/5]` (1.6:1), the mean
+ * of the current creatives' ratios, so the box's own shape matches the
+ * art at the breakpoint that actually renders it edge-to-edge with
+ * (near-)zero letterboxing, instead of just inheriting an unrelated
+ * component's portrait ratio. sm/md were already authored for this
+ * content (21:10, 28:9) and are untouched.
  */
 export function HeroAdsCarousel({ ads }: { ads: HeroAd[] }) {
  const [active, setActive] = useState(0);
@@ -255,7 +272,7 @@ export function HeroAdsCarousel({ ads }: { ads: HeroAd[] }) {
  />
  );
  const slideClassName = cn(
- "relative shrink-0 w-full aspect-[4/5] sm:aspect-[21/10] md:aspect-[28/9] snap-center overflow-hidden rounded-none md:rounded-md",
+ "relative shrink-0 w-full aspect-[8/5] sm:aspect-[21/10] md:aspect-[28/9] snap-center overflow-hidden rounded-none md:rounded-md",
  // Baked creatives get a solid backdrop behind the blurred fill
  // layer so there's never a flash of raw page background before
  // the image paints.
