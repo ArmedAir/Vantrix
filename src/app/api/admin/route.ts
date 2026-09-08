@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { supabaseAdmin }   from '@/lib/supabase/admin';
 import { requireAdmin }    from '@/lib/auth/admin';
@@ -249,6 +250,16 @@ export async function POST(req: NextRequest) {
           clicks:      0,
         }).select('id,title,position,active').single();
         if (error) throw error;
+        // CACHE-INVALIDATION FIX: getHeroAds/getInlineAds (lib/frontend/ads.ts)
+        // now cache the 'hero'/'inline' rows for 60s (PERF, 2026-09-08) —
+        // without this, a newly created ad would sit invisible on Home/Feed
+        // for up to a minute after an admin publishes it. Both tags are
+        // busted unconditionally rather than switched on `position` since
+        // this route has no per-position cache key to target precisely, and
+        // an extra cache miss on the other slot is a rounding error next to
+        // "admin publishes an ad and it doesn't show up."
+        revalidateTag('hero-ads');
+        revalidateTag('inline-ads');
         return NextResponse.json({ ad: data });
       }
       case 'toggle_ad': {
@@ -260,6 +271,8 @@ export async function POST(req: NextRequest) {
           .from('ads').update({ active }).eq('id', id)
           .select('id,title,active').single();
         if (error) throw error;
+        revalidateTag('hero-ads');
+        revalidateTag('inline-ads');
         return NextResponse.json({ ad: data });
       }
       case 'delete_ad': {
@@ -274,6 +287,8 @@ export async function POST(req: NextRequest) {
         if (!data) {
           return NextResponse.json({ error: 'Ad not found', code: 'NOT_FOUND' }, { status: 404 });
         }
+        revalidateTag('hero-ads');
+        revalidateTag('inline-ads');
         logger.info('Admin: ad deleted', { adId: id, title: data.title, by: user.id });
         return NextResponse.json({ success: true, deleted: data });
       }

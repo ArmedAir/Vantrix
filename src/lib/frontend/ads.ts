@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export interface HeroAd {
@@ -32,8 +33,22 @@ export interface HeroAd {
  * three lines. The public route itself is untouched and still serves
  * the ad board / any other future client-side caller directly.
  */
-export async function getHeroAds(limit = 8): Promise<HeroAd[]> {
-  try {
+/**
+ * PERF (2026-09-08): this query ran fresh on every single Home render —
+ * both the anon LandingPage and the authenticated HomePage hit it, with
+ * no dependency on `user` (see (app)/page.tsx's Promise.all — it's in
+ * the unauthenticated batch). Ad rows only change when someone edits the
+ * `ads` table via /admin, so re-querying Supabase for the exact same 16
+ * rows on every visitor's every request was pure round-trip cost with no
+ * freshness benefit. Wrapped in unstable_cache with a 60s window (plenty
+ * fresh for a promo carousel, not for anything time-critical) and a
+ * `hero-ads` tag so an admin mutation can revalidateTag() this the
+ * moment a row changes rather than waiting out the window. The `limit`
+ * param is folded into the cache key so different call sites (currently
+ * always 16, but the signature stays general) don't collide.
+ */
+const getCachedHeroAds = unstable_cache(
+  async (limit: number): Promise<HeroAd[]> => {
     const { data, error } = await supabaseAdmin
       .from("ads")
       .select("id,title,image_url,link,hide_overlay")
@@ -44,6 +59,14 @@ export async function getHeroAds(limit = 8): Promise<HeroAd[]> {
 
     if (error) throw error;
     return data ?? [];
+  },
+  ["hero-ads"],
+  { revalidate: 60, tags: ["hero-ads"] }
+);
+
+export async function getHeroAds(limit = 8): Promise<HeroAd[]> {
+  try {
+    return await getCachedHeroAds(limit);
   } catch {
     // Same fail-quiet contract as getDiscoverHome/getHomeContext — an ads
     // outage should never break Home; HeroAdsCarousel already renders
@@ -61,8 +84,8 @@ export async function getHeroAds(limit = 8): Promise<HeroAd[]> {
  * than parameterizing getHeroAds() so each call site's intent stays
  * grep-able and either slot's row limit can change independently.
  */
-export async function getInlineAds(limit = 6): Promise<HeroAd[]> {
-  try {
+const getCachedInlineAds = unstable_cache(
+  async (limit: number): Promise<HeroAd[]> => {
     const { data, error } = await supabaseAdmin
       .from("ads")
       .select("id,title,image_url,link,hide_overlay")
@@ -73,6 +96,16 @@ export async function getInlineAds(limit = 6): Promise<HeroAd[]> {
 
     if (error) throw error;
     return data ?? [];
+  },
+  ["inline-ads"],
+  // Same reasoning as getHeroAds above — public, non-personalized,
+  // admin-mutated-only rows.
+  { revalidate: 60, tags: ["inline-ads"] }
+);
+
+export async function getInlineAds(limit = 6): Promise<HeroAd[]> {
+  try {
+    return await getCachedInlineAds(limit);
   } catch {
     // Fail-quiet: an ads outage should never break the Feed. FeedGrid
     // just interleaves nothing when this comes back empty.

@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import {
   getWorldOverview,
   getAllLocations,
@@ -110,8 +111,16 @@ export interface HomeWorldTeaser {
  * the same "don't pull ~30-40 unused rows onto Home's critical path"
  * reason the rest of this doc comment already gives.
  */
-export async function getHomeWorldTeaser(): Promise<HomeWorldTeaser> {
-  try {
+// PERF (2026-09-08): public, non-personalized (no userId anywhere in this
+// call graph) and previously re-fetched — a live event, the active daily
+// choice, and per-location image lookups, three round trips — on every
+// single Home render for every visitor. 60s revalidate matches the
+// window already used for getHeroAds/listHomeScenarios: "today's world
+// choice" doesn't need to flip within a minute of actually resolving,
+// and a live event's own real-time surfaces (World hub, not this teaser)
+// are unaffected since this cache is scoped to getHomeWorldTeaser only.
+const getCachedHomeWorldTeaser = unstable_cache(
+  async (): Promise<HomeWorldTeaser> => {
     const [{ events, stories }, choice] = await Promise.all([
       getWorldOverview(),
       getActiveDailyChoice(),
@@ -133,6 +142,14 @@ export async function getHomeWorldTeaser(): Promise<HomeWorldTeaser> {
         ? imagesByLocation.get(activeChoice.locationId) ?? null
         : null,
     };
+  },
+  ["home-world-teaser"],
+  { revalidate: 60, tags: ["home-world-teaser"] }
+);
+
+export async function getHomeWorldTeaser(): Promise<HomeWorldTeaser> {
+  try {
+    return await getCachedHomeWorldTeaser();
   } catch {
     return { event: null, eventLocationImage: null, story: null, choice: null, choiceLocationImage: null };
   }

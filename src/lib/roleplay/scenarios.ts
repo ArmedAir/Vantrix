@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
 import { getLocationResidents } from '@/lib/universe/world-atlas';
@@ -302,21 +303,36 @@ export async function listScenariosForFaction(factionSlug: string, userId?: stri
  * hardcoded tile list every time — see popular-scenarios.tsx's own note on
  * why it moved off a static array.
  */
-export async function listHomeScenarios(limit = 8): Promise<RoleplayScenario[]> {
-  const { data, error } = await supabaseAdmin
-    .from('roleplay_scenarios')
-    .select(SCENARIO_COLUMNS)
-    .eq('is_active', true)
-    .is('character_id', null)
-    .order('sort_order', { ascending: true })
-    .limit(limit);
+// PERF (2026-09-08): same shape as the getHeroAds cache fix — a public,
+// non-personalized catalog read (no userId, no per-request variance)
+// that every Home render re-queried from scratch. The scenario catalog
+// only changes via a migration or a future admin tool, so a short
+// revalidate window trades a trivial amount of staleness for cutting a
+// Supabase round trip off Home's critical path on every request.
+const getCachedHomeScenarios = unstable_cache(
+  async (limit: number): Promise<RoleplayScenario[]> => {
+    const { data, error } = await supabaseAdmin
+      .from('roleplay_scenarios')
+      .select(SCENARIO_COLUMNS)
+      .eq('is_active', true)
+      .is('character_id', null)
+      .order('sort_order', { ascending: true })
+      .limit(limit);
 
-  if (error) {
+    if (error) throw error;
+    return (data ?? []) as RoleplayScenario[];
+  },
+  ['home-scenarios'],
+  { revalidate: 60, tags: ['home-scenarios'] }
+);
+
+export async function listHomeScenarios(limit = 8): Promise<RoleplayScenario[]> {
+  try {
+    return await getCachedHomeScenarios(limit);
+  } catch (error) {
     logger.warn('roleplay:scenarios:list-home-failed', { error });
     return [];
   }
-
-  return (data ?? []) as RoleplayScenario[];
 }
 
 /**

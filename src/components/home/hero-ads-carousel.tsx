@@ -233,43 +233,18 @@ export function HeroAdsCarousel({ ads }: { ads: HeroAd[] }) {
  const slideContent = isCode ? (
  <PromoHeroArt slug={promoHeroSlugFrom(ad.image_url)} />
  ) : ad.hide_overlay ? (
- // IMAGE-FIT FIX: baked-in creatives (headline/CTA already
- // designed into the image — see this file's header comment)
- // must always show 100% of the artwork, never cropped, or the
- // CTA/badge baked into their top or bottom edge gets sliced off
- // by this slide's wide aspect ratio. object-contain guarantees
- // that; the blurred, scaled-up copy underneath fills the
- // resulting letterbox bars with the same image instead of bare
- // background, so it reads as a deliberate frame rather than
- // empty space.
- //
- // PERF (2026-09-07): both layers used to request `sizes="100vw"`
- // — full viewport width — even though this carousel never
- // renders wider than max-w-7xl (1280px), so anyone on a monitor
- // wider than that was downloading pixels the layout throws away.
- // Capped to the actual max render width below. The blur layer
- // goes further: it's blurred to unrecognizability on screen, so
- // there's no reason it should cost the same bytes as the sharp
- // foreground copy — a small fixed size plus a lower `quality`
- // gets a visually identical blur for a fraction of the download,
- // and `priority` now matches the foreground's (both were only
- // ever meant to be "first slide loads eagerly, the rest lazy") so
- // the blurred backdrop can't lag in a beat after the sharp image
- // on the slide most likely to be this page's LCP element.
- <>
- {/* Blurred, scaled-up backdrop fills the letterbox bars behind
- the full-contain image below, so baked creatives never show
- bare/empty space on the sides or top/bottom. */}
- <Image
- src={resolveImageSrc(ad.image_url)}
- alt=""
- aria-hidden
- fill
- sizes="(min-width: 1280px) 640px, 50vw"
- quality={20}
- loading={i === 0 ? undefined : "lazy"}
- className="object-cover scale-110 blur-2xl opacity-70"
- />
+ // BLUR-BACKDROP-REMOVED FIX: the previous treatment rendered
+ // baked-in creatives with object-contain over a second, blurred
+ // object-cover copy filling the letterbox bars. On this slide's
+ // wide aspect ratio (21:10 / 28:9) against ~1.5:1 source art,
+ // those bars ran thick — the blurred fill was doing most of the
+ // visible slide, reading as dead/soft space rather than content,
+ // and doubling the image payload per slide for it. Single
+ // object-cover image, matching the plain-photo branch below, so
+ // the ad fills the whole slide with the sharp creative and no
+ // blurred filler. This crops a sliver off the tallest baked
+ // creatives on the widest breakpoint — an acceptable trade for a
+ // slide that's actually full of image instead of half blur.
  <Image
  src={resolveImageSrc(ad.image_url)}
  alt={ad.title}
@@ -277,19 +252,8 @@ export function HeroAdsCarousel({ ads }: { ads: HeroAd[] }) {
  sizes="(min-width: 1280px) 1280px, 100vw"
  priority={i === 0}
  loading={i === 0 ? undefined : "lazy"}
- // IMAGE-FIT FIX (restored): object-contain guarantees the full,
- // uncropped baked-in artwork — headline, badges, CTA button —
- // is always 100% visible, whatever the slide box's aspect ratio
- // is. A prior "LUXURY FILL" pass swapped this to object-cover
- // with a Ken-Burns zoom for a punchier full-bleed look, but that
- // crops these specific creatives (~1.5:1 art in a 4/5 portrait
- // box on mobile, 21:10/28:9 on larger screens) and slices off
- // the baked-in text on the edges — exactly the "cut off" bug
- // this re-fixes. Photo ads (no baked text) keep the cover+zoom
- // treatment below since cropping a plain photo is safe.
- className="relative object-contain"
+ className="object-cover"
  />
- </>
  ) : (
  <>
  <Image
