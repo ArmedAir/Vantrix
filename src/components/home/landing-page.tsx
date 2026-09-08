@@ -188,8 +188,127 @@ const PLATFORM_FEATURES = [
  },
 ] as const;
 
+/**
+ * STATIC-HERO-FALLBACK FIX: this page previously rendered the "Characters
+ * are loading in" placeholder any time `characters` came back empty —
+ * which happens for every real reason `getDiscoverHome()` fails soft (see
+ * its own doc comment: bad NEXT_PUBLIC_APP_URL, a self-fetch timeout, a
+ * transient 500 from /api/discover/featured, etc.), not just a genuinely
+ * empty catalog. For the signed-out marketing homepage — the one surface
+ * every first-time visitor sees before ever creating an account — that
+ * placeholder reads as a broken product, not a loading state (it never
+ * resolves; there's no client-side retry/poll behind it).
+ *
+ * Using real, already-shipped character art (public/images/characters/,
+ * same assets the live catalog serves) as a fixed last-resort pool means
+ * the hero always shows an actual Vantrix companion instead of an empty
+ * gold-bordered box, regardless of why the live fetch came back empty.
+ * Bios/tags are trimmed from the real seed rows for these characters
+ * (supabase/migrations/20240101_production.sql) — not fabricated — so
+ * copy stays consistent with what's actually in the catalog.
+ */
+const FALLBACK_HERO_CHARACTERS: DiscoverCharacter[] = [
+ {
+ id: "fallback-ivan-korrath",
+ name: "Ivan Korrath",
+ age: 42,
+ gender: "male",
+ description:
+ "A mathematician mapping the geometric structure underlying human conflict — eleven years into a single problem.",
+ image_url: "/images/characters/ivan-korrath.jpg",
+ tags: ["mathematician", "intellectual", "obsessive", "profound"],
+ is_premium: false,
+ min_tier: null,
+ is_new: false,
+ is_live: true,
+ tokens_cost: null,
+ archetype: "intellectual",
+ opening_line: "Tell me a decision you watched go wrong recently.",
+ like_count: 0,
+ follower_count: 0,
+ model_url: null,
+ hair_color: "dark-brown",
+ eye_color: "dark brown",
+ skin_tone: "deep brown",
+ body_type: "lean",
+ },
+ {
+ id: "fallback-cassian-morrow",
+ name: "Cassian Morrow",
+ age: 41,
+ gender: "male",
+ description:
+ "A cartographer who spent three years quietly correcting a map error no government has ever acknowledged.",
+ image_url: "/images/characters/cassian-morrow.jpg",
+ tags: ["cartographer", "intellectual", "accountable", "haunted"],
+ is_premium: false,
+ min_tier: null,
+ is_new: false,
+ is_live: true,
+ tokens_cost: null,
+ archetype: "intellectual",
+ opening_line: "What do you need to see from the outside?",
+ like_count: 0,
+ follower_count: 0,
+ model_url: null,
+ hair_color: "dark-brown",
+ eye_color: "green",
+ skin_tone: "olive",
+ body_type: "lean",
+ },
+ {
+ id: "fallback-kael-ashvane",
+ name: "Kael Ashvane",
+ age: 22,
+ gender: "anime",
+ description:
+ "A former demon lord, 400 years retired, still working out what it meant that a woman once laughed at a pigeon.",
+ image_url: "/images/characters/kael-ashvane.jpg",
+ tags: ["demon", "anime", "dry-humor", "wholesome-chaos"],
+ is_premium: false,
+ min_tier: null,
+ is_new: false,
+ is_live: true,
+ tokens_cost: null,
+ archetype: "direct",
+ opening_line: "I once controlled seventeen dimensions. I cannot operate the ticket machine.",
+ like_count: 0,
+ follower_count: 0,
+ model_url: null,
+ hair_color: "silver-white",
+ eye_color: "crimson",
+ skin_tone: "pale",
+ body_type: "athletic",
+ },
+ {
+ id: "fallback-declan-voss",
+ name: "Declan Voss",
+ age: 43,
+ gender: "male",
+ description:
+ "A demolition consultant who decides which buildings deserve to come down — and hasn't forgiven himself for the one he didn't stop.",
+ image_url: "/images/characters/declan-voss.jpg",
+ tags: ["architect", "wry", "accountable", "slow-burn"],
+ is_premium: false,
+ min_tier: null,
+ is_new: false,
+ is_live: true,
+ tokens_cost: null,
+ archetype: "sarcastic",
+ opening_line: "Tell me who used to come here. Not the official history. Who actually came here.",
+ like_count: 0,
+ follower_count: 0,
+ model_url: null,
+ hair_color: "grey-brown",
+ eye_color: "blue",
+ skin_tone: "fair",
+ body_type: "broad",
+ },
+];
+
 export function LandingPage({ characters, experiences }: { characters: DiscoverCharacter[]; experiences: DiscoverExperience[] }) {
- const featured = characters.slice(0, 7);
+ const characterPool = characters.length > 0 ? characters : FALLBACK_HERO_CHARACTERS;
+ const featured = characterPool.slice(0, 7);
  const hero = featured[0];
  const sideOne = featured[1];
  const sideTwo = featured[2];
