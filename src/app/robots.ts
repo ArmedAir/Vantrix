@@ -40,6 +40,9 @@ import { getLandingPageSlugs } from "@/lib/seo/landing-pages";
  * (seo)/companions/[id]/page.tsx) is allowed the same way — a longer,
  * more specific allow prefix beats the blanket "/" disallow for every
  * path under it, same tie-break rule as above.
+ *
+ * SEO-LOCATIONS FIX: "/locations/" (the new public world-location
+ * pages, see (seo)/locations/[slug]/page.tsx) is allowed the same way.
  */
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -59,6 +62,7 @@ export default function robots(): MetadataRoute.Robots {
         "/terms",
         "/privacy",
         "/companions/",
+        "/locations/",
         ...getLandingPageSlugs().map((slug) => `/${slug}`),
       ],
       disallow: ["/", "/api/"],

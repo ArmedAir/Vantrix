@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/utils";
 import { getLandingPageSlugs } from "@/lib/seo/landing-pages";
 import { getPublicCharacterIds } from "@/lib/seo/public-character";
+import { getPublicLocationSlugs } from "@/lib/seo/public-location";
 import { getBlogSlugs } from "@/lib/blog/posts";
 
 /**
@@ -32,7 +33,10 @@ import { getBlogSlugs } from "@/lib/blog/posts";
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const characterIds = await getPublicCharacterIds();
+  const [characterIds, locationSlugs] = await Promise.all([
+    getPublicCharacterIds(),
+    getPublicLocationSlugs(),
+  ]);
   return [
     {
       url: absoluteUrl("/"),
@@ -111,6 +115,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.6,
+    })),
+    // SEO-LOCATIONS FIX: public /locations/[slug] pages (see
+    // (seo)/locations/[slug]/page.tsx + lib/seo/public-location.ts) —
+    // same data-driven pattern as characterIds above.
+    ...locationSlugs.map((slug) => ({
+      url: absoluteUrl(`/locations/${slug}`),
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.55,
     })),
   ];
 }

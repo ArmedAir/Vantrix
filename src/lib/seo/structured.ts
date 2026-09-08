@@ -220,3 +220,34 @@ export function generateBreadcrumbSchema(items: { name: string; path?: string }[
     })),
   };
 }
+
+/**
+ * SEO-LOCATIONS FIX: Place schema for /locations/[slug] — the world
+ * atlas's platform-authored cities/districts (see
+ * lib/seo/public-location.ts's own comment on why these need no
+ * approval gate the way character pages do). `containsPlace`/
+ * `containedInPlace` are left out for now: a Place-to-Place hierarchy
+ * would need parent_location_id resolved to its own Place node, which
+ * isn't worth the extra query for what's currently a single flat list
+ * of top-level cities plus a few sub-district Wings.
+ */
+export function generateLocationSchema(location: {
+  slug: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  archetype?: string | null;
+}) {
+  const url = absoluteUrl(`/locations/${location.slug}`);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "@id": `${url}#place`,
+    name: location.name,
+    description: location.description ?? undefined,
+    image: location.image_url ?? absoluteUrl("/og-image.jpg"),
+    url,
+    ...(location.archetype && { additionalType: location.archetype }),
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+  };
+}
