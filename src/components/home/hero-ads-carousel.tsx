@@ -233,18 +233,18 @@ export function HeroAdsCarousel({ ads }: { ads: HeroAd[] }) {
  const slideContent = isCode ? (
  <PromoHeroArt slug={promoHeroSlugFrom(ad.image_url)} />
  ) : ad.hide_overlay ? (
- // BLUR-BACKDROP-REMOVED FIX: the previous treatment rendered
- // baked-in creatives with object-contain over a second, blurred
- // object-cover copy filling the letterbox bars. On this slide's
- // wide aspect ratio (21:10 / 28:9) against ~1.5:1 source art,
- // those bars ran thick — the blurred fill was doing most of the
- // visible slide, reading as dead/soft space rather than content,
- // and doubling the image payload per slide for it. Single
- // object-cover image, matching the plain-photo branch below, so
- // the ad fills the whole slide with the sharp creative and no
- // blurred filler. This crops a sliver off the tallest baked
- // creatives on the widest breakpoint — an acceptable trade for a
- // slide that's actually full of image instead of half blur.
+ // OBJECT-COVER-REVERTED FIX: the previous pass swapped this to a
+ // single object-cover image to kill the wasted blur backdrop space
+ // — but object-cover crops a baked-in creative (headline/CTA/badge
+ // already designed into the image) whenever the slide box's aspect
+ // ratio doesn't match the source art, which on mobile's aspect-[4/5]
+ // box sliced the CTA button right off the bottom. Restored to
+ // object-contain (the full, uncropped image, always 100% visible),
+ // but WITHOUT reviving the blurred second-image backdrop that was
+ // taking up visible space before — just a flat backdrop (the
+ // `bg-black` already on this slide's wrapper, see slideClassName
+ // below) behind the letterboxed image instead of a second image
+ // download.
  <Image
  src={resolveImageSrc(ad.image_url)}
  alt={ad.title}
@@ -252,7 +252,7 @@ export function HeroAdsCarousel({ ads }: { ads: HeroAd[] }) {
  sizes="(min-width: 1280px) 1280px, 100vw"
  priority={i === 0}
  loading={i === 0 ? undefined : "lazy"}
- className="object-cover"
+ className="object-contain"
  />
  ) : (
  <>

@@ -22,7 +22,6 @@ import { ExploreCharacters } from "@/components/home/explore-characters";
 import { Greeting } from "@/components/home/greeting";
 import { HeroSplit } from "@/components/home/hero-split";
 import { YourWorld } from "@/components/home/your-world";
-import { PlatformFeatures } from "@/components/home/platform-features";
 import { Footer } from "@/components/home/footer";
 // LUXURY-SCROLL FIX: MotionWrapper (already proven on HeroSplit/CharacterHero
 // — reduced-motion-safe fade+rise on scroll-into-view) was never applied
@@ -282,16 +281,6 @@ export default async function HomePage() {
       <MotionWrapper><ExploreCharacters initial={allCharacters.slice(0, 24)} /></MotionWrapper>
       <MotionWrapper><YourWorld teaser={worldTeaser} /></MotionWrapper>
       <MotionWrapper><CreatorsYouFollow creators={creators} /></MotionWrapper>
-      {/* FEATURES-ON-HOME FIX: PlatformFeatures ("Beyond the chat" —
-          Dating, World, Community, Studio, Digital Twin) previously only
-          rendered on the signed-out LandingPage. A returning,
-          authenticated visitor never sees LandingPage at all (see the
-          !user branch above), so this whole grid — and the empty gap it
-          leaves — was missing from Home entirely, right above what used
-          to be a bare Footer. Rendered here, in the same slot LandingPage
-          uses it (just before Footer), with real in-app hrefs since this
-          audience is already signed in. */}
-      <MotionWrapper><PlatformFeatures /></MotionWrapper>
       <Footer />
     </div>
   );
