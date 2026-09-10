@@ -1,0 +1,596 @@
+import { SafeImage as Image } from "@/components/ui/safe-image";
+import Link from "next/link";
+import {
+ ArrowRight,
+ BrainCircuit,
+ ChevronRight,
+ CirclePlay,
+ Heart,
+ MessageCircle,
+ Sparkles,
+ WandSparkles,
+ Volume2,
+} from "lucide-react";
+import { resolveImageSrc } from "@/lib/utils";
+import type { DiscoverCharacter, DiscoverExperience } from "@/lib/frontend/discover";
+import { LandingCharacterGrid } from "@/components/home/landing-character-grid";
+import { CharacterFeatures } from "@/components/home/character-features";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { CharacterPresence } from "@/components/immersive/character-presence";
+import { CharacterPortraitViewer } from "@/components/immersive/character-portrait-viewer";
+// LUXURY-SCROLL FIX: MotionWrapper (immersive/motion-wrapper.tsx) already
+// powers the reduced-motion-safe fade+rise reveal used on HeroSplit and
+// CharacterHero, but every section below the fold on this page — the
+// platform's one first-impression/conversion surface (see ASO/landing-copy
+// work) — rendered inert, no different from a static screenshot. Reusing
+// the same proven wrapper here (rather than a page-local one-off) keeps
+// "respect prefers-reduced-motion" centralized in the one place it's
+// already implemented correctly.
+import { MotionWrapper } from "@/components/immersive/motion-wrapper";
+import { Logo as BrandMark } from "@/components/shell/logo";
+
+/**
+ * LOGO FIX (marketing homepage): this page had its own local placeholder —
+ * a plain gold "V" tile — never migrated to the real brand mark
+ * (public/images/vantrix-logo.png) that shell/logo.tsx's own comment says
+ * PublicHeader/Sidebar/MobileDrawer were already fixed to use. Since this
+ * page is the actual signed-out-visitor homepage (LandingPage, not
+ * PublicHeader — see (app)/layout.tsx's "/" branch), it was the one
+ * surface still showing the fake logo to every first-time visitor.
+ */
+function Logo() {
+ return (
+ <Link href="/" className="flex items-center gap-2.5" aria-label="Vantrix home">
+ <BrandMark size={32} />
+ <span className="font-display text-xl tracking-[-0.02em] text-text-primary">Vantrix</span>
+ </Link>
+ );
+}
+
+function LandingHeader() {
+ return (
+ <header className="sticky top-0 z-50 border-b border-border-hairline bg-base/80 backdrop-blur-xl">
+ <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between px-5 md:px-8">
+ <Logo />
+ <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
+ <a href="#characters" className="text-sm text-text-secondary transition-colors ease-premium hover:text-text-primary">Characters</a>
+ <a href="#intelligence" className="text-sm text-text-secondary transition-colors ease-premium hover:text-text-primary">Intelligence</a>
+ <a href="#how-it-works" className="text-sm text-text-secondary transition-colors ease-premium hover:text-text-primary">How it works</a>
+ <a href="#features" className="text-sm text-text-secondary transition-colors ease-premium hover:text-text-primary">Features</a>
+ <Link href="/discover" className="text-sm text-text-secondary transition-colors ease-premium hover:text-text-primary">Discover</Link>
+ </nav>
+ <div className="flex items-center gap-2">
+ <ThemeToggle />
+ <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+ <Link href="/login">Log in</Link>
+ </Button>
+ <Button asChild size="sm">
+ <Link href="/login?mode=sign-up" className="gap-2">
+ Create free
+ <ArrowRight className="h-4 w-4" />
+ </Link>
+ </Button>
+ </div>
+ </div>
+ </header>
+ );
+}
+
+function CharacterPortrait({ character, className = "" }: { character: DiscoverCharacter; className?: string }) {
+ // LIVING-PORTRAIT / 3D: single-use hero (one `hero` character below, not
+ // a card grid) — see character-hero.tsx's notes on why the
+ // animate-breathe loop is scoped to singular hero surfaces only, why
+ // it's click/focus-triggered rather than continuous (living-portrait.tsx),
+ // and character-portrait-viewer.tsx for the 2D/3D fallback this now
+ // shares with the character detail page's hero.
+ return (
+ <div className={`relative overflow-hidden rounded-lg border border-border-hairline bg-base shadow-[0_30px_80px_-35px_rgba(0,0,0,.9)] ${className}`}>
+ <CharacterPortraitViewer
+ modelUrl={character.model_url}
+ imageSrc={resolveImageSrc(character.image_url)}
+ alt={character.name}
+ sizes="(max-width: 768px) 80vw, 42vw"
+ appearance={{
+ hair_color: character.hair_color,
+ eye_color: character.eye_color,
+ skin_tone: character.skin_tone,
+ body_type: character.body_type,
+ }}
+ />
+ <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+ <div className="absolute inset-x-0 bottom-0 p-5">
+ {/* IMMERSIVE-UI-PHASE-1: "Online now" replaced with the same
+ deterministic, atmospheric presence state the character
+ detail page uses — spec §10 explicitly rules out "Online" as
+ a primary status, and this was never a real presence signal
+ (no online/offline column exists on `characters`). */}
+ <div className="mb-2">
+ <CharacterPresence characterId={character.id} tags={character.tags} />
+ </div>
+ <div className="font-display text-2xl text-white">{character.name}{character.age ? `, ${character.age}` : ""}</div>
+ <div className="mt-1 line-clamp-1 text-sm text-white/65">{character.archetype || character.tags?.slice(0, 2).join(" · ") || "Your next conversation"}</div>
+ </div>
+ </div>
+ );
+}
+
+function Pill({ children }: { children: React.ReactNode }) {
+ return <span className="inline-flex items-center rounded-full border border-border-hairline bg-white/[0.025] px-3 py-1.5 text-xs font-medium text-text-secondary">{children}</span>;
+}
+
+/**
+ * RSC-BOUNDARY FIX (2026-09-09): previously exported as a standalone
+ * `loginHref(path)` helper and passed as a `hrefFor` function prop into
+ * CharacterFeatures -> CharacterCircleViewer. CharacterCircleViewer is a
+ * "use client" component, and a Server Component (this file) can't hand a
+ * function to a Client Component across the RSC boundary — Next threw
+ * "Functions cannot be passed directly to Client Components" on every
+ * render of "/", taking the whole homepage down. CharacterFeatures/
+ * CharacterCircleViewer now take a `signedOut` boolean instead and build
+ * the equivalent `/login?mode=sign-up&redirect=...` href internally (see
+ * those components' own notes) — this helper has no remaining callers.
+ */
+
+/**
+ * STATIC-HERO-FALLBACK FIX: this page previously rendered the "Characters
+ * are loading in" placeholder any time `characters` came back empty —
+ * which happens for every real reason `getDiscoverHome()` fails soft (see
+ * its own doc comment: bad NEXT_PUBLIC_APP_URL, a self-fetch timeout, a
+ * transient 500 from /api/discover/featured, etc.), not just a genuinely
+ * empty catalog. For the signed-out marketing homepage — the one surface
+ * every first-time visitor sees before ever creating an account — that
+ * placeholder reads as a broken product, not a loading state (it never
+ * resolves; there's no client-side retry/poll behind it).
+ *
+ * Using real, already-shipped character art (public/images/characters/,
+ * same assets the live catalog serves) as a fixed last-resort pool means
+ * the hero always shows an actual Vantrix companion instead of an empty
+ * gold-bordered box, regardless of why the live fetch came back empty.
+ * Bios/tags are trimmed from the real seed rows for these characters
+ * (supabase/migrations/20240101_production.sql) — not fabricated — so
+ * copy stays consistent with what's actually in the catalog.
+ */
+const FALLBACK_HERO_CHARACTERS: DiscoverCharacter[] = [
+ {
+ id: "fallback-ivan-korrath",
+ name: "Ivan Korrath",
+ age: 42,
+ gender: "male",
+ description:
+ "A mathematician mapping the geometric structure underlying human conflict — eleven years into a single problem.",
+ image_url: "/images/characters/ivan-korrath.jpg",
+ tags: ["mathematician", "intellectual", "obsessive", "profound"],
+ is_premium: false,
+ min_tier: null,
+ is_new: false,
+ is_live: true,
+ tokens_cost: null,
+ archetype: "intellectual",
+ opening_line: "Tell me a decision you watched go wrong recently.",
+ like_count: 0,
+ follower_count: 0,
+ model_url: null,
+ hair_color: "dark-brown",
+ eye_color: "dark brown",
+ skin_tone: "deep brown",
+ body_type: "lean",
+ },
+ {
+ id: "fallback-cassian-morrow",
+ name: "Cassian Morrow",
+ age: 41,
+ gender: "male",
+ description:
+ "A cartographer who spent three years quietly correcting a map error no government has ever acknowledged.",
+ image_url: "/images/characters/cassian-morrow.jpg",
+ tags: ["cartographer", "intellectual", "accountable", "haunted"],
+ is_premium: false,
+ min_tier: null,
+ is_new: false,
+ is_live: true,
+ tokens_cost: null,
+ archetype: "intellectual",
+ opening_line: "What do you need to see from the outside?",
+ like_count: 0,
+ follower_count: 0,
+ model_url: null,
+ hair_color: "dark-brown",
+ eye_color: "green",
+ skin_tone: "olive",
+ body_type: "lean",
+ },
+ {
+ id: "fallback-kael-ashvane",
+ name: "Kael Ashvane",
+ age: 22,
+ gender: "anime",
+ description:
+ "A former demon lord, 400 years retired, still working out what it meant that a woman once laughed at a pigeon.",
+ image_url: "/images/characters/kael-ashvane.jpg",
+ tags: ["demon", "anime", "dry-humor", "wholesome-chaos"],
+ is_premium: false,
+ min_tier: null,
+ is_new: false,
+ is_live: true,
+ tokens_cost: null,
+ archetype: "direct",
+ opening_line: "I once controlled seventeen dimensions. I cannot operate the ticket machine.",
+ like_count: 0,
+ follower_count: 0,
+ model_url: null,
+ hair_color: "silver-white",
+ eye_color: "crimson",
+ skin_tone: "pale",
+ body_type: "athletic",
+ },
+ {
+ id: "fallback-declan-voss",
+ name: "Declan Voss",
+ age: 43,
+ gender: "male",
+ description:
+ "A demolition consultant who decides which buildings deserve to come down — and hasn't forgiven himself for the one he didn't stop.",
+ image_url: "/images/characters/declan-voss.jpg",
+ tags: ["architect", "wry", "accountable", "slow-burn"],
+ is_premium: false,
+ min_tier: null,
+ is_new: false,
+ is_live: true,
+ tokens_cost: null,
+ archetype: "sarcastic",
+ opening_line: "Tell me who used to come here. Not the official history. Who actually came here.",
+ like_count: 0,
+ follower_count: 0,
+ model_url: null,
+ hair_color: "grey-brown",
+ eye_color: "blue",
+ skin_tone: "fair",
+ body_type: "broad",
+ },
+];
+
+export function LandingPage({ characters, experiences }: { characters: DiscoverCharacter[]; experiences: DiscoverExperience[] }) {
+ const characterPool = characters.length > 0 ? characters : FALLBACK_HERO_CHARACTERS;
+ const featured = characterPool.slice(0, 7);
+ const hero = featured[0];
+ const sideOne = featured[1];
+ const sideTwo = featured[2];
+ // Mobile avatar strip (see MOBILE-HERO-IMAGE FIX below) — up to 4 faces,
+ // deliberately reusing the same `featured` pool rather than a separate
+ // fetch, so it's never out of sync with what the big portrait shows.
+ const avatarRow = featured.slice(0, 4);
+ // ALL-IMAGES-ARE-CHARACTERS FIX: the "intelligence" section's art used
+ // to be an abstract SVG (see that section's own comment, kept below for
+ // history). Picks a fourth face — same `featured` pool, one slot past
+ // avatarRow's last index — so this panel doesn't just repeat `hero`.
+ // `?? hero` is a belt-and-suspenders fallback only; `characterPool` is
+ // never smaller than FALLBACK_HERO_CHARACTERS' 4 entries, so index 3
+ // always resolves in practice.
+ const intelligenceCharacter = featured[3] ?? hero;
+
+ return (
+ <div className="min-h-screen overflow-hidden bg-base text-text-primary selection:bg-gold-500/25">
+ <LandingHeader />
+
+ <main>
+ <section className="relative isolate px-5 pb-20 pt-14 md:px-8 md:pb-28 md:pt-24">
+ <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[700px] overflow-hidden" aria-hidden>
+ <div className="absolute left-[8%] top-[-260px] h-[560px] w-[560px] rounded-full bg-gold-500/[0.07] blur-[130px]" />
+ <div className="absolute right-[-10%] top-[-180px] h-[520px] w-[520px] rounded-full bg-white/[0.025] blur-[120px]" />
+ <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+ </div>
+
+ <div className="mx-auto grid max-w-[1320px] items-center gap-14 lg:grid-cols-[1.03fr_.97fr] lg:gap-20">
+ <div className="max-w-[690px]">
+ <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/[0.045] px-3.5 py-2 text-xs font-semibold tracking-[0.14em] text-gold-400 uppercase">
+ <Sparkles className="h-3.5 w-3.5" />
+ A living universe of AI companions
+ </div>
+ <h1 className="max-w-4xl font-display text-[clamp(3.2rem,7vw,6.6rem)] leading-[0.91] tracking-[-0.045em] text-text-primary">
+ Not just an AI.
+ <br />
+ <span className="text-gold-400">A companion with a life.</span>
+ </h1>
+ <p className="mt-7 max-w-[590px] text-base leading-7 text-text-secondary md:text-lg md:leading-8">
+ They remember you, always. They change with you. Their world keeps going — even when you&apos;re not there. Create a companion with a personality, memory, voice, appearance, relationships, and a world of their own.
+ </p>
+
+ <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+ <Button asChild size="lg">
+ <Link href="/login?mode=sign-up" className="gap-2">
+ Create your character
+ <ArrowRight className="h-4 w-4" />
+ </Link>
+ </Button>
+ <Button asChild variant="secondary" size="lg">
+ <Link href="/discover" className="gap-2">
+ <CirclePlay className="h-4 w-4" />
+ Meet the characters
+ </Link>
+ </Button>
+ </div>
+
+ <div className="mt-7 flex flex-wrap gap-2">
+ <Pill>Persistent memory</Pill>
+ <Pill>Emotional context</Pill>
+ <Pill>Voice &amp; visual identity</Pill>
+ <Pill>Stories &amp; relationships</Pill>
+ </div>
+
+ {/* MOBILE-HERO-IMAGE FIX: the big portrait + its two floating
+ side cards below are real character imagery, but on a
+ phone the grid stacks to a single column and everything
+ from `sideOne`/`sideTwo` down to the two floating stat
+ cards is `hidden ... md:block` — so a mobile visitor
+ scrolling past the pills either hit nothing but the big
+ portrait (small screens, no context around it) or, if
+ `hero` ever came back empty for that request, a bare
+ gray box with no imagery at all. This strip puts real
+ character faces directly under the CTAs — no scrolling,
+ no dependency on the md: portrait rendering — so the
+ hero always reads as "a universe of characters," not
+ text-only, at any width. Hidden at lg: the full portrait
+ composition already does this job better once there's
+ room for it. */}
+ {avatarRow.length > 0 && (
+ <div className="mt-7 flex items-center gap-3 lg:hidden">
+ <div className="flex -space-x-3">
+ {avatarRow.map((c) => (
+ <div
+ key={c.id}
+ className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-base bg-white/5 shadow-[0_4px_14px_-4px_rgba(0,0,0,.7)]"
+ >
+ <Image
+ src={resolveImageSrc(c.image_url)}
+ alt={c.name}
+ fill
+ sizes="44px"
+ className="object-cover"
+ />
+ </div>
+ ))}
+ </div>
+ <p className="text-xs text-text-secondary">
+ <span className="font-semibold text-text-primary">{avatarRow.map((c) => c.name).join(", ")}</span>
+ {" "}and more are waiting to meet you.
+ </p>
+ </div>
+ )}
+ </div>
+
+ <div className="relative mx-auto w-full max-w-[600px] lg:mx-0">
+ {hero ? (
+ <div className="relative mx-auto aspect-[0.82] w-[72%] max-w-[410px]">
+ <CharacterPortrait character={hero} className="absolute inset-0" />
+ {sideOne && (
+ <div className="absolute -left-[28%] bottom-[8%] hidden aspect-[0.78] w-[39%] -rotate-6 overflow-hidden rounded-md border border-border-hairline bg-base shadow-[0_30px_80px_-35px_rgba(0,0,0,.9)] md:block">
+ <Image src={resolveImageSrc(sideOne.image_url)} alt={sideOne.name} fill sizes="180px" className="object-cover" />
+ <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+ </div>
+ )}
+ {sideTwo && (
+ <div className="absolute -right-[28%] top-[10%] hidden aspect-[0.78] w-[39%] rotate-6 overflow-hidden rounded-md border border-border-hairline bg-base shadow-[0_30px_80px_-35px_rgba(0,0,0,.9)] md:block">
+ <Image src={resolveImageSrc(sideTwo.image_url)} alt={sideTwo.name} fill sizes="180px" className="object-cover" />
+ <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+ </div>
+ )}
+ <div className="absolute -bottom-5 -left-5 hidden rounded-md border border-border-hairline bg-black/80 p-3.5 backdrop-blur-xl sm:block md:-left-10">
+ <div className="flex items-center gap-2 text-xs text-white/65"><MessageCircle className="h-3.5 w-3.5 text-gold-400" /> Remembers the little things</div>
+ <div className="mt-1 text-sm font-semibold text-white">Your conversations have continuity.</div>
+ </div>
+ <div className="absolute -right-5 top-10 hidden rounded-md border border-border-hairline bg-black/80 p-3.5 backdrop-blur-xl sm:block md:-right-12">
+ <div className="flex items-center gap-2 text-xs text-white/65"><BrainCircuit className="h-3.5 w-3.5 text-gold-400" /> Character intelligence</div>
+ <div className="mt-1 text-sm font-semibold text-white">Personality shapes every response.</div>
+ </div>
+ </div>
+ ) : (
+ // EMPTY-HERO FIX: previously a flat, empty bg-base box with
+ // nothing in it if `characters` ever came back empty for a
+ // given request — indistinguishable from a broken image on
+ // this page's own dark background. Now reads as an
+ // intentional "characters incoming" placeholder instead of
+ // a rendering failure.
+ <div className="relative mx-auto flex aspect-[0.82] w-[72%] max-w-[410px] flex-col items-center justify-center gap-3 overflow-hidden rounded-lg border border-gold-500/20 bg-gradient-to-br from-gold-500/[0.08] via-transparent to-transparent text-center shadow-card">
+ <Sparkles className="h-8 w-8 text-gold-400" strokeWidth={1.5} />
+ <p className="max-w-[70%] text-sm text-text-secondary">Characters are loading in.</p>
+ </div>
+ )}
+ </div>
+ </div>
+ </section>
+
+ <section className="border-y border-border-hairline px-5 py-8 md:px-8">
+ <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-5">
+ <p className="text-sm text-text-tertiary">Built around the things that make a character feel consistent.</p>
+ <div className="flex flex-wrap gap-x-7 gap-y-2 text-sm font-medium text-text-secondary">
+ <span>Memory</span><span>Personality</span><span>Voice</span><span>Appearance</span><span>Relationships</span><span>World</span>
+ </div>
+ </div>
+ </section>
+
+ {/* ALL-IMAGES-ARE-CHARACTERS FIX (2026-09-10): this section previously
+ filled its art slot with an abstract network/node SVG (public/images/
+ character-intelligence-visual.svg) — a deliberate metaphor at the
+ time (see git history), but it meant a first-time visitor scrolling
+ past the hero hit a stretch of the page with no actual companion on
+ it, on a homepage whose entire premise is the companions themselves.
+ Every other art slot on this page (hero/sideOne/sideTwo, avatarRow,
+ CharacterFeatures, LandingCharacterGrid, the experiences strip) is
+ already real character art; this was the one holdout. Swapped for
+ `intelligenceCharacter` (see its own comment above, in LandingPage) —
+ same SafeImage-via-resolveImageSrc + gradient treatment as sideOne/
+ sideTwo, so a missing/broken image degrades to the shared character
+ placeholder instead of a 404, exactly like every other portrait on
+ this page. The old SVG asset itself is untouched on disk in case
+ another surface still references it. */}
+ <MotionWrapper>
+ <section id="intelligence" className="px-5 py-24 md:px-8 md:py-32">
+ <div className="mx-auto max-w-[1320px]">
+ <div className="grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
+ <div className="max-w-2xl">
+ <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500">Character intelligence</p>
+ <h2 className="mt-4 font-display text-4xl leading-tight tracking-[-0.03em] md:text-6xl">Give your character a reason to respond.</h2>
+ <p className="mt-5 text-base leading-7 text-text-secondary md:text-lg">Vantrix connects personality, memories, emotions, goals, relationships, and context so your character can respond like the same person across time — not a fresh prompt every message.</p>
+ </div>
+ <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-border-hairline shadow-card">
+ <Image
+ src={resolveImageSrc(intelligenceCharacter.image_url)}
+ alt={intelligenceCharacter.name}
+ fill
+ sizes="(max-width: 1024px) 100vw, 48vw"
+ className="object-cover"
+ />
+ <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+ <div className="absolute inset-x-0 bottom-0 p-5">
+ <div className="font-display text-xl text-white">{intelligenceCharacter.name}</div>
+ {intelligenceCharacter.archetype && (
+ <div className="mt-0.5 text-xs text-white/65">{intelligenceCharacter.archetype}</div>
+ )}
+ </div>
+ </div>
+ </div>
+
+ <div className="mt-14 grid gap-px overflow-hidden rounded-lg border border-border-hairline bg-white/[0.08] md:grid-cols-3">
+ {[
+ { icon: BrainCircuit, title: "A mind, not a prompt", body: "Define beliefs, fears, values, attachment, motivations, flaws, and goals that influence behavior." },
+ { icon: MessageCircle, title: "Memory with context", body: "Important moments can persist so your relationship has continuity instead of resetting every session." },
+ { icon: Heart, title: "Relationships that move", body: "Characters can develop trust, affection, tension, boundaries, and repair over time." },
+ ].map((item) => {
+ const Icon = item.icon;
+ return (
+ <article key={item.title} className="bg-base p-7 md:p-9">
+ <div className="grid h-11 w-11 place-items-center rounded-md border border-gold-500/20 bg-gold-500/[0.05] text-gold-400"><Icon className="h-5 w-5" /></div>
+ <h3 className="mt-6 font-display text-2xl">{item.title}</h3>
+ <p className="mt-3 text-sm leading-6 text-text-secondary">{item.body}</p>
+ </article>
+ );
+ })}
+ </div>
+ </div>
+ </section>
+ </MotionWrapper>
+
+ <MotionWrapper>
+ <section id="how-it-works" className="px-5 pb-24 md:px-8 md:pb-32">
+ <div className="mx-auto grid max-w-[1320px] items-center gap-14 lg:grid-cols-[.9fr_1.1fr]">
+ <div>
+ <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500">The creation studio</p>
+ <h2 className="mt-4 font-display text-4xl leading-tight tracking-[-0.03em] md:text-5xl">Build the person before you meet them.</h2>
+ <p className="mt-5 max-w-xl text-base leading-7 text-text-secondary">Start from an idea or build from scratch. Shape the identity, psychology, voice, appearance, memories, and behavior — then test the character before you publish.</p>
+ <Link href="/login?mode=sign-up" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-gold-400 hover:text-gold-300">Open the Creation Studio <ChevronRight className="h-4 w-4" /></Link>
+ </div>
+
+ <div className="relative overflow-hidden rounded-lg border border-border-hairline bg-base shadow-card p-5 md:p-7">
+ <div className="mb-5 flex items-center justify-between border-b border-border-hairline pb-4">
+ <div><div className="text-xs uppercase tracking-[0.16em] text-text-tertiary">Character Studio</div><div className="mt-1 font-display text-xl">Character DNA</div></div>
+ <span className="rounded-full border border-gold-500/20 px-2.5 py-1 text-[11px] font-semibold text-gold-400">LIVE PREVIEW</span>
+ </div>
+ <div className="grid gap-3 sm:grid-cols-2">
+ {[
+ ["Identity", "Who they are", "Complete"],
+ ["Personality", "How they think", "94%"],
+ ["Psychology", "What drives them", "87%"],
+ ["Voice", "How they sound", "Ready"],
+ ["Appearance", "How they look", "Locked"],
+ ["Memory", "What they carry", "12 seeds"],
+ ].map(([title, sub, value]) => (
+ <div key={title} className="rounded-md border border-border-hairline p-4 transition-colors ease-premium hover:border-gold-500/40">
+ <div className="flex items-center justify-between gap-3"><span className="text-sm font-semibold">{title}</span><span className="text-[11px] font-medium text-gold-400">{value}</span></div>
+ <p className="mt-1 text-xs text-text-tertiary">{sub}</p>
+ <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.07]"><div className="h-full w-[78%] rounded-full bg-gold-fill" /></div>
+ </div>
+ ))}
+ </div>
+ <div className="mt-5 flex items-center gap-3 rounded-md border border-border-hairline bg-base p-4">
+ <WandSparkles className="h-5 w-5 text-gold-400" />
+ <div><div className="text-sm font-semibold">AI can build the first draft for you.</div><div className="mt-0.5 text-xs text-text-tertiary">Describe the character in one sentence. Refine everything afterward.</div></div>
+ </div>
+ </div>
+ </div>
+ </section>
+
+ <section className="px-5 pb-24 md:px-8 md:pb-32">
+ <div className="mx-auto max-w-[1320px] rounded-xl border border-border-hairline bg-base shadow-card p-5 md:p-8">
+ <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
+ <div className="max-w-xl">
+ <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500">Bring them to life</p>
+ <h2 className="mt-4 font-display text-4xl leading-tight tracking-[-0.03em] md:text-5xl">See how they react before you publish.</h2>
+ <p className="mt-5 text-base leading-7 text-text-secondary">Test your character with difficult conversations, affection, conflict, silence, vulnerability, and unexpected turns. Find contradictions. Tune the behavior. Then start the real story.</p>
+ </div>
+ <div className="overflow-hidden rounded-lg border border-border-hairline bg-base">
+ <div className="flex items-center justify-between border-b border-border-hairline px-5 py-4">
+ <div className="flex items-center gap-2.5">
+ {hero && (
+ <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full border border-border-hairline">
+ <Image src={resolveImageSrc(hero.image_url)} alt={hero.name} fill sizes="28px" className="object-cover" />
+ </span>
+ )}
+ <span className="h-2 w-2 rounded-full bg-success" />
+ <span className="text-sm font-semibold">{hero ? `${hero.name} · Character Simulation` : "Character Simulation"}</span>
+ </div>
+ <span className="text-xs text-text-tertiary">Scenario · conflict</span>
+ </div>
+ <div className="space-y-5 p-5 md:p-7">
+ <div className="ml-auto max-w-[75%] rounded-lg border border-border-hairline bg-base px-4 py-2.5 text-[15px] leading-relaxed text-text-primary">I ignored you yesterday. You probably noticed.</div>
+ <div className="max-w-[78%] rounded-lg border border-gold-500/25 bg-base px-4 py-2.5 text-[15px] leading-relaxed text-text-primary">I did. I told myself it was nothing, but I kept checking whether you&rsquo;d come back. I&rsquo;d rather you tell me when something is wrong.</div>
+ <div className="grid gap-2 border-t border-border-hairline pt-4 sm:grid-cols-3">
+ <div className="rounded-md border border-border-hairline p-3"><div className="text-[10px] uppercase tracking-[0.14em] text-text-tertiary">Trust</div><div className="mt-2 text-sm font-semibold">61%</div></div>
+ <div className="rounded-md border border-border-hairline p-3"><div className="text-[10px] uppercase tracking-[0.14em] text-text-tertiary">Attachment</div><div className="mt-2 text-sm font-semibold">72%</div></div>
+ <div className="rounded-md border border-border-hairline p-3"><div className="text-[10px] uppercase tracking-[0.14em] text-text-tertiary">Response style</div><div className="mt-2 text-sm font-semibold">Direct</div></div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
+ </MotionWrapper>
+
+ <MotionWrapper>
+ <CharacterFeatures characters={characterPool} signedOut />
+ </MotionWrapper>
+
+ {featured.length > 0 && (
+ <MotionWrapper>
+ <section id="characters" className="px-5 pb-24 md:px-8 md:pb-32">
+ <div className="mx-auto max-w-[1320px]">
+ <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+ <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500">Discover</p><h2 className="mt-3 font-display text-4xl tracking-[-0.03em] md:text-5xl">Meet a few of the people already here.</h2></div>
+ <Link href="/discover" className="inline-flex items-center gap-2 text-sm font-semibold text-gold-400 hover:text-gold-300">Explore all <ArrowRight className="h-4 w-4" /></Link>
+ </div>
+ <LandingCharacterGrid initial={featured} />
+ </div>
+ </section>
+ </MotionWrapper>
+ )}
+
+ {experiences.length > 0 && (
+ <MotionWrapper>
+ <section className="px-5 pb-24 md:px-8 md:pb-32">
+ <div className="mx-auto max-w-[1320px]">
+ <div className="max-w-2xl"><p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500">More than chat</p><h2 className="mt-4 font-display text-4xl tracking-[-0.03em] md:text-5xl">Start with a moment. See where it goes.</h2><p className="mt-4 text-base leading-7 text-text-secondary">Roleplay scenes and experiences give your characters somewhere to be — and something to react to.</p></div>
+ <div className="mt-9 flex snap-x gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+ {experiences.slice(0, 6).map((experience) => (
+ <Link key={experience.id} href={`/companions/${experience.characterId}`} className="group relative min-w-[270px] snap-start overflow-hidden rounded-md border border-border-hairline md:min-w-[320px]">
+ <div className="relative aspect-[1.25]"><Image src={resolveImageSrc(experience.image)} alt={experience.title} fill sizes="320px" className="object-cover transition-transform ease-premium duration-500 group-hover:scale-[1.04]" /><div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" /></div>
+ <div className="absolute inset-x-0 bottom-0 p-5"><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-gold-400">{experience.category}</div><div className="mt-1 font-display text-xl text-white">{experience.title}</div><div className="mt-1 line-clamp-1 text-xs text-white/55">{experience.subtitle}</div></div>
+ </Link>
+ ))}
+ </div>
+ </div>
+ </section>
+ </MotionWrapper>
+ )}
+
+ </main>
+
+ <footer className="border-t border-border-hairline px-5 py-10 md:px-8">
+ <div className="mx-auto flex max-w-[1320px] flex-col gap-7 md:flex-row md:items-center md:justify-between">
+ <div><Logo /><p className="mt-3 max-w-sm text-xs leading-5 text-text-tertiary">Create, talk to, and grow relationships with AI companions who have a life beyond the chat.</p></div>
+ <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs text-text-tertiary"><Link href="/about" className="hover:text-text-primary">About</Link><Link href="/support" className="hover:text-text-primary">Support</Link><Link href="/blog" className="hover:text-text-primary">Blog</Link><Link href="/privacy" className="hover:text-text-primary">Privacy</Link><Link href="/terms" className="hover:text-text-primary">Terms</Link></div>
+ <div className="flex items-center gap-2 text-xs text-text-tertiary"><Volume2 className="h-3.5 w-3.5" /> Vantrix · {new Date().getFullYear()}</div>
+ </div>
+ </footer>
+ </div>
+ );
+}
