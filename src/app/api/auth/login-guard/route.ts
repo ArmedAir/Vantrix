@@ -23,6 +23,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkLoginLockout, recordLoginFailure, clearLoginFailures } from "@/lib/auth/login-guard";
 import { getClientIp } from "@/lib/network/get-client-ip";
+import { withErrorHandling } from "@/lib/api/with-error-handling";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,7 @@ function isValidBody(body: unknown): body is { action: Action; email: string } {
   );
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const body: unknown = await req.json().catch(() => null);
   if (!isValidBody(body)) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -61,4 +62,4 @@ export async function POST(req: NextRequest) {
 
   await clearLoginFailures(body.email, ip);
   return NextResponse.json({ ok: true });
-}
+}, 'auth/login-guard');

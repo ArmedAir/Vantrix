@@ -68,6 +68,7 @@ export interface CreatorFundConfig {
   platformSharePct: number;        // of each character's cut, % retained by the platform
   monetizationUpgradeFeeTokens: number;
   minActiveUsers: number;          // characters under this are excluded from the period entirely
+  minReadinessScore: number;       // 0 = advisory only; see computeCharacterFundReadiness() below
 }
 
 const CONFIG_DEFAULTS: CreatorFundConfig = {
@@ -76,6 +77,7 @@ const CONFIG_DEFAULTS: CreatorFundConfig = {
   platformSharePct: 30,
   monetizationUpgradeFeeTokens: 250,
   minActiveUsers: 5,
+  minReadinessScore: 0,
 };
 
 async function readConfigNumber(key: string, fallback: number): Promise<number> {
@@ -85,15 +87,80 @@ async function readConfigNumber(key: string, fallback: number): Promise<number> 
 }
 
 export async function getCreatorFundConfig(): Promise<CreatorFundConfig> {
-  const [eligibleRevenuePct, creatorSharePct, platformSharePct, monetizationUpgradeFeeTokens, minActiveUsers] =
+  const [eligibleRevenuePct, creatorSharePct, platformSharePct, monetizationUpgradeFeeTokens, minActiveUsers, minReadinessScore] =
     await Promise.all([
       readConfigNumber('creator_fund_eligible_revenue_pct', CONFIG_DEFAULTS.eligibleRevenuePct),
       readConfigNumber('creator_fund_creator_share_pct', CONFIG_DEFAULTS.creatorSharePct),
       readConfigNumber('creator_fund_platform_share_pct', CONFIG_DEFAULTS.platformSharePct),
       readConfigNumber('character_monetization_upgrade_fee', CONFIG_DEFAULTS.monetizationUpgradeFeeTokens),
       readConfigNumber('creator_fund_min_active_users', CONFIG_DEFAULTS.minActiveUsers),
+      readConfigNumber('creator_fund_min_readiness_score', CONFIG_DEFAULTS.minReadinessScore),
     ]);
-  return { eligibleRevenuePct, creatorSharePct, platformSharePct, monetizationUpgradeFeeTokens, minActiveUsers };
+  return { eligibleRevenuePct, creatorSharePct, platformSharePct, monetizationUpgradeFeeTokens, minActiveUsers, minReadinessScore };
+}
+
+// ── Fund readiness (server-side mirror of studio/creation/completeness.ts's
+// fundReadiness(), evaluated against the persisted character) ──────────────
+//
+// The Studio-side fundReadiness() only ever sees an in-progress
+// CharacterDraft, which is never itself sent to the server. This is the
+// same six-check shape evaluated against the actual `characters` row, plus
+// a memory_graph existence check standing in for "at least one seed
+// memory" (draft.memories has no server write path yet — a separate,
+// undocumented gap, not fabricated here). Used by the monetization-upgrade
+// route below to surface (and, once creator_fund_min_readiness_score is
+// raised above 0, optionally gate) readiness at the moment a creator
+// actually spends the enrollment fee — the criteria doc's own suggestion,
+// since both already live in this file.
+export interface FundReadinessCheck {
+  key: string;
+  label: string;
+  met: boolean;
+}
+
+export interface FundReadinessResult {
+  checks: FundReadinessCheck[];
+  metCount: number;
+  total: number;
+  score: number; // 0-100
+}
+
+export async function computeCharacterFundReadiness(characterId: string): Promise<FundReadinessResult> {
+  const [{ data: character }, { count: memoryCount }] = await Promise.all([
+    supabaseAdmin
+      .from('characters')
+      .select('personality, archetype, backstory, speech_style, opening_line, image_url, identity_locked')
+      .eq('id', characterId)
+      .maybeSingle(),
+    supabaseAdmin
+      .from('memory_graph')
+      .select('id', { count: 'exact', head: true })
+      .eq('character_id', characterId),
+  ]);
+
+  const c = character ?? {
+    personality: null, archetype: null, backstory: null,
+    speech_style: null, opening_line: null, image_url: null, identity_locked: null,
+  };
+
+  const checks: FundReadinessCheck[] = [
+    {
+      key: 'personality',
+      label: 'Personality or archetype defined',
+      met: !!(c.personality?.trim() || c.archetype?.trim()),
+    },
+    { key: 'backstory', label: 'Backstory written', met: !!c.backstory?.trim() },
+    { key: 'voice', label: 'Speech style set', met: !!c.speech_style?.trim() },
+    { key: 'opening_line', label: 'Opening line written', met: !!c.opening_line?.trim() },
+    { key: 'memory', label: 'At least one seed memory', met: (memoryCount ?? 0) > 0 },
+    {
+      key: 'portrait_locked',
+      label: 'Portrait generated and identity-locked',
+      met: !!c.image_url && !!c.identity_locked,
+    },
+  ];
+  const metCount = checks.filter(ch => ch.met).length;
+  return { checks, metCount, total: checks.length, score: Math.round((metCount / checks.length) * 100) };
 }
 
 // ── Pool sizing: a documented approximation, not a real payments ledger ────
@@ -437,11 +504,25 @@ export async function computeCharacterValueScores(periodStart: Date, periodEnd: 
 export interface MonetizationUpgradeResult {
   success: boolean;
   error?: 'character_not_found' | 'not_owner' | 'already_monetized' | 'monetization_suspended' |
-    'character_not_public' | 'character_not_approved' | 'insufficient_tokens' | 'upgrade_failed';
+    'character_not_public' | 'character_not_approved' | 'insufficient_tokens' | 'upgrade_failed' |
+    'below_readiness_threshold';
+  /** Only populated on the below_readiness_threshold error, so the client can show exactly what's missing. */
+  readiness?: FundReadinessResult;
 }
 
 export async function upgradeCharacterMonetization(userId: string, characterId: string): Promise<MonetizationUpgradeResult> {
   const config = await getCreatorFundConfig();
+
+  // Advisory by default (minReadinessScore === 0 skips this entirely, so
+  // the readiness read never costs a round trip on the common path).
+  // Raising the config value above 0 turns this into a real gate — see the
+  // knob's own app_config description for why that's opt-in, not default.
+  if (config.minReadinessScore > 0) {
+    const readiness = await computeCharacterFundReadiness(characterId);
+    if (readiness.score < config.minReadinessScore) {
+      return { success: false, error: 'below_readiness_threshold', readiness };
+    }
+  }
 
   const { error } = await supabaseAdmin.rpc('upgrade_character_monetization', {
     p_user_id: userId,

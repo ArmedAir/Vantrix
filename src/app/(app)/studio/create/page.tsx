@@ -18,5 +18,5 @@ export default async function CreateCharacterPage() {
   const isAdmin = session?.profile.isAdmin ?? false;
   const gated = tier.toLowerCase() === "free" && !isAdmin;
 
-  return gated ? <StudioGatedNotice /> : <CreationStudio />;
+  return gated ? <StudioGatedNotice /> : <CreationStudio userId={session?.profile.id ?? null} />;
 }

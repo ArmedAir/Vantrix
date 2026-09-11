@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
@@ -47,7 +48,14 @@ export async function getPublicLocationSlugs(): Promise<string[]> {
   return data.map((row) => row.slug as string).filter(Boolean);
 }
 
-export async function getPublicLocation(slug: string): Promise<PublicLocation | null> {
+// PERF: this page's generateMetadata() and page body both call
+// getPublicLocation() with the same slug. Because this is a plain
+// Supabase call (not fetch()), Next's automatic per-request request
+// memoization never applies to it — without cache(), that's two full
+// round-trips to Supabase for one page load. React's cache() memoizes by
+// arguments for the lifetime of a single request/render, so the second
+// call is free, and the cache never leaks across requests.
+export const getPublicLocation = cache(async function getPublicLocation(slug: string): Promise<PublicLocation | null> {
   const { data: location, error } = await supabaseAdmin
     .from("world_locations")
     .select(LOCATION_SELECT)
@@ -76,4 +84,4 @@ export async function getPublicLocation(slug: string): Promise<PublicLocation | 
     .filter((c): c is { id: string; name: string; image_url: string | null } => Boolean(c));
 
   return { ...(location as Omit<PublicLocation, "residents">), residents };
-}
+});

@@ -4,6 +4,7 @@ import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { sanitize } from '@/lib/sanitize';
 import { logger } from '@/lib/logger';
 import { ratelimit } from '@/lib/rate-limit';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 /**
  * POST /api/chat/claim-guest-transcript
@@ -45,7 +46,7 @@ const claimSchema = z.object({
   })).min(1).max(MAX_MESSAGES),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { supabase, user } = await getAuthedUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
@@ -138,4 +139,4 @@ export async function POST(req: NextRequest) {
     .eq('id', conversationId);
 
   return NextResponse.json({ claimed: true, conversationId, messagesImported: rows.length });
-}
+}, 'chat/claim-guest-transcript');

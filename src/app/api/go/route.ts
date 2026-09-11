@@ -36,6 +36,7 @@ import { redis }                     from '@/lib/redis';
 import { isSafeExternalUrl }         from '@/lib/security.edge';
 import { getClientIp }               from '@/lib/network/get-client-ip';
 import { logger }                    from '@/lib/logger';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 export const runtime  = 'edge';
@@ -60,7 +61,7 @@ const querySchema = z.object({
 // URL back into the response body (reflected-XSS surface).
 const FALLBACK_REDIRECT = '/';
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   // BUG FIX (2026-08-08): getClientIp() returning null (no proxy header
   // present — e.g. a bare `next start` with no reverse proxy in front) used
   // to fall back to a hardcoded "127.0.0.1", making every client on a
@@ -101,4 +102,4 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.redirect(url, { status: 302 });
-}
+}, 'go');

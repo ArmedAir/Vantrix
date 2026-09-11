@@ -23,6 +23,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { z }                         from 'zod';
 import { getCompatibilityForMatch }  from '@/lib/dating/get-match-detail';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,7 +43,7 @@ const schema = z.object({ matchId: z.string().uuid() });
 // — the exact "recompute every call" failure mode the comment claimed to
 // have fixed, just via a different arithmetic mistake. Now a true delta
 // against the conversation count stored at the last recompute.
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -54,4 +55,4 @@ export async function GET(req: NextRequest) {
   if (!result) return NextResponse.json({ error: 'Match not found' }, { status: 404 });
 
   return NextResponse.json(result);
-}
+}, 'dating/compatibility');

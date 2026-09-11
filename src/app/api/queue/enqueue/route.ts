@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
     // character fetch + tier/mature gates ahead of both counter increments.
     const { data: character } = await supabaseAdmin
       .from('characters')
-      .select('id,is_premium,min_tier,is_nsfw')
+      .select('id,is_premium,min_tier,is_nsfw,creator_id')
       .eq('id', parsed.data.characterId)
       .maybeSingle();
     if (!character) {
@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
       tier,
       character.min_tier as Tier | null | undefined,
       !!character.is_premium,
+      character.creator_id != null,
     );
     if (!premiumGate.allowed) {
       return NextResponse.json(

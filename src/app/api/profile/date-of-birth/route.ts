@@ -31,6 +31,7 @@ import {
   getAgeVerification,
   MINIMUM_AGE,
 } from '@/lib/age-verification/age-gate';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,7 +56,7 @@ const dobSchema = z.object({
   }, 'Enter a valid date of birth.'),
 });
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   const { user } = await getAuthedUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -63,9 +64,9 @@ export async function GET() {
 
   const record = await getAgeVerification(user.id);
   return NextResponse.json({ ageVerification: record });
-}
+}, 'profile/date-of-birth');
 
-export async function PATCH(req: NextRequest) {
+export const PATCH = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -110,4 +111,4 @@ export async function PATCH(req: NextRequest) {
 
   logger.info('profile:date-of-birth:updated', { userId: user.id });
   return NextResponse.json({ status: result.status, message: result.message });
-}
+}, 'profile/date-of-birth');

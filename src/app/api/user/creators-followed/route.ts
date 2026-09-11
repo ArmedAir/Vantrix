@@ -21,6 +21,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { fetchFollowedCreators, type FollowedCreator } from '@/lib/creators/followed';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,7 @@ export const dynamic = 'force-dynamic';
 // be able to force an unbounded query via query string.
 const MAX_LIMIT = 100;
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
 
   if (!user) {
@@ -48,4 +49,4 @@ export async function GET(req: NextRequest) {
     { creators },
     { headers: { 'Cache-Control': 'private, max-age=30, stale-while-revalidate=60' } }
   );
-}
+}, 'user/creators-followed');

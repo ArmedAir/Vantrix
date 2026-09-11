@@ -113,6 +113,38 @@ const STAGE_DEPTH: Record<RelationshipStage, { tone: string; depth: string; inti
   partner:      { tone: 'unconditionally loving, profoundly intimate',            depth: 'True partnership. Complete trust, depth, vulnerability, and love.',                     intimacy: 10 },
 };
 
+// ── Progression event log ─────────────────────────────────────────────────
+// Feeds compute_character_engagement_signals()'s progression_agg (see
+// 20270117_creator_fund_saves_progression_and_readiness_gate.sql) with a
+// real per-period log instead of the old character_relationships.updated_at
+// snapshot proxy. Written at the two places a stage or milestone bit
+// actually changes below. Non-fatal on failure — a missed event costs one
+// character one period's worth of Creator Fund signal, not a user-facing
+// error — but still awaited (not fire-and-forget) so a failure is always
+// logged rather than silently lost mid-request.
+async function logProgressionEvent(params: {
+  userId: string;
+  characterId: string;
+  eventType: 'stage_change' | 'milestone';
+  fromStage?: RelationshipStage;
+  toStage?: RelationshipStage;
+  milestoneKey?: string;
+}): Promise<void> {
+  const { error } = await supabaseAdmin.from('relationship_progression_events').insert({
+    user_id:       params.userId,
+    character_id:  params.characterId,
+    event_type:    params.eventType,
+    from_stage:    params.fromStage ?? null,
+    to_stage:      params.toStage ?? null,
+    milestone_key: params.milestoneKey ?? null,
+  });
+  if (error) {
+    logger.warn('relationship-engine:logProgressionEvent failed', {
+      error: error.message, userId: params.userId, characterId: params.characterId, eventType: params.eventType,
+    });
+  }
+}
+
 // ── Load relationship ─────────────────────────────────────────────────────
 
 export async function getRelationship(
@@ -208,7 +240,16 @@ export async function addRelationshipXp(
       updated_at:     new Date().toISOString(),
     }, { onConflict: 'user_id,character_id' });
 
-  if (error) logger.warn('Relationship XP update failed', { userId, characterId, error: error.message });
+  if (error) {
+    logger.warn('Relationship XP update failed', { userId, characterId, error: error.message });
+  } else {
+    if (leveledUp) {
+      await logProgressionEvent({ userId, characterId, eventType: 'stage_change', fromStage: prevStage, toStage: currentStage });
+    }
+    if (newMilestone) {
+      await logProgressionEvent({ userId, characterId, eventType: 'milestone', milestoneKey: newMilestone });
+    }
+  }
 
   return { xpGained, newStage: currentStage, prevStage, leveledUp, newMilestone };
 }
@@ -296,6 +337,10 @@ export async function checkAndApplyExtraMilestones(
     logger.warn('checkAndApplyExtraMilestones: update failed', { userId, characterId, error: error.message });
     return [];
   }
+
+  await Promise.all(unlocks.map(u =>
+    logProgressionEvent({ userId, characterId, eventType: 'milestone', milestoneKey: u.key }),
+  ));
 
   return unlocks;
 }

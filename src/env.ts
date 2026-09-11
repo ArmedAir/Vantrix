@@ -377,6 +377,29 @@ const envSchema = z.object({
   X_API_BASE_URL:        z.string().url().default('https://api.twitter.com'),
   X_UPLOAD_BASE_URL:     z.string().url().default('https://upload.twitter.com'),
 
+  // ── X / Twitter (Sign in with X — user-facing OAuth2 + PKCE) ────────────────
+  // Entirely separate credential set and grant type from the OAuth 1.0a
+  // cross-posting creds above: this is the confidential-client OAuth2
+  // Authorization Code + PKCE flow ("Sign in with X" / "User authentication
+  // settings" in the X Developer Portal), used to let a visitor
+  // authenticate with their own X account rather than post on behalf of
+  // one fixed company account. Optional: unset makes /api/auth/x/login a
+  // clean 503 rather than a startup failure, same no-op-if-unset posture
+  // as every other X_* var.
+  X_OAUTH_CLIENT_ID:     z.string().optional(),
+  X_OAUTH_CLIENT_SECRET: z.string().optional(),
+  // Must exactly match the callback URI registered in the X Developer
+  // Portal's app settings. Defaults to the production callback so a real
+  // deploy needs zero extra config; override for local/staging.
+  X_OAUTH_REDIRECT_URI:  z.string().url().default('https://vantrix.ink/api/auth/x/callback'),
+  // The user-facing authorize page (a browser redirect, not an API call) —
+  // separate host from X_API_BASE_URL's api.twitter.com on purpose.
+  X_OAUTH_AUTHORIZE_URL: z.string().url().default('https://x.com/i/oauth2/authorize'),
+  // Token exchange IS an API call, so this defaults off X_API_BASE_URL's
+  // host for consistency with the rest of the X_* config rather than a
+  // second hardcoded api host.
+  X_OAUTH_TOKEN_URL:     z.string().url().optional(),
+
   // ── Platform cost controls ──────────────────────────────────────────────────
   PLATFORM_HOURLY_TOKEN_BUDGET:  z.coerce.number().int().positive().default(10_000_000),
   PLATFORM_BUDGET_REDUCTION_PCT: z.coerce.number().int().min(10).max(90).default(50),

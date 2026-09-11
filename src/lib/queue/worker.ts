@@ -249,7 +249,7 @@ async function executeJob(job: ChatJob): Promise<{ reply: string; tokensUsed: nu
     // Character
     supabaseAdmin
       .from('characters')
-      .select('name,description,personality,scenario,backstory,tags,age,gender,origin,occupation,values_list,fears,flaws,speech_style,current_goal,goal_progress,daily_routine,friends_list,secrets,char_openness,char_warmth,char_adventure,char_depth,is_premium,min_tier,is_nsfw')
+      .select('name,description,personality,scenario,backstory,tags,age,gender,origin,occupation,values_list,fears,flaws,speech_style,current_goal,goal_progress,daily_routine,friends_list,secrets,char_openness,char_warmth,char_adventure,char_depth,is_premium,min_tier,is_nsfw,creator_id')
       .eq('id', characterId)
       .single(),
 
@@ -289,6 +289,7 @@ async function executeJob(job: ChatJob): Promise<{ reply: string; tokensUsed: nu
     tier,
     (character as Record<string, unknown>).min_tier as typeof tier | null | undefined,
     !!(character as Record<string, unknown>).is_premium,
+    (character as Record<string, unknown>).creator_id != null,
   );
   if (!premiumGate.allowed) {
     throw new Error(`PREMIUM_CHARACTER_REQUIRED: ${premiumGate.reason ?? 'character requires a higher plan'}`);

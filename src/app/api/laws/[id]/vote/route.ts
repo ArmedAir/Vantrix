@@ -6,10 +6,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { castLawVote, retractLawVote } from '@/lib/universe/laws';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withErrorHandling(async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -28,9 +29,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   return NextResponse.json({ ok: true });
-}
+}, 'laws/[id]/vote');
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const DELETE = withErrorHandling(async (_req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -39,4 +40,4 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   if (!result.ok) return NextResponse.json({ error: result.reason ?? 'retract_failed' }, { status: 500 });
 
   return NextResponse.json({ ok: true });
-}
+}, 'laws/[id]/vote');

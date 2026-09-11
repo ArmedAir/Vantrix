@@ -15,6 +15,7 @@ import { emitDatingEvent }           from '@/lib/tracing';
 import { bg }                        from '@/lib/logger';
 import { checkSwipeLimit, resolveEffectiveTier } from '@/lib/rate-limit';
 import { emitNotification } from '@/lib/notifications/emit';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 import type { Json } from '@/types/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +25,7 @@ const schema = z.object({
   direction:   z.enum(['like', 'pass', 'super_like']),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -304,4 +305,4 @@ export async function POST(req: NextRequest) {
     // insert into the notification store," not as a failure.
     notificationId,
   });
-}
+}, 'dating/swipe');

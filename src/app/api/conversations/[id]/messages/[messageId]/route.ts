@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser }             from '@/lib/auth/get-authed-user';
 import { z }                         from 'zod';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 /**
  * DELETE /api/conversations/[id]/messages/[messageId]
@@ -26,10 +27,8 @@ const paramsSchema = z.object({
   messageId: z.string().uuid(),
 });
 
-export async function DELETE(
-  _req: NextRequest,
-  props: { params: Promise<{ id: string; messageId: string }> },
-) {
+export const DELETE = withErrorHandling(async (_req: NextRequest,
+  props: { params: Promise<{ id: string; messageId: string }> },) => {
   const { supabase, user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -68,4 +67,4 @@ export async function DELETE(
   }
 
   return NextResponse.json({ success: true, id: messageId });
-}
+}, 'conversations/[id]/messages/[messageId]');

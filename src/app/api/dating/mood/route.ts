@@ -31,6 +31,7 @@ import { advancePrestige }            from '@/lib/dating/prestige-chapters';
 import { bg, logger }                 from '@/lib/logger';
 import { checkDatingActionLimit, resolveEffectiveTier } from '@/lib/rate-limit';
 import { recordSurprise }             from '@/lib/ai/surprise-engine';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,7 +53,7 @@ const schema = z.object({
   messageCount: z.number().int().min(1),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -279,4 +280,4 @@ export async function POST(req: NextRequest) {
     streak:     newStreak,
     milestones: ms.triggered,
   });
-}
+}, 'dating/mood');

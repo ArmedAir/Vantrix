@@ -3,6 +3,7 @@ import { getChatConversation, getInitialMessages } from "@/lib/frontend/chat";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatWindow } from "@/components/chat/chat-window";
 import { AiDisclaimerBanner } from "@/components/chat/ai-disclaimer-banner";
+import { SectionErrorBoundary } from "@/components/shell/section-error-boundary";
 
 /**
  * §12 Phase 2 — "the core loop; get it real before anything else."
@@ -53,11 +54,13 @@ export default async function ChatPage({
         sanctuaryMode={conversation.sanctuaryMode}
       />
       <AiDisclaimerBanner conversationId={conversation.id} />
-      <ChatWindow
-        conversationId={conversation.id}
-        characterId={conversation.characterId}
-        initialMessages={initialMessages}
-      />
+      <SectionErrorBoundary label="Chat" context="chat/[id]">
+        <ChatWindow
+          conversationId={conversation.id}
+          characterId={conversation.characterId}
+          initialMessages={initialMessages}
+        />
+      </SectionErrorBoundary>
     </div>
   );
 }

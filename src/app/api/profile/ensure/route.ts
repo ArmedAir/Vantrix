@@ -28,10 +28,11 @@ import { getAuthedUser }             from "@/lib/auth/get-authed-user";
 import { supabaseAdmin }             from "@/lib/supabase/admin";
 import { ensureProfileWithReferralAttribution } from "@/lib/profile/ensure-profile";
 import { logger }                    from "@/lib/logger";
+import { withErrorHandling } from "@/lib/api/with-error-handling";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
 
   if (!user) {
@@ -55,4 +56,4 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json(profile);
-}
+}, 'profile/ensure');

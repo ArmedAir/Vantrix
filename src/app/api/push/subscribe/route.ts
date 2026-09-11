@@ -28,6 +28,7 @@ import { logger } from '@/lib/logger';
 import { ratelimit } from '@/lib/rate-limit';
 import { isKnownPushEndpoint } from '@/lib/push/known-endpoints';
 import { z } from 'zod';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,7 +43,7 @@ const subscribeSchema = z.object({
   userAgent: z.string().max(300).optional(),
 });
 
-export async function POST(req: Request) {
+export const POST = withErrorHandling(async (req: Request) => {
   const { user } = await getAuthedUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -115,5 +116,5 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ ok: true });
-}
+}, 'push/subscribe');
 

@@ -6,11 +6,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { getAllLocations, getLocationBySlug } from '@/lib/universe/world-atlas';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -24,4 +25,4 @@ export async function GET(req: NextRequest) {
 
   const locations = await getAllLocations();
   return NextResponse.json({ locations });
-}
+}, 'universe/locations');

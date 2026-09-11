@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SafeImage as Image } from "@/components/ui/safe-image";
@@ -44,14 +45,18 @@ interface ShareCardRow {
   data: Record<string, unknown>;
 }
 
-async function getCardRow(id: string): Promise<ShareCardRow | null> {
+// PERF: called once in generateMetadata() and once in the page body below
+// — cache() (safe alongside `dynamic = "force-dynamic"` above; that
+// controls route-level static caching, this only dedupes within one
+// request's render) collapses that back to a single Supabase round-trip.
+const getCardRow = cache(async function getCardRow(id: string): Promise<ShareCardRow | null> {
   const { data } = await supabaseAdmin
     .from("share_cards")
     .select("id,card_type,character_id,data")
     .eq("id", id)
     .maybeSingle();
   return (data as ShareCardRow | null) ?? null;
-}
+});
 
 // Mirrors /api/share/[id]/og/route.tsx's own headline mapping exactly —
 // the page's <h1> and the social-preview image it sits above should

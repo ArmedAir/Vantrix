@@ -9,6 +9,7 @@ import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { z }                         from 'zod';
 import { createMilestoneCard, createRelationshipCard } from '@/lib/growth/viral-share';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +40,7 @@ const relationshipSchema = z.object({
 
 const bodySchema = z.discriminatedUnion('type', [milestoneSchema, relationshipSchema]);
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -117,4 +118,4 @@ export async function POST(req: NextRequest) {
     ogImageUrl: card.ogImageUrl,
     cardId:     card.id,
   });
-}
+}, 'dating/share-card');

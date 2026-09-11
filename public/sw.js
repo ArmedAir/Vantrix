@@ -11,17 +11,57 @@
  * true offline support is wanted later, add a narrowly-scoped
  * runtime cache for static assets only (fonts, icons), not routes.
  *
+ * v2 adds exactly one narrowly-scoped exception to that "not routes"
+ * rule: a single static offline.html, precached at install time and
+ * served ONLY when a navigation request fails with no network at all
+ * (see the fetch handler below). It is never used as a stand-in for an
+ * actual page — a real HTTP error (4xx/5xx) still reaches the browser
+ * normally, this only fires on a network failure — and it holds no
+ * user/session data, so the "risk serving stale/wrong-user data"
+ * concern above doesn't apply to it.
+ *
  * CACHE_VERSION exists only so clear-caches.ts (src/lib/pwa/clear-caches.ts)
  * has something deterministic to delete when the app wants to force a
  * clean slate (e.g. after a logout, or a breaking client update).
  */
 
-const CACHE_VERSION = "vantrix-sw-v1";
+const CACHE_VERSION = "vantrix-sw-v2";
+const OFFLINE_URL = "/offline.html";
 
-self.addEventListener("install", () => {
-  // Activate immediately rather than waiting for all tabs to close —
-  // this worker has no cached assets to be careful about serving stale.
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    (async () => {
+      try {
+        const cache = await caches.open(CACHE_VERSION);
+        await cache.addAll([OFFLINE_URL, "/icons/icon-192.png"]);
+      } catch {
+        // Best-effort — a failed precache just means no offline fallback
+        // until the next successful install, not a broken SW.
+      }
+    })()
+  );
+  // Activate immediately rather than waiting for all tabs to close.
   self.skipWaiting();
+});
+
+self.addEventListener("fetch", (event) => {
+  // Only ever intercept top-level navigations (actual page loads), and
+  // only to supply the offline fallback on a hard network failure.
+  // Everything else (API calls, assets, RSC fetches) passes straight
+  // through untouched, exactly as before this addition.
+  if (event.request.mode !== "navigate") return;
+
+  event.respondWith(
+    (async () => {
+      try {
+        return await fetch(event.request);
+      } catch {
+        const cache = await caches.open(CACHE_VERSION);
+        const cached = await cache.match(OFFLINE_URL);
+        return cached || Response.error();
+      }
+    })()
+  );
 });
 
 self.addEventListener("activate", (event) => {

@@ -14,11 +14,12 @@ import type {
   PostDailyChoiceResponse,
   DailyChoiceErrorResponse,
 } from "@/types/daily-choice-api";
+import { withErrorHandling } from "@/lib/api/with-error-handling";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: NextRequest): Promise<NextResponse<GetDailyChoiceResponse>> {
+export const GET = withErrorHandling(async (_req: NextRequest): Promise<NextResponse<GetDailyChoiceResponse>> => {
   const { user } = await getAuthedUser();
 
   const choice = await getActiveDailyChoice();
@@ -39,16 +40,14 @@ export async function GET(_req: NextRequest): Promise<NextResponse<GetDailyChoic
   const tally = (userVote || choice.resolved) ? await getTally(choice.id) : null;
 
   return NextResponse.json({ choice, userVote, tally });
-}
+}, 'universe/daily-choice');
 
 const voteSchema = z.object({
   choiceId: z.string().uuid(),
   option: z.enum(["a", "b"]),
 });
 
-export async function POST(
-  req: NextRequest,
-): Promise<NextResponse<PostDailyChoiceResponse | DailyChoiceErrorResponse>> {
+export const POST = withErrorHandling(async (req: NextRequest,): Promise<NextResponse<PostDailyChoiceResponse | DailyChoiceErrorResponse>> => {
   const { user } = await getAuthedUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -75,4 +74,4 @@ export async function POST(
     option: result.option,
     tally,
   });
-}
+}, 'universe/daily-choice');

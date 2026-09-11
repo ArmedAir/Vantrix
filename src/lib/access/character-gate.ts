@@ -223,6 +223,12 @@ export async function checkCharacterSlotAvailable(
  * (never trust a client- or job-supplied min_tier/is_premium), and checks
  * access. Always re-fetches the character server-side — a caller can't
  * accidentally pass in stale or attacker-supplied character metadata.
+ *
+ * MONETIZATION SCOPE: the tier requirement itself is only ever enforced
+ * for user-created (creator_id IS NOT NULL) characters — see
+ * checkCharacterTierAccess()'s own header in rate-limit/index.ts. Vantrix's
+ * seeded/official characters are always free regardless of their
+ * is_premium/min_tier columns.
  */
 export async function checkCharacterAccessForProfile(
   characterId: string,
@@ -249,7 +255,7 @@ async function checkCharacterAccessForTier(
 ): Promise<CharacterGateResult> {
   const { data: character } = await supabaseAdmin
     .from('characters')
-    .select('is_premium,min_tier,is_nsfw')
+    .select('is_premium,min_tier,is_nsfw,creator_id')
     .eq('id', characterId)
     .maybeSingle();
 
@@ -263,6 +269,7 @@ async function checkCharacterAccessForTier(
     tier,
     character.min_tier as Tier | null | undefined,
     !!character.is_premium,
+    character.creator_id != null,
   );
   if (!gate.allowed) return { allowed: false, reason: gate.reason, tier };
 

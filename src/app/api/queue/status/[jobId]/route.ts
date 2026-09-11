@@ -15,12 +15,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { getJobResult, getJobStatus } from '@/lib/queue';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
 export const runtime = 'edge';
 
-export async function GET(_req: NextRequest, props: { params: Promise<{ jobId: string }> }) {
+export const GET = withErrorHandling(async (_req: NextRequest, props: { params: Promise<{ jobId: string }> }) => {
   const params = await props.params;
   const { jobId } = params;
 
@@ -62,4 +63,4 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ jobId: s
   return NextResponse.json({ jobId, status }, {
     headers: { 'Cache-Control': 'no-store' },
   });
-}
+}, 'queue/status/[jobId]');

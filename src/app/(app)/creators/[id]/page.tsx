@@ -51,9 +51,14 @@ export default async function CreatorProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { user } = await getAuthedUser();
-
-  const creator = await getCreatorProfile(id);
+  // PERF: these two don't depend on each other (getCreatorProfile takes
+  // only the route id), so there's no reason to pay both round-trips back
+  // to back. getCreatorProfile is now cache()-deduped against the copy
+  // generateMetadata() already fetched, too — see profile.ts.
+  const [{ user }, creator] = await Promise.all([
+    getAuthedUser(),
+    getCreatorProfile(id),
+  ]);
   if (!creator) notFound();
 
   const characters = await getCreatorCharacters(id, user?.id ?? null);

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SafeImage as Image } from "@/components/ui/safe-image";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { saveCharacterFields, addSeedMemory } from "@/hooks/use-studio";
 import type { CharacterDraft } from "../types";
-import { canPublish } from "../completeness";
+import { canPublish, fundReadiness } from "../completeness";
 
 /** Trims a value for the initial POST, which caps several fields lower than the later PATCH does. */
 function cap(value: string, max: number): string | undefined {
@@ -17,13 +17,24 @@ function cap(value: string, max: number): string | undefined {
   return trimmed.length > max ? trimmed.slice(0, max) : trimmed;
 }
 
-export function PreviewStage({ draft }: { draft: CharacterDraft }) {
+export function PreviewStage({
+  draft,
+  onPublished,
+}: {
+  draft: CharacterDraft;
+  /** Called once the character has actually been created (step 1 below
+   *  succeeded) — before navigation, so the caller can clear any local
+   *  draft state (see CreationStudio's autosave) regardless of whether
+   *  the follow-up detail-save steps succeed. */
+  onPublished?: () => void;
+}) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
 
   const ready = canPublish(draft);
+  const readiness = fundReadiness(draft);
 
   async function publish() {
     if (!ready || submitting) return;
@@ -66,6 +77,12 @@ export function PreviewStage({ draft }: { draft: CharacterDraft }) {
         return;
       }
       const characterId: string = createBody.character.id;
+      // The character now exists server-side — clear the local autosaved
+      // draft immediately, regardless of whether the detail-save steps
+      // below succeed. Otherwise a failure in step 2/3 would leave a
+      // stale draft in storage that offers to "resume" into creating a
+      // second, duplicate character on the next visit.
+      onPublished?.();
 
       // From here on, the character exists and has been charged/submitted
       // — a failure in the following steps shouldn't look like a full
@@ -162,6 +179,30 @@ export function PreviewStage({ draft }: { draft: CharacterDraft }) {
         {draft.opening_line && (
           <p className="text-sm italic text-text-tertiary max-w-sm">&ldquo;{draft.opening_line}&rdquo;</p>
         )}
+      </Card>
+
+      <Card interactive={false} className="p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-text-primary">Creator Fund Readiness</h3>
+          <span className="text-xs font-semibold text-gold-400 tabular-nums">{readiness.metCount}/{readiness.total}</span>
+        </div>
+        <p className="text-xs text-text-tertiary">
+          Once your companion is public and passes review, you can enroll them in the Creator Fund from Creator
+          Studio. Payouts there are driven by genuine engagement — returning conversations, saves, follows —
+          not by activity alone, so the depth you add now is what gives them a real shot at that later.
+        </p>
+        <ul className="space-y-1.5 pt-1">
+          {readiness.checks.map((c) => (
+            <li key={c.key} className="flex items-center gap-2 text-xs">
+              {c.met ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-gold-400 shrink-0" />
+              ) : (
+                <Circle className="h-3.5 w-3.5 text-text-tertiary/50 shrink-0" />
+              )}
+              <span className={c.met ? "text-text-secondary" : "text-text-tertiary"}>{c.label}</span>
+            </li>
+          ))}
+        </ul>
       </Card>
 
       {!ready && (

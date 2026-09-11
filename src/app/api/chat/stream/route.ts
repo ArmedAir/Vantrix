@@ -571,7 +571,12 @@ export async function POST(req: NextRequest) {
     }
     characterRow = gateChar;
 
-    const tierGate = checkCharacterTierAccess(tier, gateChar.min_tier as typeof tier | null | undefined, !!gateChar.is_premium);
+    const tierGate = checkCharacterTierAccess(
+      tier,
+      gateChar.min_tier as typeof tier | null | undefined,
+      !!gateChar.is_premium,
+      gateChar.creator_id != null,
+    );
     if (!tierGate.allowed) {
       return jsonErr(tierGate.reason ?? 'This character requires a higher plan', 403);
     }
@@ -910,6 +915,7 @@ export async function POST(req: NextRequest) {
       tier,
       character.min_tier as typeof tier | null | undefined,
       !!character.is_premium,
+      character.creator_id != null,
     );
   if (!premiumGate.allowed) {
     await releaseStreamSlot(userId, streamScopeId);

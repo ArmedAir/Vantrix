@@ -11,6 +11,7 @@ import { getAuthedUser }             from "@/lib/auth/get-authed-user";
 import { requireAdmin }              from "@/lib/auth/admin";
 import { supabaseAdmin }             from "@/lib/supabase/admin";
 import { logger }                    from "@/lib/logger";
+import { withErrorHandling } from "@/lib/api/with-error-handling";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ type WaitlistRow = {
   created_at: string;
 };
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await requireAdmin(user.id);
@@ -70,4 +71,4 @@ export async function GET(req: NextRequest) {
       "Content-Disposition": `attachment; filename="vantrix-waitlist-${new Date().toISOString().slice(0, 10)}.csv"`,
     },
   });
-}
+}, 'admin/waitlist-export');

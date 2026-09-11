@@ -22,14 +22,15 @@
  */
 import { NextResponse } from "next/server";
 import { getOnboardingCharacterPool } from "@/lib/seo/public-character";
+import { withErrorHandling } from "@/lib/api/with-error-handling";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   const characters = await getOnboardingCharacterPool();
   return NextResponse.json(
     { characters },
     { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" } }
   );
-}
+}, 'public/onboarding-characters');

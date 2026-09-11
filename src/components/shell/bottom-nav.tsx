@@ -25,11 +25,18 @@ import { useScrollChromeHidden } from "./scroll-chrome-context";
  *   - Chat    -> "/chats"   (conversation list)
  *   - Feed    -> "/feed"    (community feed — /api/feed/posts-backed)
  *   - Studio  -> "/studio"  (character/scene creation tools)
- *   - Premium -> "/premium" (subscription/upsell — gets the same gold
- *                            "premium" treatment NAV_ITEMS marks it
- *                            with elsewhere, not a plain icon)
- * Characters, Dating, and Settings are still one tap away via the
- * drawer (hamburger, top-left) and the desktop rail's account row.
+ *   - Premium -> "/premium" (plan upsell — gets the same gold "premium"
+ *                            treatment NAV_ITEMS marks it with elsewhere,
+ *                            not a plain icon)
+ * Characters, Dating, and Analytics (subscription/billing management —
+ * see analytics/page.tsx) are still one tap away via the drawer
+ * (hamburger, top-left) and the desktop rail's account row; this bar
+ * stays at 5 slots per the pass above rather than growing to fit it.
+ *
+ * SUBSCRIPTION-PREMIUM-SPLIT (2026-09-11): this slot's label used to
+ * read "Subscription" while pointing at "/premium" — same mislabel
+ * nav-config.ts's own note describes. Fixed to "Premium" here too; the
+ * href/treatment/position were already correct, only the word was wrong.
  */
 const BOTTOM_NAV_ITEMS: (NavItem & { match: (pathname: string) => boolean })[] = [
   {
@@ -58,7 +65,7 @@ const BOTTOM_NAV_ITEMS: (NavItem & { match: (pathname: string) => boolean })[] =
   },
   {
     href: "/premium",
-    label: "Subscription",
+    label: "Premium",
     icon: Crown,
     premium: true,
     match: (p) => p.startsWith("/premium"),

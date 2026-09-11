@@ -22,6 +22,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z }                         from 'zod';
 import { getAuthedUser }             from '@/lib/auth/get-authed-user';
 import { logger }                    from '@/lib/logger';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,7 @@ const bodySchema = z.object({
   sanctuaryMode: z.boolean(),
 });
 
-export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+export const PATCH = withErrorHandling(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
 
   const { supabase, user } = await getAuthedUser();
@@ -61,4 +62,4 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
   }
 
   return NextResponse.json({ id: data.id, sanctuaryMode: data.sanctuary_mode });
-}
+}, 'conversations/[id]');

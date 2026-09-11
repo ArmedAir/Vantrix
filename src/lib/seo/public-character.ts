@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
@@ -101,7 +102,11 @@ function toPublicCharacter(row: PublicFilterRow & Record<string, unknown>): Publ
   } as PublicCharacter;
 }
 
-export async function getPublicCharacter(
+// PERF: companions/[id]/page.tsx calls getPublicCharacter(id) once in
+// generateMetadata() and once in the page body. Plain Supabase calls
+// aren't deduped by Next's fetch() memoization, so without cache() this
+// ran the same query against Supabase twice per page load.
+export const getPublicCharacter = cache(async function getPublicCharacter(
   id: string
 ): Promise<PublicCharacter | null> {
   const { data, error } = await supabaseAdmin
@@ -113,7 +118,7 @@ export async function getPublicCharacter(
   if (error || !data || !isPublicRow(data)) return null;
 
   return toPublicCharacter(data);
-}
+});
 
 /**
  * Used by generateStaticParams (build-time) and sitemap.ts. Capped —

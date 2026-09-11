@@ -6,10 +6,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { supabaseAdmin }             from '@/lib/supabase/admin';
 import { getShieldsForTier }         from '@/lib/growth/streak-rewards-engine';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(_req: NextRequest) {
+export const GET = withErrorHandling(async (_req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -40,9 +41,9 @@ export async function GET(_req: NextRequest) {
     hoursSinceCheckin: hoursSinceCheckin ? Math.floor(hoursSinceCheckin) : null,
     tier,
   });
-}
+}, 'user/streak-shield');
 
-export async function POST(_req: NextRequest) {
+export const POST = withErrorHandling(async (_req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -64,4 +65,4 @@ export async function POST(_req: NextRequest) {
     streakProtected: shieldRow.restored_streak,
     message:       'Streak shield activated — your streak is safe.',
   });
-}
+}, 'user/streak-shield');

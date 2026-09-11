@@ -7,10 +7,11 @@ import { NextResponse } from "next/server";
 import { getAuthedUser } from "@/lib/auth/get-authed-user";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { withErrorHandling } from "@/lib/api/with-error-handling";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export const POST = withErrorHandling(async () => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -24,4 +25,4 @@ export async function POST() {
   }
 
   return NextResponse.json({ ok: true, count: data ?? 0 });
-}
+}, "notifications/read-all");

@@ -13,6 +13,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
 import { ratelimit } from '@/lib/rate-limit';
 import { z } from 'zod';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,7 @@ const unsubscribeSchema = z.object({
   endpoint: z.string().url().max(2048),
 });
 
-export async function POST(req: Request) {
+export const POST = withErrorHandling(async (req: Request) => {
   const { user } = await getAuthedUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -55,4 +56,4 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ ok: true });
-}
+}, 'push/unsubscribe');

@@ -5,12 +5,13 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin }             from "@/lib/supabase/admin";
+import { withErrorHandling } from "@/lib/api/with-error-handling";
 
 export const dynamic = "force-dynamic";
 
 const ALLOWED_ORIGINS = (process.env.WAITLIST_ALLOWED_ORIGINS ?? "").split(",").map(o => o.trim());
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const origin = req.headers.get("origin") ?? "*";
   const cors = {
     "Access-Control-Allow-Origin": ALLOWED_ORIGINS.includes(origin) ? origin : (ALLOWED_ORIGINS[0] ?? "*"),
@@ -26,4 +27,4 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({ count: count ?? 0 }, { status: 200, headers: cors });
-}
+}, 'waitlist/count');

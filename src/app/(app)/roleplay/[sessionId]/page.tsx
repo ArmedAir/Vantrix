@@ -7,6 +7,7 @@ import {
   getBeats,
 } from "@/lib/frontend/roleplay";
 import { RoleplayStage } from "@/components/roleplay/roleplay-stage";
+import { SectionErrorBoundary } from "@/components/shell/section-error-boundary";
 import type { RoleplayFeedItem } from "@/types/roleplay";
 
 /**
@@ -62,20 +63,22 @@ export default async function RoleplaySessionPage({
   const initialChoices = session.status === "active" ? (latestBeat?.choices ?? null) : null;
 
   return (
-    <RoleplayStage
-      sessionId={session.id}
-      conversationId={session.conversation_id}
-      scenarioTitle={scenario.title}
-      scenarioSlug={scenario.slug}
-      backdropUrl={scenario.cover_image_url}
-      chapterCount={scenario.chapter_count}
-      characterId={session.character_id}
-      characterName={character.name}
-      characterAvatar={character.avatarUrl}
-      initialFeed={feed}
-      initialChapter={session.current_chapter}
-      initialStatus={session.status}
-      initialChoices={initialChoices}
-    />
+    <SectionErrorBoundary label="This scene" context="roleplay/[sessionId]">
+      <RoleplayStage
+        sessionId={session.id}
+        conversationId={session.conversation_id}
+        scenarioTitle={scenario.title}
+        scenarioSlug={scenario.slug}
+        backdropUrl={scenario.cover_image_url}
+        chapterCount={scenario.chapter_count}
+        characterId={session.character_id}
+        characterName={character.name}
+        characterAvatar={character.avatarUrl}
+        initialFeed={feed}
+        initialChapter={session.current_chapter}
+        initialStatus={session.status}
+        initialChoices={initialChoices}
+      />
+    </SectionErrorBoundary>
   );
 }

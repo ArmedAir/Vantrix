@@ -33,6 +33,7 @@ import { env }                        from '@/env';
 export const dynamic = 'force-dynamic';
 
 import { REPORT_CATEGORIES, type ReportCategory } from '@/lib/reporting/categories';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 // Categories that trigger an immediate alert to operations
 const HIGH_PRIORITY_CATEGORIES: Set<ReportCategory> = new Set([
@@ -52,7 +53,7 @@ const schema = z.object({
   messageSnippet:    z.string().max(300).optional(),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
 
   if (!user) {
@@ -156,13 +157,13 @@ export async function POST(req: NextRequest) {
     reportId: report.id,
     message:  'Your report has been submitted. Our team reviews all reports.',
   });
-}
+}, 'report');
 
 /**
  * GET /api/report?reportId=...
  * Allow a user to check the status of their own report.
  */
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -179,4 +180,4 @@ export async function GET(req: NextRequest) {
   if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
 
   return NextResponse.json({ report });
-}
+}, 'report');

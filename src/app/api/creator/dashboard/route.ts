@@ -15,10 +15,11 @@ import { NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getCreatorDashboard } from '@/lib/commerce/character-fund';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -52,4 +53,4 @@ export async function GET() {
 
   const dashboard = await getCreatorDashboard(user.id, periodStart, periodEnd, priorPeriodStart);
   return NextResponse.json(dashboard);
-}
+}, 'creator/dashboard');

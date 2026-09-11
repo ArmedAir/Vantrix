@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser }             from '@/lib/auth/get-authed-user';
 import { z }                         from 'zod';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 /**
  * GET /api/conversations/[id]/messages?before=<ISO timestamp>&limit=<n>
@@ -45,10 +46,8 @@ const querySchema = z.object({
   limit:    z.coerce.number().int().min(1).max(100).default(50),
 });
 
-export async function GET(
-  req: NextRequest,
-  props: { params: Promise<{ id: string }> },
-) {
+export const GET = withErrorHandling(async (req: NextRequest,
+  props: { params: Promise<{ id: string }> },) => {
   const { supabase, user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -109,4 +108,4 @@ export async function GET(
     // asking. Cheap and correct without a second COUNT query.
     hasMore: rows.length === limit,
   });
-}
+}, 'conversations/[id]/messages');

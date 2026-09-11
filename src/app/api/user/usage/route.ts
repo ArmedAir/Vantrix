@@ -31,6 +31,7 @@ import type { TierId }     from '@/lib/tiers/config';
 // the engine's actual bonus (200), so the UI promised the wrong reward.
 // Now this route defers entirely to the real engine.
 import { getDailyQuests }  from '@/lib/growth/streak-rewards-engine';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +42,7 @@ function xpProgress(level: number, xpToNext: number) {
   return { accumulated, threshold, pct: Math.round((accumulated / threshold) * 100) };
 }
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   // ── Auth ────────────────────────────────────────────────────────────────
   const { user } = await getAuthedUser();
 
@@ -163,4 +164,4 @@ export async function GET() {
       })),
     },
   });
-}
+}, 'user/usage');

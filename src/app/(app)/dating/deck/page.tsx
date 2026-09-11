@@ -1,4 +1,5 @@
 import { SwipeDeck } from "@/components/dating/swipe-deck";
+import { SectionErrorBoundary } from "@/components/shell/section-error-boundary";
 
 /**
  * §12 phase 4: deck/swipe/matches/gifts. The deck itself is fully
@@ -14,5 +15,9 @@ import { SwipeDeck } from "@/components/dating/swipe-deck";
  * rather than the only thing the tab does.
  */
 export default function DatingDeckPage() {
-  return <SwipeDeck />;
+  return (
+    <SectionErrorBoundary label="The deck" context="dating/deck">
+      <SwipeDeck />
+    </SectionErrorBoundary>
+  );
 }

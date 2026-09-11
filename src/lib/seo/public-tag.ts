@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { PublicCharacter } from "@/lib/seo/public-character";
 
@@ -131,7 +132,11 @@ export async function getPublicTagSlugs(): Promise<string[]> {
  * applies the same five-clause public filter as every other crawlable
  * character surface (see public-character.ts).
  */
-export async function getCharactersByTag(
+// PERF: tags/[tag]/page.tsx calls getCharactersByTag(tag) once in
+// generateMetadata() and once in the page body — cache() collapses that
+// back to a single getPublicTags() + RPC round-trip per request instead
+// of two.
+export const getCharactersByTag = cache(async function getCharactersByTag(
   slug: string,
   limit = 60
 ): Promise<{ label: string; characters: PublicCharacter[] } | null> {
@@ -152,4 +157,4 @@ export async function getCharactersByTag(
   })) as PublicCharacter[];
 
   return { label: match.label, characters };
-}
+});

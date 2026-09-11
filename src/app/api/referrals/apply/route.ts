@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { generateCode } from '@/lib/referral-engine';
 import { CLASS_REQUIREMENTS } from '@/lib/referral-config';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 const schema = z.object({
   requestedClass: z.enum(['dev', 'influencer']),
@@ -22,7 +23,7 @@ const schema = z.object({
  * follower count alone doesn't tell you about audience quality or fraud
  * risk. An admin approves via /api/admin/referrals/approve.
  */
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -74,4 +75,4 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ applicationId: partner.id, status: partner.status, code: partner.code });
-}
+}, 'referrals/apply');

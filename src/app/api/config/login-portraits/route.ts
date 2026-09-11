@@ -17,6 +17,7 @@
  */
 import { NextResponse } from 'next/server';
 import { getLoginPortraits } from '@/lib/config/login-portraits';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 /**
  * CACHE-FIX: was `force-dynamic` with zero Cache-Control, so every call
@@ -33,10 +34,10 @@ import { getLoginPortraits } from '@/lib/config/login-portraits';
  */
 export const revalidate = 60;
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   const portraits = await getLoginPortraits();
   return NextResponse.json(
     { portraits },
     { headers: { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=300' } },
   );
-}
+}, 'config/login-portraits');

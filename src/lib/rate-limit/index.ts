@@ -276,16 +276,45 @@ export async function checkVideoLimit(userId: string, tier: Tier = 'free'): Prom
  * in that case an is_premium=true character is treated as 'premium'-gated,
  * matching the old behavior, rather than silently allowing everyone through.
  */
-// PRODUCT DECISION (this revision): no character is tier-locked anymore —
-// every character is reachable by every account, paid or not. Kept as a
-// function (rather than removed) so existing call sites still compile;
-// characterMinTier/characterIsPremium are accepted but intentionally
-// ignored.
+/**
+ * Character tier gate. TWO-TIER MODEL: characters.min_tier is only ever
+ * 'free' or 'premium'. A character with min_tier = 'premium' (or
+ * is_premium = true as a legacy fallback — see below) requires a paid
+ * account to chat with.
+ *
+ * MONETIZATION SCOPE (2026-09-11, per direct request): only user-created
+ * (creator marketplace) characters are ever monetized. Vantrix's own
+ * seeded/official characters (characters.creator_id IS NULL) are always
+ * free, full stop — `isUserCreated` must be true for a tier requirement
+ * to be enforced at all. This is deliberately checked here, not just left
+ * to the data (is_premium/min_tier are already false/'free' on every
+ * seeded character as of the previous pass), so a future admin mistake
+ * that flips one of those flags on a seeded character can't accidentally
+ * monetize it — the creator_id check is the actual source of truth.
+ *
+ * `characterIsPremium` is accepted as a fallback for any character row that
+ * has no min_tier set (legacy data, or a race with the backfill migration):
+ * in that case an is_premium=true character is treated as 'premium'-gated,
+ * matching the old behavior, rather than silently allowing everyone through.
+ */
 export function checkCharacterTierAccess(
-  _tier: Tier,
-  _characterMinTier: Tier | null | undefined,
-  _characterIsPremium = false,
+  tier: Tier,
+  characterMinTier: Tier | null | undefined,
+  characterIsPremium = false,
+  isUserCreated = false,
 ): { allowed: boolean; reason?: string } {
+  if (!isUserCreated) return { allowed: true };
+
+  const requiresPremium = (characterMinTier ?? (characterIsPremium ? 'premium' : 'free')) !== 'free';
+  if (!requiresPremium) return { allowed: true };
+
+  if (tier === 'free') {
+    return {
+      allowed: false,
+      reason: "This character requires a paid plan — its creator has made it a premium character",
+    };
+  }
+
   return { allowed: true };
 }
 

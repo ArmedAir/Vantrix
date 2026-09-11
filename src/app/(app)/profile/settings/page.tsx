@@ -1,14 +1,13 @@
-import { getProfileSettings, getSubscriptionInfo } from "@/lib/frontend/profile";
+import { getProfileSettings } from "@/lib/frontend/profile";
 import { getVerifiedTotpFactorCount } from "@/lib/auth/mfa";
 import { SettingsForm } from "@/components/profile/settings-form";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
-import { SubscriptionManagement } from "@/components/profile/subscription-management";
 import { DateOfBirthField } from "@/components/profile/date-of-birth-field";
 import { SettingsNavRow } from "@/components/profile/settings-nav-row";
 import { StreakShieldPanel } from "@/components/profile/streak-shield-panel";
 import { DataPrivacyPanel } from "@/components/profile/data-privacy-panel";
 import { ThemePicker } from "@/components/theme/theme-picker";
-import { Bell, ShieldCheck } from "lucide-react";
+import { Bell, ShieldCheck, BarChart3 } from "lucide-react";
 
 export default async function SettingsPage() {
   const profile = await getProfileSettings();
@@ -21,10 +20,7 @@ export default async function SettingsPage() {
     );
   }
 
-  const [subscription, verifiedFactorCount] = await Promise.all([
-    getSubscriptionInfo(profile.id),
-    getVerifiedTotpFactorCount(),
-  ]);
+  const verifiedFactorCount = await getVerifiedTotpFactorCount();
 
   return (
     <div className="mx-auto max-w-lg px-4 md:px-8 py-8 space-y-8">
@@ -47,11 +43,6 @@ export default async function SettingsPage() {
           Changes apply instantly, everywhere in the app.
         </p>
         <ThemePicker />
-      </div>
-
-      <div id="subscription" className="border-t border-border-hairline pt-6 scroll-mt-20">
-        <h2 className="text-sm font-semibold text-text-primary mb-3">Subscription</h2>
-        <SubscriptionManagement subscription={subscription} />
       </div>
 
       {/*
@@ -80,6 +71,12 @@ export default async function SettingsPage() {
           icon={Bell}
           label="Notifications"
           description="Push alerts and per-category preferences"
+        />
+        <SettingsNavRow
+          href="/analytics"
+          icon={BarChart3}
+          label="Analytics"
+          description="Billing, renewal, and plan management"
         />
       </div>
 

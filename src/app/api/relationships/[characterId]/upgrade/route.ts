@@ -15,6 +15,7 @@ import { purchaseRelationshipTier, getCharacterPricing } from '@/lib/commerce/ra
 import { checkDatingActionLimit, resolveEffectiveTier } from '@/lib/rate-limit';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ const schema = z.object({
   tier: z.enum(['bond', 'soulbound']),
 });
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ characterId: string }> }) {
+export const POST = withErrorHandling(async (req: NextRequest, { params }: { params: Promise<{ characterId: string }> }) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -61,4 +62,4 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
   }
 
   return NextResponse.json({ tier: result.tier });
-}
+}, 'relationships/[characterId]/upgrade');

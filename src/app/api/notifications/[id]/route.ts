@@ -14,12 +14,13 @@ import { z } from "zod";
 import { getAuthedUser } from "@/lib/auth/get-authed-user";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { withErrorHandling } from "@/lib/api/with-error-handling";
 
 export const dynamic = "force-dynamic";
 
 const paramsSchema = z.object({ id: z.string().uuid() });
 
-export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+export const DELETE = withErrorHandling(async (_req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   const params = await props.params;
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -45,4 +46,4 @@ export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: s
   }
 
   return NextResponse.json({ ok: true });
-}
+}, "notifications/[id]");

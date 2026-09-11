@@ -7,14 +7,15 @@
 import { NextResponse }   from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { getWorldOverview } from '@/lib/universe/world-atlas';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const overview = await getWorldOverview();
   return NextResponse.json(overview);
-}
+}, 'universe/world');

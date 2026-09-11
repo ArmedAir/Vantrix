@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Script from "next/script";
 import { display, sans } from "@/lib/fonts";
 import { ServiceWorkerRegister } from "@/components/shell/sw-register";
+import { InstallPrompt } from "@/components/shell/install-prompt";
 import { ViewportHeightSync } from "@/components/shell/viewport-height-sync";
 import { AnalyticsPageview } from "@/lib/analytics/client";
 import { ThemeHydration } from "@/components/theme/theme-hydration";
@@ -177,6 +178,7 @@ export default function RootLayout({
           <AnalyticsPageview />
         </Suspense>
         <CookieConsentBanner />
+        <InstallPrompt />
         {children}
       </body>
     </html>

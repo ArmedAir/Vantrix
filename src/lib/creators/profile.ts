@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { resolveNsfwDiscoveryAccess } from "@/lib/access/character-gate";
@@ -50,7 +51,13 @@ export interface CreatorCharacterSummary {
  * this table (creators-followed, community posts) is scoped to a
  * specific relationship (a follow, a post) rather than a bare id lookup.
  */
-export async function getCreatorProfile(
+// PERF: creators/[id]/page.tsx calls getCreatorProfile(id) once in
+// generateMetadata() and once in the page body — two Supabase round-trips
+// (a count query plus a profile lookup, so four queries total) for one
+// page load without cache(). This function reads through supabaseAdmin
+// with no per-request/user context, so memoizing it for the life of one
+// request/render is safe — it never leaks across requests or users.
+export const getCreatorProfile = cache(async function getCreatorProfile(
   id: string
 ): Promise<CreatorProfile | null> {
   const { count } = await supabaseAdmin
@@ -77,7 +84,7 @@ export async function getCreatorProfile(
     avatarUrl: data.avatar_url ?? null,
     bio: data.bio ?? null,
   };
-}
+});
 
 const CHAR_SELECT =
   "id,name,image_url,tags,gender,archetype,is_premium,is_new,is_nsfw,like_count,follower_count";

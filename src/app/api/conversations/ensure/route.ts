@@ -4,6 +4,7 @@ import { ratelimit, resolveEffectiveTier } from '@/lib/rate-limit';
 import { checkCharacterSlotAvailable } from '@/lib/access/character-gate';
 import { captureEvent }              from '@/lib/analytics/server';
 import { z }                         from 'zod';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 /**
  * POST /api/conversations/ensure
@@ -24,7 +25,7 @@ import { z }                         from 'zod';
  */
 const bodySchema = z.object({ characterId: z.string().uuid() });
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { supabase, user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -117,4 +118,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ conversationId: created.id });
-}
+}, 'conversations/ensure');

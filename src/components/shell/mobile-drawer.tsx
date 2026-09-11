@@ -16,6 +16,7 @@ import {
   ChevronDown,
   Mail,
   LifeBuoy,
+  BarChart3,
 } from "lucide-react";
 import { NAV_ITEMS, ADMIN_NAV_ITEM } from "./nav-config";
 import { Logo } from "./logo";
@@ -77,14 +78,15 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
  *   - ACCOUNT ZONE: the merged avatar/name/tier row from the
  *     ACCOUNT-MERGE FIX below is now an actual disclosure toggle (closed
  *     state = the earlier merged row's info-at-a-glance; open state
- *     reveals Subscription, Settings, Notifications, Vantrix Coin, and
+ *     reveals Analytics, Settings, Notifications, Vantrix Coin, and
  *     Sign out as indented rows) rather than a single link, so all five
  *     account-scoped destinations live in one place instead of being
  *     split between this footer and TopBar's old dropdown.
- *      - Subscription -> /premium (the actual subscription/upgrade +
- *        Creators Dashboard page). Previously mis-routed to
- *        /profile/settings#subscription (billing-management only, no
- *        upgrade path) — corrected so the row goes where its label says.
+ *      - Analytics -> /analytics (subscription/billing management —
+ *        cancel, portal, renewal date). Originally labeled "Subscription"
+ *        but routed to /premium (the upgrade page, already reachable via
+ *        NAV_ITEMS' own gold Premium row below) — see
+ *        SUBSCRIPTION-PREMIUM-SPLIT further down for the fix.
  *      - Notifications -> /notifications (already a real route) with a
  *        live unread badge read straight from useNotificationStore,
  *        the same store NotificationCenterProvider already hydrates and
@@ -296,17 +298,24 @@ export function MobileDrawer({
                   <User className="h-4 w-4 shrink-0" strokeWidth={1.75} />
                   My Profile
                 </Link>
+                {/* SUBSCRIPTION-PREMIUM-SPLIT (2026-09-11): this row used to
+                    read "Subscription" while pointing at /premium — the
+                    same mislabel nav-config.ts's own note describes, and a
+                    literal duplicate of the gold Premium row this drawer
+                    already renders separately below (from NAV_ITEMS). Now
+                    points at the real subscription-management page
+                    (analytics/page.tsx) and is labeled to match. */}
                 <Link
-                  href="/premium"
+                  href="/analytics"
                   onClick={() => setDrawerOpen(false)}
                   className={cn(
                     "flex items-center gap-2.5 px-2 py-1 rounded-xs text-[13px] text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium",
-                    isNavItemActive(pathname, "/premium") &&
+                    isNavItemActive(pathname, "/analytics") &&
                       "text-text-primary bg-gold-500/[0.07]"
                   )}
                 >
-                  <Crown className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                  Subscription
+                  <BarChart3 className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+                  Analytics
                 </Link>
                 <Link
                   href="/profile/settings"

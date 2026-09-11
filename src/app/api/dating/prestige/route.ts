@@ -15,6 +15,7 @@ import { z }                         from 'zod';
 import { supabaseAdmin }             from '@/lib/supabase/admin';
 import { advancePrestige }           from '@/lib/dating/prestige-chapters';
 import { getPrestigeForMatch }       from '@/lib/dating/get-match-detail';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +29,7 @@ const postSchema = z.object({ matchId: z.string().uuid() });
 // is now a thin wrapper, still serving any client-side/external caller.
 // POST (advance) is unaffected — it's only ever called from a client
 // component / cron, never self-fetched from a Server Component.
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -40,9 +41,9 @@ export async function GET(req: NextRequest) {
   if (!result) return NextResponse.json({ error: 'Match not found' }, { status: 404 });
 
   return NextResponse.json(result);
-}
+}, 'dating/prestige');
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -52,4 +53,4 @@ export async function POST(req: NextRequest) {
 
   const result = await advancePrestige(supabaseAdmin, user.id, parsed.data.matchId);
   return NextResponse.json(result);
-}
+}, 'dating/prestige');

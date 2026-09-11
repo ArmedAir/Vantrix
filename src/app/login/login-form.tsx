@@ -78,6 +78,21 @@ function initialMode(searchParams: URLSearchParams): "sign-in" | "sign-up" {
   return searchParams.get("mode") === "sign-up" ? "sign-up" : "sign-in";
 }
 
+// Maps redirect-based error codes from /auth/callback and /api/auth/x/callback
+// (neither of which can show an inline error itself — they only ever
+// redirect) to a friendly message here. under_18/auth_callback_failed
+// predate this file's X sign-in addition and were previously unhandled;
+// closing that gap here too rather than leaving it dangling next to the
+// new x_sign_in_* codes.
+const ERROR_MESSAGES: Record<string, string> = {
+  auth_callback_failed: "That link has expired or already been used. Please sign in again.",
+  under_18: "You must be 18 or older to use Vantrix.",
+  x_sign_in_unavailable: "Sign in with X isn't available right now. Please use email instead.",
+  x_sign_in_cancelled: "Sign in with X was cancelled.",
+  x_sign_in_state_mismatch: "That sign-in link expired. Please try again.",
+  x_sign_in_failed: "Couldn't sign in with X right now. Please try again or use email.",
+};
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -90,7 +105,12 @@ export function LoginForm() {
   const [gender, setGender] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    () => {
+      const code = searchParams.get("error");
+      return code ? (ERROR_MESSAGES[code] ?? "Something went wrong. Please try again.") : null;
+    },
+  );
   const [confirmationSentTo, setConfirmationSentTo] = useState<string | null>(null);
   const [pendingAgeReview, setPendingAgeReview] = useState(false);
 
@@ -437,6 +457,27 @@ export function LoginForm() {
                     : "Create account"}
               </Button>
             </form>
+
+            <div className="flex items-center gap-3 mt-6">
+              <div className="h-px flex-1 bg-interactive" />
+              <span className="text-xs text-text-tertiary uppercase tracking-wide">or</span>
+              <div className="h-px flex-1 bg-interactive" />
+            </div>
+
+            {/* Full-page navigation on purpose (not a client handler) — this
+                kicks off /api/auth/x/login's server-side PKCE redirect to
+                X, which a fetch()/XHR can't follow the way a real browser
+                navigation can. `redirect` reuses the same sanitized
+                same-origin path handleSubmit() already sends users to. */}
+            <a
+              href={`/api/auth/x/login?next=${encodeURIComponent(redirectTo)}`}
+              className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-interactive text-text-primary text-[15px] font-medium hover:bg-interactive/40 transition-colors ease-premium"
+            >
+              <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              Continue with X
+            </a>
 
             <p className="text-center text-sm text-text-secondary mt-6">
               {mode === "sign-in" ? "New to Vantrix?" : "Already have an account?"}{" "}

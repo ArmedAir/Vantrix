@@ -7,11 +7,12 @@ import { NextRequest, NextResponse }  from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { getSocialStatus, getStatusLeaderboard, getLegend } from '@/lib/universe/status-legend';
 import { getCharacterAttributes }     from '@/lib/universe/character-evolution';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -29,4 +30,4 @@ export async function GET(req: NextRequest) {
 
   const leaderboard = await getStatusLeaderboard(20);
   return NextResponse.json({ leaderboard });
-}
+}, 'universe/status');

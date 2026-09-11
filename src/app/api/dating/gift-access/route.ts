@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { z } from 'zod';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,7 @@ const schema = z.object({
   characterId: z.string().uuid(),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -71,4 +72,4 @@ export async function POST(req: NextRequest) {
   if (error || !created) return NextResponse.json({ error: 'Could not open gift shop' }, { status: 500 });
 
   return NextResponse.json({ matchId: created.id, matchTier: created.match_tier, bondScore: created.bond_score });
-}
+}, 'dating/gift-access');

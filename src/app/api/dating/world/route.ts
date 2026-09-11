@@ -13,13 +13,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { getDatingWorldHome } from '@/lib/dating/get-world-home';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(_req: NextRequest) {
+export const GET = withErrorHandling(async (_req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const world = await getDatingWorldHome(user.id);
   return NextResponse.json(world);
-}
+}, 'dating/world');

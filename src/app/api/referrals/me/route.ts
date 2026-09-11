@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { generateCode } from '@/lib/referral-engine';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 /**
  * GET /api/referrals/me
@@ -10,7 +11,7 @@ import { generateCode } from '@/lib/referral-engine';
  * tier; dev/influencer must go through /api/referrals/apply instead).
  * Includes lifetime stats for the dashboard.
  */
-export async function GET(_req: NextRequest) {
+export const GET = withErrorHandling(async (_req: NextRequest) => {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -65,4 +66,4 @@ export async function GET(_req: NextRequest) {
       commissionPaidNgn: totalPaidNgn,
     },
   });
-}
+}, 'referrals/me');

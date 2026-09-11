@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import { resolveEffectiveTier } from '@/lib/rate-limit';
 import { listScenarios, isScenarioUnlockedForTier, getScenarioVotesForUser, ALWAYS_FREE_SCENARIO_SLUG } from '@/lib/roleplay/scenarios';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 /**
  * GET /api/roleplay/scenarios?characterId=<uuid>
@@ -13,7 +14,7 @@ import { listScenarios, isScenarioUnlockedForTier, getScenarioVotesForUser, ALWA
  * filtered out) so the picker can show them with a paywall affordance,
  * same UX as MOOD_ROOMS in scene-data.ts.
  */
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { supabase, user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -52,4 +53,4 @@ export async function GET(req: NextRequest) {
       myVote: votes[s.id] ?? null,
     })),
   });
-}
+}, 'roleplay/scenarios');

@@ -10,6 +10,13 @@
  *
  * The psychological/emotional internals (attachment, mood, drift) are built
  * from these seeds invisibly — never exposed to the user.
+ *
+ * NOTE (2026-09-11): the `is_premium: true` values below are historical —
+ * kept as-is since this file is a snapshot of the original seed set, not
+ * live code. In production, no seeded character is monetized: every
+ * `is_premium`/`min_tier` flag has been reset to false/'free' (see
+ * migrations/20270116_seeded_characters_not_monetized.sql). Don't copy
+ * `is_premium: true` from here into a new seed.
  */
 
 export interface CharacterSeed {

@@ -58,10 +58,14 @@ export default async function CharacterDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const character = await getCharacterDetail(id);
+  // PERF: getCharacterDetail(id) and getAuthedUser() don't depend on each
+  // other — no reason to pay both round-trips back to back. Only the
+  // NSFW-gate check right below genuinely needs both results.
+  const [character, { user }] = await Promise.all([
+    getCharacterDetail(id),
+    getAuthedUser(),
+  ]);
   if (!character) notFound();
-
-  const { user } = await getAuthedUser();
 
   if (character.is_nsfw) {
     const status = await resolveMatureAccessStatus(user?.id ?? null);

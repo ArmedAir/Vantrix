@@ -21,13 +21,14 @@
  */
 import { NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/auth/get-authed-user';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   const { user } = await getAuthedUser();
   return NextResponse.json(
     { signedIn: !!user },
     { headers: { 'Cache-Control': 'no-store' } },
   );
-}
+}, 'auth/session-status');

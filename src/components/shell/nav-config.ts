@@ -8,6 +8,7 @@ import {
   Heart,
   Sparkles,
   Crown,
+  BarChart3,
   ShieldAlert,
   Bot,
   type LucideIcon,
@@ -70,6 +71,20 @@ export interface NavItem {
  * page.tsx) — Characters right after it is the strongest "this is what
  * the product is" signal the shared nav order can send without
  * duplicating Home's own content.
+ *
+ * SUBSCRIPTION-PREMIUM-SPLIT (2026-09-11): the old single entry here
+ * (`href: "/premium", label: "Subscription"`) was a mislabel, not a
+ * genuine second destination — it pointed at the Premium upsell/plan-
+ * selection page while calling itself "Subscription," and the actual
+ * subscription-management surface (cancel, billing portal — see
+ * subscription-management.tsx) lived unreachable from primary nav
+ * entirely, buried in Profile > Settings. Per direct request: split into
+ * two real entries below — Premium keeps its original href/treatment
+ * (just the accurate label now), and Analytics is the new entry pointing
+ * at that management surface, now promoted to its own page
+ * (app/(app)/analytics/page.tsx). Analytics intentionally has no
+ * `premium: true` gold treatment — that treatment exists to make the
+ * upsell entry pop, and this isn't the upsell.
  */
 export const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Home", icon: Home },
@@ -86,7 +101,8 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/world", label: "World", icon: Globe2 },
   { href: "/dating", label: "Dating", icon: Heart },
   { href: "/studio", label: "Studio", icon: Sparkles },
-  { href: "/premium", label: "Subscription", icon: Crown, premium: true },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/premium", label: "Premium", icon: Crown, premium: true },
 ];
 
 /**

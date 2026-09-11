@@ -10,11 +10,12 @@ import { getAuthedUser } from '@/lib/auth/get-authed-user';
 import {
   getAllScarceAssets, getUnclaimedAssets, getCharacterAssets, getAsset,
 } from '@/lib/universe/scarcity';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { user } = await getAuthedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -41,4 +42,4 @@ export async function GET(req: NextRequest) {
 
   const assets = await getAllScarceAssets();
   return NextResponse.json({ assets });
-}
+}, 'universe/artifacts');

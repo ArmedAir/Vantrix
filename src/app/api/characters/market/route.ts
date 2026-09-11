@@ -14,6 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getMarketValueLeaderboard } from '@/lib/universe/market-value';
 import type { RarityTier } from '@/types/legacy-systems';
+import { withErrorHandling } from '@/lib/api/with-error-handling';
 
 /**
  * CACHE-FIX: was `force-dynamic` with no Cache-Control at all, so every
@@ -31,7 +32,7 @@ export const revalidate = 60;
 
 const VALID_TIERS: RarityTier[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
 
-export async function GET(req: NextRequest) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 20));
   const tierParam = searchParams.get('tier');
@@ -54,4 +55,4 @@ export async function GET(req: NextRequest) {
     },
     { headers: { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=300' } },
   );
-}
+}, 'characters/market');
