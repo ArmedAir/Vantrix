@@ -1,0 +1,46 @@
+
+# capacitor native builds (mobile-capacitor is a standalone sub-project)
+# debug
+# dependencies
+# local env files
+# misc
+# next.js
+# playwright
+# production
+# testing
+# typescript
+# vercel
+# vitest
+*.pem
+*.tsbuildinfo
+.DS_Store
+.env
+.env*.local
+.env.development
+.env.local
+.env.production
+.next/
+.pnp.js
+.vercel
+/.next/
+/.pnp
+/blob-report/
+/build
+/coverage
+/node_modules
+/out/
+/playwright-report/
+/playwright/.cache/
+/test-results/
+desktop/dist
+desktop/node_modules
+desktop/out
+mobile-capacitor/android
+mobile-capacitor/ios
+mobile-capacitor/node_modules
+next-env.d.ts
+node_modules/
+npm-debug.log*
+tsconfig.tsbuildinfo
+yarn-debug.log*
+yarn-error.log*
