@@ -20,9 +20,19 @@ import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
  */
 export const dynamic = "force-dynamic";
 
+// BRAND-DISAMBIGUATION FIX: this used to be a flat `title: "Vantrix"` —
+// bare "Vantrix" with no AI/companion context, on the one route every
+// signed-out crawler that isn't on the KNOWN_CRAWLER_UA_PATTERN allowlist
+// in middleware.ts (GPTBot, ClaudeBot, PerplexityBot, etc. — see that
+// file's own fix comment) actually gets redirected to. That combination
+// meant exactly the AI-answer-engine crawlers llms.txt is written for
+// were seeing the least disambiguated title on the whole site. The root
+// layout's title template (`%s — Vantrix AI Companions`) now appends the
+// disambiguator automatically, so this only needs the page-specific part.
 export const metadata: Metadata = {
-  title: "Vantrix",
-  description: "Someone has been trying to figure you out.",
+  title: "Someone Has Been Trying to Figure You Out",
+  description:
+    "Vantrix — AI companions with persistent memory who remember you, always. Someone has been trying to figure you out.",
 };
 
 export default function EnterPage() {

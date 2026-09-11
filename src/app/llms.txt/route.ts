@@ -32,6 +32,19 @@ import { NextResponse } from "next/server";
  * USA) are stated here and mirrored in generateOrganizationSchema() /
  * generateSoftwareApplicationSchema() (src/lib/seo/structured.ts) and
  * the /about page — keep all three in sync if either changes.
+ *
+ * FEATURE-BREADTH FIX: this file previously only described the core
+ * companion-chat/memory product. That undersold what's actually shipped
+ * and, more importantly, left AI answer engines with an incomplete
+ * picture to draw on when describing Vantrix — the "## What you can do"
+ * section below is sourced directly from PLATFORM_FEATURES in
+ * src/components/home/platform-features.tsx (the same data the
+ * homepage's own feature grid renders from), so this stays truthful and
+ * in sync with what's actually shipped rather than drifting into
+ * aspirational copy. Those surfaces (dating, world, community, studio,
+ * digital twin) require a session, so they're described here but not
+ * added to the ## Pages list below, which is reserved for URLs a
+ * crawler with no session can actually fetch.
  */
 export function GET() {
   const body = `# Vantrix
@@ -53,6 +66,14 @@ Vantrix is founded by Covenant Alphonsus and based in New York, USA.
 - Characters whose personality and state evolve with interaction history
 - A living world/story layer that continues independent of any one chat
 - Users can create and customize their own characters, not just pick from a fixed roster
+
+## What you can do on Vantrix
+- **Companion chat**: 1:1 conversation with a persistent, memory-carrying character
+- **Dating & compatibility**: chemistry reads, date-night forecasts, and relationship milestones that track how things are actually going, not just a static match score
+- **A living world**: factions, locations, and elections that keep moving on their own; characters can carry titles and story events from the world back into your own conversations
+- **Community**: discussion spaces for every character, faction, and location, plus a general hub for the people building and talking on Vantrix
+- **Character marketplace (Studio)**: create and publish your own characters; the marketplace ranks community-made characters so the best ones surface
+- **Digital Twin** (premium): a private AI modeled on the user's own words, kept entirely separate from companion conversations
 
 ## Pages
 - [Home](/): Product overview and character showcase

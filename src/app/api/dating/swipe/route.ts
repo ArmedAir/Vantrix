@@ -258,30 +258,50 @@ export async function POST(req: NextRequest) {
       userId, matchId: match.id, operation: 'match_created', outcome: 'success',
       meta: { direction, compatibility: finalScore, matchTier },
     }).catch(bg('emitDatingEvent.matchCreated'));
-
-    // Inbox notification — only for a genuinely new match, not a re-swipe
-    // on an existing one (which just refreshes compatibility/tier above).
-    if (!existingMatch) {
-      emitNotification({
-        userId,
-        type: 'dating_match',
-        title: 'New match!',
-        body: `You and ${char.name} matched.`,
-        // ROUTE-FIX: the actual page is at /dating/match/[id]
-        // (src/app/(main)/dating/match/[id]/page.tsx) — this was missing
-        // the /match segment, so tapping a "New match!" notification 404'd.
-        ctaUrl: `/dating/match/${match.id}`,
-        urgency: 'high',
-        icon: undefined,
-        metadata: { matchId: match.id, characterId, characterName: char.name },
-      }).catch(bg('emitNotification.datingMatch'));
-    }
   });
+
+  // CLIENT-FANOUT-FIX: previously fired inside after(), which discards
+  // whatever it returns — the client (useDatingDeck.swipe()) already knows
+  // a match happened, it's in this very response, but had no way to tell
+  // useNotificationStore without waiting on the realtime round-trip for
+  // the row this route is about to insert. Awaiting here (one insert, same
+  // cost class as the compatibility upsert above) lets the response carry
+  // the *real* notification id, so the client's optimistic store.receive()
+  // call dedupes correctly against the realtime INSERT event when it lands
+  // a moment later — receive() dedupes on id, see notifications/store.ts.
+  // Only the push fan-out inside emitNotification stays fire-and-forget;
+  // that part was already internally async and unaffected by this await.
+  let notificationId: string | null = null;
+  // Inbox notification — only for a genuinely new match, not a re-swipe
+  // on an existing one (which just refreshes compatibility/tier above).
+  if (!existingMatch) {
+    notificationId = await emitNotification({
+      userId,
+      type: 'dating_match',
+      title: 'New match!',
+      body: `You and ${char.name} matched.`,
+      // ROUTE-FIX: the actual page is at /dating/match/[id]
+      // (src/app/(main)/dating/match/[id]/page.tsx) — this was missing
+      // the /match segment, so tapping a "New match!" notification 404'd.
+      ctaUrl: `/dating/match/${match.id}`,
+      urgency: 'high',
+      icon: undefined,
+      metadata: { matchId: match.id, characterId, characterName: char.name },
+    }).catch((err) => {
+      bg('emitNotification.datingMatch')(err);
+      return null;
+    });
+  }
 
   return NextResponse.json({
     matched:     true,
     match,
     compatibility: { score: finalScore, breakdown: compat, tier: matchTier },
     reason:        response.reason,
+    // Null on a re-swipe of an existing match (no new row) or if the user
+    // has dating_match in-app notifications muted (emitNotification
+    // returns null in both cases) — the client must treat null as "don't
+    // insert into the notification store," not as a failure.
+    notificationId,
   });
 }

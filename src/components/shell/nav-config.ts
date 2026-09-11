@@ -86,7 +86,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/world", label: "World", icon: Globe2 },
   { href: "/dating", label: "Dating", icon: Heart },
   { href: "/studio", label: "Studio", icon: Sparkles },
-  { href: "/premium", label: "Premium", icon: Crown, premium: true },
+  { href: "/premium", label: "Subscription", icon: Crown, premium: true },
 ];
 
 /**

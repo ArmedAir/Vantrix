@@ -81,9 +81,10 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
  *     Sign out as indented rows) rather than a single link, so all five
  *     account-scoped destinations live in one place instead of being
  *     split between this footer and TopBar's old dropdown.
- *      - Subscription -> /profile/settings#subscription, a real anchor
- *        added to that page's existing <SubscriptionManagement> section
- *        (see settings/page.tsx) rather than a second settings surface.
+ *      - Subscription -> /premium (the actual subscription/upgrade +
+ *        Creators Dashboard page). Previously mis-routed to
+ *        /profile/settings#subscription (billing-management only, no
+ *        upgrade path) — corrected so the row goes where its label says.
  *      - Notifications -> /notifications (already a real route) with a
  *        live unread badge read straight from useNotificationStore,
  *        the same store NotificationCenterProvider already hydrates and
@@ -296,9 +297,13 @@ export function MobileDrawer({
                   My Profile
                 </Link>
                 <Link
-                  href="/profile/settings#subscription"
+                  href="/premium"
                   onClick={() => setDrawerOpen(false)}
-                  className="flex items-center gap-2.5 px-2 py-1 rounded-xs text-[13px] text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
+                  className={cn(
+                    "flex items-center gap-2.5 px-2 py-1 rounded-xs text-[13px] text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium",
+                    isNavItemActive(pathname, "/premium") &&
+                      "text-text-primary bg-gold-500/[0.07]"
+                  )}
                 >
                   <Crown className="h-4 w-4 shrink-0" strokeWidth={1.75} />
                   Subscription

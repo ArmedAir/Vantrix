@@ -42,6 +42,7 @@ export function generateOrganizationSchema() {
     founder: {
       "@type": "Person",
       name: "Covenant Alphonsus",
+      sameAs: ["https://x.com/dxcovenant9"],
     },
     areaServed: {
       "@type": "Place",
@@ -56,15 +57,16 @@ export function generateOrganizationSchema() {
       "https://twitter.com/vantrixai",
       "https://discord.gg/py7JQNqqz",
       "https://t.me/vantrixai",
+      "https://www.tiktok.com/@tryvantrix",
+      "https://www.reddit.com/user/thadleai",
       // "https://www.linkedin.com/company/vantrix",
       // "https://www.instagram.com/vantrixai",
-      // "https://www.tiktok.com/@vantrixai",
       // "https://www.youtube.com/@vantrixai",
       // "https://www.producthunt.com/products/vantrix",
       // "https://github.com/vantrix",
     ],
     description:
-      "Vantrix is a living universe of AI companions who remember you, always. They change with you, and their world keeps going — persistent cross-session memory and evolving personalities, not a chatbot that resets every conversation.",
+      "Vantrix is a living universe of AI companions who remember you, always. They change with you, and their world keeps going — persistent cross-session memory and evolving personalities, not a chatbot that resets every conversation. Beyond 1:1 chat, Vantrix includes dating and compatibility tracking, a living world of factions and locations, community discussion spaces, a character marketplace, and a private Digital Twin.",
   };
 }
 
@@ -188,7 +190,7 @@ export function generateSoftwareApplicationSchema() {
     operatingSystem: "Web, iOS, Android",
     url: absoluteUrl("/"),
     description:
-      "Vantrix is a living universe of AI companions who remember you, always. They change with you, and their world keeps going — persistent cross-session memory and evolving personalities, not a chatbot that resets every conversation. Free tier available; paid plans unlock additional companions, memory depth, and generation.",
+      "Vantrix is a living universe of AI companions who remember you, always. They change with you, and their world keeps going — persistent cross-session memory and evolving personalities, not a chatbot that resets every conversation. Includes dating and compatibility tracking, a living world of factions and locations, community spaces, a character marketplace/Studio, and a private Digital Twin. Free tier available; paid plans unlock additional companions, memory depth, and generation.",
     offers: {
       "@type": "Offer",
       price: "0",

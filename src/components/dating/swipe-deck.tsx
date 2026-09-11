@@ -8,6 +8,7 @@ import { useDatingDeck, type DeckCandidate } from "@/hooks/use-dating-deck";
 import { SwipeCard } from "./swipe-card";
 import { MatchCelebration } from "./match-celebration";
 import { usePaywall } from "@/components/paywall/paywall-provider";
+import { useNotificationStore } from "@/lib/notifications/store";
 
 export function SwipeDeck() {
   const {
@@ -49,7 +50,37 @@ export function SwipeDeck() {
     direction: "like" | "pass" | "super_like"
   ) {
     const result = await swipe(candidate.id, direction);
-    if (result?.matched) setMatchedCandidate(candidate);
+    if (result?.matched) {
+      setMatchedCandidate(candidate);
+
+      // CLIENT-FANOUT-FIX: the swipe response already carries the real
+      // notifications-table id for this match (see notificationId on
+      // /api/dating/swipe's response) — push it into the shared
+      // notification store now instead of waiting for the bell/toast to
+      // learn about it via the realtime INSERT, which can lag a swipe by
+      // a second or more. Using the server's own id (not a client-made
+      // one) means receive()'s id-based dedup collapses cleanly with that
+      // later realtime event instead of double-counting it. Mirrors the
+      // exact title/body/ctaUrl the server used in /api/dating/swipe, so
+      // there's one string authored in one place (that route) and this is
+      // just an early, identical echo of it.
+      if (result.notificationId) {
+        useNotificationStore.getState().receive({
+          id: result.notificationId,
+          type: "dating_match",
+          title: "New match!",
+          body: `You and ${candidate.name} matched.`,
+          cta_url: result.match ? `/dating/match/${result.match.id}` : null,
+          icon: null,
+          urgency: "high",
+          metadata: result.match
+            ? { matchId: result.match.id, characterId: candidate.id, characterName: candidate.name }
+            : null,
+          read_at: null,
+          created_at: new Date().toISOString(),
+        });
+      }
+    }
   }
 
   function closeCelebration() {

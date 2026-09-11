@@ -39,6 +39,14 @@ export interface SwipeResult {
   match?: { id: string };
   compatibility?: { score: number; tier: string };
   reason?: string;
+  /** The real notifications-table row id for this match, or null if none
+   *  was created (re-swipe of an existing match, or the user has
+   *  dating_match in-app notifications muted). Callers that want to
+   *  optimistically surface this in useNotificationStore must use this
+   *  exact id — receive() dedupes by id against the realtime INSERT for
+   *  the same row, so a mismatched id would double the toast/unread count
+   *  instead of merging with it. */
+  notificationId?: string | null;
 }
 
 interface DeckResponse {

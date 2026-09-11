@@ -6,6 +6,7 @@ import { TrialButton } from "@/components/premium/trial-button";
 import { PaywallViewed } from "@/components/premium/paywall-viewed";
 import { isProviderEnabled } from "@/lib/payments/provider-gate";
 import { CinematicEntrance } from "@/components/immersive/cinematic-entrance";
+import { CreatorsDashboardSection } from "@/components/premium/creators-dashboard-section";
 
 /**
  * §12 Phase 7 — "checkout flow off the upsell banner." Home's
@@ -139,6 +140,18 @@ export default async function PremiumPage() {
         </div>
       )}
       </CinematicEntrance>
+
+      {/*
+       * CREATORS-DASHBOARD-IN-SUBSCRIPTION (2026-09-11): the Studio
+       * "Earnings" button/page used to be the only way to reach creator
+       * payouts, disconnected from the Subscription/Premium surface even
+       * though it's a premium-only capability. Moved here per direct
+       * request — this whole section renders only for paying members,
+       * so it reads as a benefit of the plan itself rather than an
+       * unrelated Studio sub-page. Free/signed-out-effectively users see
+       * nothing here; the upsell copy above is their path in.
+       */}
+      {!isFreeUser && <CreatorsDashboardSection />}
     </div>
   );
 }

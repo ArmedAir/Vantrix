@@ -58,7 +58,7 @@ const BOTTOM_NAV_ITEMS: (NavItem & { match: (pathname: string) => boolean })[] =
   },
   {
     href: "/premium",
-    label: "Premium",
+    label: "Subscription",
     icon: Crown,
     premium: true,
     match: (p) => p.startsWith("/premium"),

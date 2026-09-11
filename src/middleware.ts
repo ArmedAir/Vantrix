@@ -72,8 +72,16 @@ const ALLOWED_ORIGINS = [
 // substring allowlist rather than pulling in a UA-parsing dependency —
 // this only ever needs to answer "is this one of the handful of crawlers
 // that matter for SEO/link-previews," not fully classify every UA.
+//
+// AI-CRAWLER FIX: the original list only covered traditional search/social
+// bots. It was missing every crawler that actually reads llms.txt and
+// feeds AI answer engines (ChatGPT, Perplexity, Gemini, Claude) — GPTBot,
+// ClaudeBot, PerplexityBot, Google-Extended, CCBot, Bytespider, and Meta's
+// external agent. Those were falling through to the /enter redirect and
+// seeing the onboarding flow instead of the real homepage/llms.txt
+// positioning, which defeats the entire point of that file existing.
 const KNOWN_CRAWLER_UA_PATTERN =
-  /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|applebot|pinterestbot|discordbot|whatsapp|telegrambot/i;
+  /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|applebot|pinterestbot|discordbot|whatsapp|telegrambot|gptbot|claudebot|perplexitybot|google-extended|ccbot|bytespider|meta-externalagent/i;
 
 // ── Main middleware ───────────────────────────────────────────────────────────
 

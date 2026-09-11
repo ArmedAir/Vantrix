@@ -37,7 +37,21 @@ export const metadata: Metadata = {
   // Open Graph requires. Falls back to localhost in dev so this never
   // throws on a missing env var; production always has NEXT_PUBLIC_APP_URL.
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: SITE_TITLE,
+  // BRAND-DISAMBIGUATION FIX: this used to be a flat `title: SITE_TITLE`,
+  // which meant any child route setting its own plain `title: "..."`
+  // string (e.g. /enter's old `title: "Vantrix"`) fully replaced it —
+  // silently dropping the "AI Companions" disambiguator on exactly the
+  // pages most likely to get indexed or read by an AI crawler, undoing
+  // the entity-disambiguation work described above `SITE_TITLE`. A title
+  // template means any child page can set a short title (e.g. "Vantrix
+  // AI") and Next appends `template` around it automatically, while
+  // `default` still covers routes that set no title at all. Child pages
+  // that need a fully custom title (rare) can still override with an
+  // `absolute` title field.
+  title: {
+    default: SITE_TITLE,
+    template: "%s — Vantrix AI Companions",
+  },
   description: SITE_DESCRIPTION,
   openGraph: {
     title: SITE_TITLE,

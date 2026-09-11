@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Sparkles, Coins } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { getMyCharacters, getMarketLeaderboard } from "@/lib/frontend/studio";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -25,12 +25,12 @@ export default async function StudioPage() {
     <div className="mx-auto max-w-3xl px-4 md:px-8 py-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-2xl text-text-primary">Studio</h1>
+        {/* EARNINGS-MOVED-TO-SUBSCRIPTION: the Earnings button that used to
+            live here now lives in Subscription (/premium) as the Creators
+            Dashboard, a Premium-member benefit rather than a plain Studio
+            sub-page — see creators-dashboard-section.tsx. /studio/earnings
+            itself now just redirects there. */}
         <div className="flex items-center gap-2">
-          <Button asChild variant="secondary">
-            <Link href="/studio/earnings">
-              <Coins className="h-4 w-4" /> Earnings
-            </Link>
-          </Button>
           <ImportCharacterButton />
           <Button asChild>
             <Link href="/studio/create">
