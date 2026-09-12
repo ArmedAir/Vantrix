@@ -1,17 +1,12 @@
+import type { CreatorDashboard } from "@/lib/commerce/character-fund";
+
 export type { CreatorDashboard, CharacterFundDashboardEntry } from "@/lib/commerce/character-fund";
 
-/**
- * SERVER-SIDE FIX (2026-09-12): fetchCreatorDashboard() (the client-side
- * fetch("/api/creator/dashboard") wrapper) is removed — its one caller,
- * creator-earnings-dashboard.tsx, now receives its data as a server-
- * resolved prop instead (see getCreatorAnalyticsDashboard() in
- * creator-analytics.server.ts and that dashboard component's own
- * SERVER-SIDE FIX comment). The monetization helpers below are untouched:
- * they back an actual user-initiated write (POST .../monetization from
- * monetize-character-card.tsx's upgrade button), which is a client
- * interaction by nature, not a page-load read — nothing about "make
- * analytics server-side" applies to a click handler triggering a mutation.
- */
+export async function fetchCreatorDashboard(): Promise<CreatorDashboard> {
+  const res = await fetch("/api/creator/dashboard");
+  if (!res.ok) throw new Error("Failed to load creator dashboard");
+  return res.json();
+}
 
 export interface MonetizationStatusResponse {
   monetizationStatus: "none" | "eligible" | "suspended";

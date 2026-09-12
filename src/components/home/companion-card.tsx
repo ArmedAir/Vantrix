@@ -86,8 +86,11 @@ export function CompanionCard({
   // label here unless checkCharacterTierAccess is also restored to
   // actually gate, or this goes back to promising a gate that isn't there.
   const cornerBadge = character.is_premium ? (
-    <Badge variant="outline" className="gap-1 border-gold-500/60 shadow-gold-glow">
-      <Crown className="h-3 w-3" strokeWidth={2} />
+    <Badge
+      variant="outline"
+      className="gap-1 border-gold-500/60 bg-black/50 shadow-gold-glow backdrop-blur-md"
+    >
+      <Crown className="h-3 w-3 fill-gold-400" strokeWidth={1.5} />
       Premium
     </Badge>
   ) : undefined;

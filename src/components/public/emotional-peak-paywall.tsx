@@ -22,8 +22,8 @@ export function EmotionalPeakPaywall({
   signUpHref: string;
 }) {
   return (
-    <Card interactive={false} className="p-6 text-center border-gold-500/30">
-      <Heart className="h-5 w-5 text-gold-400 mx-auto mb-3" strokeWidth={1.75} />
+    <Card interactive={false} glass className="p-6 text-center border-gold-500/25">
+      <Heart className="h-5 w-5 text-gold-400 mx-auto mb-3 drop-shadow-[0_0_6px_rgba(201,161,90,0.4)]" strokeWidth={1.75} />
       <h3 className="font-display text-lg text-text-primary tracking-tight">
         You and {characterName} are just getting started
       </h3>

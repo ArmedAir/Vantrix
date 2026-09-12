@@ -1,3 +1,6 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
 import {
   Coins,
   Users,
@@ -8,13 +11,18 @@ import {
   Sparkles,
   Crown,
   Store,
+  RotateCcw,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { KpiCard } from "@/components/admin/analytics/kpi-card";
 import { AnimatedCounter } from "@/components/admin/motion/animated-counter";
 import { RevealGroup, RevealItem } from "@/components/admin/motion/reveal";
 import { cn } from "@/lib/utils";
-import type { CreatorDashboard, CharacterFundDashboardEntry } from "@/lib/commerce/character-fund";
+import {
+  fetchCreatorDashboard,
+  type CreatorDashboard,
+  type CharacterFundDashboardEntry,
+} from "@/lib/frontend/creator-dashboard";
 
 function formatTokens(n: number): string {
   return `${Math.round(n).toLocaleString()} VC`;
@@ -32,32 +40,70 @@ const MONETIZATION_BADGE: Record<string, { label: string; className: string }> =
   none: { label: "Not enrolled", className: "text-text-tertiary border-border-hairline bg-white/[0.03]" },
 };
 
-/**
- * SERVER-SIDE FIX (2026-09-12): this component used to be a "use client"
- * component that owned loading/error/data state via useState and fetched
- * /api/creator/dashboard itself in a useEffect on mount — every visit to
- * /analytics rendered an empty skeleton first, then made a browser->server
- * round trip for data the server already had while producing the page.
- * Per direct request to make this deliberately server-side: the fetch,
- * the auth check, and the period lookup all now happen in page.tsx before
- * this component ever renders (see getCreatorAnalyticsDashboard() and
- * that page's own SERVER-SIDE FIX comment), and the resolved dashboard is
- * passed straight in as a prop. This file has no "use client" directive,
- * no useState/useEffect, and makes no network call of any kind — it is
- * pure presentation over data it's handed. The loading-skeleton and
- * error-card branches that used to live here moved to page.tsx (the error
- * one) or simply don't exist anymore (the loading one: a server component
- * has no "still fetching" moment the client can observe — the page either
- * has the data or doesn't render this component yet).
- */
-export function CreatorEarningsDashboard({ dashboard }: { dashboard: CreatorDashboard }) {
-  if (dashboard.characters.length === 0) {
+export function CreatorEarningsDashboard() {
+  const [dashboard, setDashboard] = useState<CreatorDashboard | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    fetchCreatorDashboard()
+      .then(setDashboard)
+      .catch(() => setError("Couldn't load your earnings right now."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-28 rounded-md border border-gold-500/10 bg-gradient-to-b from-gold-500/[0.04] to-transparent animate-pulse"
+            />
+          ))}
+        </div>
+        <div className="space-y-3">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-32 rounded-md border border-gold-500/10 bg-gradient-to-b from-gold-500/[0.04] to-transparent animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="p-8 text-center">
+        <ShieldAlert className="h-5 w-5 text-danger mx-auto mb-3" strokeWidth={1.75} />
+        <p className="text-text-primary font-display text-lg mb-1">Something went wrong</p>
+        <p className="text-sm text-text-secondary max-w-sm mx-auto mb-4">{error}</p>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-gold-400 hover:text-gold-300 transition-colors ease-premium"
+        >
+          <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.75} /> Try again
+        </button>
+      </Card>
+    );
+  }
+
+  if (!dashboard || dashboard.characters.length === 0) {
     return (
       <Card className="p-8 text-center">
         <Sparkles className="h-5 w-5 text-gold-500 mx-auto mb-3" strokeWidth={1.75} />
         <p className="text-text-primary font-display text-lg mb-1">No fund earnings yet</p>
         <p className="text-sm text-text-secondary max-w-sm mx-auto">
-          {dashboard.note ??
+          {dashboard?.note ??
             "Once you upgrade a character into the Creator Fund and it earns real returning users, its first period will show up here."}
         </p>
       </Card>

@@ -42,7 +42,7 @@ export function MediaCard({
  fallback?: string;
 }) {
  return (
- <Card className={cn("p-0", className)}>
+ <Card glass className={cn("p-0 group", className)}>
  <Link href={href} onClick={onClick} className="block group/card">
  <div className={cn("relative aspect-[3/4] w-full", imageClassName)}>
  <SafeImage
@@ -52,10 +52,24 @@ export function MediaCard({
  fill
  sizes="(max-width: 640px) 168px, 200px"
  priority={priority}
- className="object-cover transition-transform duration-300 ease-premium group-hover/card:scale-[1.03]"
+ className="object-cover transition-transform duration-500 ease-premium group-hover/card:scale-[1.05]"
+ />
+ {/* Glass sheen — a soft diagonal highlight across the top of the
+ card, the classic "light hitting glass" cue. Pure CSS gradient,
+ no image asset; opacity lifts slightly on hover for a subtle
+ polish-catching-light effect. */}
+ <div
+ className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent opacity-70 transition-opacity duration-500 ease-premium group-hover/card:opacity-100"
+ aria-hidden
  />
  <div
  className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+ aria-hidden
+ />
+ {/* Hairline inner edge — reinforces the glass-pane feel at the
+ card boundary, on top of the outer border+shadow from Card. */}
+ <div
+ className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-white/[0.06]"
  aria-hidden
  />
  {badge && <div className="absolute top-2 left-2">{badge}</div>}
