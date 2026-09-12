@@ -23,7 +23,6 @@ import { NAV_ITEMS, ADMIN_NAV_ITEM } from "./nav-config";
 import { useShellStore } from "./shell-store";
 import { useNotificationStore } from "@/lib/notifications/store";
 import { NavLink, isNavItemActive } from "@/components/ui/nav-link";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
 import { resetIdentity } from "@/lib/analytics/client";
@@ -45,14 +44,6 @@ const BROWSE_CATEGORIES: { value: "female" | "male" | "anime"; label: string }[]
   { value: "male", label: "Male" },
   { value: "anime", label: "Anime" },
 ];
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="px-2.5 pt-0 pb-0.5 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-      {children}
-    </div>
-  );
-}
 
 /**
  * Mobile: full overlay/drawer, dismiss on backdrop tap or item select
@@ -185,6 +176,15 @@ export function MobileDrawer({
   // scrolling"). Closed by default; still one tap away, and still opens
   // to the same five rows when the person actually wants them.
   const [accountOpen, setAccountOpen] = useState(false);
+  // CANDY-REFERENCE RESTYLE (2026-09-12): the category browse filter moves
+  // from a standalone pill row into a single disclosure row ("Category:
+  // <label>"), matching the reference layout's one-row category picker —
+  // same three real destinations (BROWSE_CATEGORIES), just collapsed
+  // behind a tap instead of always-expanded.
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<(typeof BROWSE_CATEGORIES)[number]>(
+    BROWSE_CATEGORIES[0]
+  );
 
   async function signOut() {
     const supabase = createClient();
@@ -267,13 +267,10 @@ export function MobileDrawer({
               )}
               <div className="min-w-0 flex-1 text-left">
                 <div className="flex items-center gap-1.5 text-sm font-semibold text-text-primary truncate">
-                  {displayName ?? username ?? "Your account"}
+                  {displayName ?? username ?? "My Profile"}
                   {tier !== "free" && (
                     <Crown className="h-3.5 w-3.5 shrink-0 text-gold-400" strokeWidth={1.75} />
                   )}
-                </div>
-                <div className="text-xs text-gold-400 uppercase tracking-wide font-semibold">
-                  {tier}
                 </div>
               </div>
               {unreadCount > 0 && !accountOpen && (
@@ -361,6 +358,16 @@ export function MobileDrawer({
                     {tokens.toLocaleString()}
                   </span>
                 </Link>
+                {/* THEME-INTO-ACCOUNT-PANEL (2026-09-12): folded in from a
+                    standalone footer row (see the now-removed DESKTOP/
+                    MOBILE-BALANCE FIX note below this component) as part
+                    of the candy-reference restyle — one fewer persistent
+                    always-visible row, still one tap away via the same
+                    disclosure that already holds every other account-
+                    scoped setting. */}
+                <div className="px-2 py-0.5">
+                  <ThemeToggle variant="sidebar" />
+                </div>
                 <button
                   onClick={signOut}
                   className="w-full flex items-center gap-2.5 px-2 py-1 rounded-xs text-[13px] font-medium text-danger hover:bg-danger/10 transition-colors ease-premium"
@@ -374,9 +381,17 @@ export function MobileDrawer({
 
           <div className="border-t border-border-hairline mx-3" />
 
-          {/* PRIMARY NAV */}
+          {/* PRIMARY NAV — CANDY-REFERENCE RESTYLE: flat list, no section
+              caption above it (matches the reference's plain Home/
+              Discover/.../Premium stack). Premium keeps its real /premium
+              destination and gold styling, now with the same inline
+              discount-badge treatment TopBar's own Upgrade CTA uses
+              (ANNUAL_DISCOUNT_LABEL, single source of truth), replacing
+              the separate bottom Upgrade button this drawer used to add
+              below the nav — Premium already appears once, right here,
+              with its discount visible; a second CTA for the same
+              destination was redundant. */}
           <nav aria-label="Primary" className="py-1 px-2 space-y-0">
-            <SectionLabel>Menu</SectionLabel>
             {items.map((item) => (
               <NavLink
                 key={item.href}
@@ -390,56 +405,71 @@ export function MobileDrawer({
               />
             ))}
             {premiumItem && (
-              <NavLink
+              <Link
                 href={premiumItem.href}
-                label={premiumItem.label}
-                icon={premiumItem.icon}
-                active={isNavItemActive(pathname, premiumItem.href)}
-                premium
-                size="tight"
                 onClick={() => setDrawerOpen(false)}
-              />
+                className={cn(
+                  "flex items-center gap-2.5 px-2 py-1.5 rounded-xs text-sm font-semibold text-gold-400 hover:bg-gold-500/[0.07] transition-colors ease-premium",
+                  isNavItemActive(pathname, premiumItem.href) && "bg-gold-500/[0.07]"
+                )}
+              >
+                <Crown className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+                <span className="flex-1">{premiumItem.label}</span>
+                <span className="rounded-full bg-danger/90 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                  {ANNUAL_DISCOUNT_LABEL}
+                </span>
+              </Link>
             )}
           </nav>
 
           <div className="border-t border-border-hairline mx-3" />
 
-          {/* CATEGORY ZONE */}
+          {/* CATEGORY ZONE — collapsed into a single disclosure row
+              (candy-reference restyle), same three real destinations. */}
           <div className="py-1 px-2">
-            <SectionLabel>Browse Companions</SectionLabel>
-            <div className="flex gap-2 px-1">
-              {BROWSE_CATEGORIES.map((cat) => (
-                <Link
-                  key={cat.value}
-                  href={`/characters?gender=${cat.value}`}
-                  onClick={() => setDrawerOpen(false)}
-                  className="flex-1 text-center rounded-xs border border-border-hairline py-1 text-xs font-semibold text-text-secondary hover:text-gold-400 hover:border-gold-500/40 transition-colors ease-premium"
-                >
-                  {cat.label}
-                </Link>
-              ))}
-            </div>
+            <button
+              type="button"
+              onClick={() => setCategoryOpen((v) => !v)}
+              aria-expanded={categoryOpen}
+              className="flex w-full items-center justify-between gap-2 rounded-xs border border-border-hairline px-2.5 py-1.5 text-xs font-semibold text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
+            >
+              <span>Category: {selectedCategory.label}</span>
+              <ChevronDown
+                className={cn(
+                  "h-3.5 w-3.5 shrink-0 text-text-tertiary transition-transform duration-200 ease-premium",
+                  categoryOpen && "rotate-180"
+                )}
+              />
+            </button>
+            {categoryOpen && (
+              <div className="mt-1 space-y-0.5 animate-fade-in">
+                {BROWSE_CATEGORIES.map((cat) => (
+                  <Link
+                    key={cat.value}
+                    href={`/characters?gender=${cat.value}`}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setCategoryOpen(false);
+                      setDrawerOpen(false);
+                    }}
+                    className="block rounded-xs px-2.5 py-1 text-xs text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
+                  >
+                    {cat.label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="border-t border-border-hairline mx-3" />
 
-          {/* FOOTER: support / legal */}
+          {/* FOOTER: support / legal — two 2-up rows (candy-reference
+              restyle) instead of the previous 3-up + full-width stack.
+              Discord/Contact first (highest-traffic support paths),
+              Affiliate/Help Center second — every destination is still
+              the same real route as before, just regrouped. */}
           <div className="py-1.5 px-2 space-y-1.5">
-            {/* DESKTOP/MOBILE-BALANCE FIX (2026-09-12): superseded the
-                prior DISCORD-FOLD / HELP-CENTER-FIT notes that used to
-                sit here (both described a 2-up Contact/Affiliate grid
-                with Discord folded into /support only) — Discord was
-                folded out of this footer on the assumption /support
-                covered it, but sidebar.tsx separately restored its own
-                standalone Discord tile (its DISCORD-RESTORE note) and
-                this drawer was never brought back in sync, leaving
-                mobile with one fewer real destination than desktop for
-                the identical footer. Re-added as a 3-up row instead of
-                2-up; discordUrl now threaded in from app-chrome.tsx the
-                same way sidebar.tsx already receives it. Help Center
-                keeps its own full-width row below — still doesn't fit
-                cleanly in a 4-up grid on this narrow a drawer. */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <a
                 href={discordUrl}
                 target="_blank"
@@ -454,8 +484,10 @@ export function MobileDrawer({
                 className="flex items-center justify-center gap-1.5 rounded-xs border border-border-hairline py-1.5 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
               >
                 <Mail className="h-3 w-3 shrink-0" strokeWidth={1.75} />
-                Contact
+                Contact Us
               </a>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
               <Link
                 href="/referrals"
                 onClick={() => setDrawerOpen(false)}
@@ -464,15 +496,20 @@ export function MobileDrawer({
                 <Gift className="h-3 w-3 shrink-0" strokeWidth={1.75} />
                 Affiliate
               </Link>
+              <Link
+                href="/support"
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center justify-center gap-1.5 rounded-xs border border-border-hairline py-1.5 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
+              >
+                <LifeBuoy className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                Help Center
+              </Link>
             </div>
-            <Link
-              href="/support"
-              onClick={() => setDrawerOpen(false)}
-              className="flex items-center justify-center gap-2 rounded-xs border border-border-hairline py-1.5 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
-            >
-              <LifeBuoy className="h-3 w-3 shrink-0" strokeWidth={1.75} />
-              Help Center
-            </Link>
+            {/* No "Trust & Safety" row here on purpose — same call the
+                original SIDEBAR-REORG PASS made: this drawer only links
+                real, already-shipped pages, and no such page exists yet.
+                Two real links (Terms, Privacy) instead of the reference's
+                three. */}
             <div className="flex items-center justify-center gap-2 text-[11px] text-text-tertiary">
               <Link href="/terms" onClick={() => setDrawerOpen(false)} className="hover:text-text-secondary">
                 Terms
@@ -484,37 +521,6 @@ export function MobileDrawer({
             </div>
           </div>
         </div>
-
-        {/* DESKTOP/MOBILE-BALANCE FIX: sidebar.tsx has always had a
-            ThemeToggle row in its footer; this drawer never did, despite
-            top-bar.tsx's own MOBILE-THEME-TOGGLE FIX comment claiming a
-            mobile-reachable toggle was restored there — it wasn't (no
-            <ThemeToggle> ever actually rendered in that file). That left
-            mobile with zero way to reach the theme switcher anywhere.
-            variant="sidebar" is the same full-width labeled row style
-            sidebar.tsx uses, just placed here since MobileDrawer has no
-            collapsed state to account for. */}
-        <div className="px-2 pb-1 border-t border-border-hairline pt-1 shrink-0">
-          <ThemeToggle variant="sidebar" />
-        </div>
-
-        {tier === "free" && (
-          <div className="p-2 border-t border-border-hairline shrink-0">
-            <Button
-              asChild
-              variant="primary"
-              className="h-auto w-full justify-center gap-2 rounded-xs px-3 py-2 text-sm transition-[filter,box-shadow] ease-premium hover:shadow-gold-glow"
-            >
-              <Link href="/premium" onClick={() => setDrawerOpen(false)}>
-                <Crown className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                Upgrade
-                <span className="ml-1 rounded-xs bg-black/25 px-1.5 py-0.5 text-[11px] font-bold tracking-wide text-white">
-                  {ANNUAL_DISCOUNT_LABEL}
-                </span>
-              </Link>
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
