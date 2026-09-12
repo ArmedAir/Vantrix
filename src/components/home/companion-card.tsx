@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Heart, Flame, Crown } from "lucide-react";
 import { MediaCard } from "@/components/ui/media-card";
 import { Badge } from "@/components/ui/badge";
@@ -47,7 +48,7 @@ import type { DiscoverCharacter } from "@/lib/frontend/discover";
  *      the row is actually flagged live, same restraint as the
  *      Premium-badge fix above it.
  */
-export function CompanionCard({
+function CompanionCardImpl({
   character,
   className,
   hot = false,
@@ -157,3 +158,16 @@ function pingCharacterClick(id: string) {
     keepalive: true,
   }).catch(() => {});
 }
+
+// PERF: memoized because this is the single card component reused across
+// every discovery surface (Home's Explore/Featured rows, /characters
+// browse — up to 200 cards in that grid, dating suggestions, anon hero).
+// Without this, any unrelated re-render of a parent grid (a search-input
+// debounce tick, an unaffected sibling's state change) forced every
+// visible card to reconcile even though its own character/className/hot
+// props hadn't changed. Props are a plain object + two primitives with
+// no inline-defined callback/object props at any call site, so the
+// default shallow-equality check is exactly right here — no custom
+// comparator needed.
+export const CompanionCard = memo(CompanionCardImpl);
+CompanionCard.displayName = "CompanionCard";
