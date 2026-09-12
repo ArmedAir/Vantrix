@@ -341,6 +341,110 @@ async function aiModerationCheck(text: string): Promise<ModerationResult> {
   return { allowed: !!parsed.allowed, category: parsed.category, reason: parsed.reason };
 }
 
+interface RawBatchModerationResult {
+  results: RawModerationResult[];
+}
+
+/**
+ * Batch variant of aiModerationCheck() — reviews many short, independent
+ * pieces of content in a single AI round trip instead of one call per item.
+ * Same model pin, same admin-config prompt, same fail-closed contract:
+ * returns null (never an auto-allow) if the AI is unavailable or replies
+ * with a mis-shaped/wrong-length result on both the pinned and fallback
+ * attempts, exactly mirroring aiModerationCheck()'s own null-on-failure
+ * behavior.
+ */
+async function aiModerationCheckBatch(texts: string[]): Promise<ModerationResult[] | null> {
+  const promptConfig = await loadPromptConfig();
+  const system =
+    buildModerationSystemPrompt(promptConfig) +
+    '\nYou will be given a numbered list of separate, independent pieces of content — each is its own item, not connected to the others. Review each one on its own merits and respond ONLY with valid JSON: {"results": [{"allowed": true|false, "category": "...", "reason": "..."}, ...]} — exactly one result per numbered item, same order, same count as the input list.';
+  const user = `Review each of these ${texts.length} separate pieces of user-submitted content:\n${texts
+    .map((t, i) => `${i + 1}. ${t.slice(0, 500)}`)
+    .join('\n')}`;
+  // Token budget scales with batch size — a fixed 80-token cap (right for
+  // one verdict) would truncate the JSON array before every item gets a
+  // result.
+  const maxTokens = Math.min(80 * texts.length + 40, 2000);
+
+  let parsed = await generateStructured<RawBatchModerationResult>({
+    caller: 'moderation-batch',
+    modelOverride: 'openai/gpt-4o-mini',
+    providerOverride: 'openrouter',
+    maxTokens,
+    temperature: 0,
+    system,
+    user,
+  });
+
+  if (!parsed || !Array.isArray(parsed.results) || parsed.results.length !== texts.length) {
+    logger.warn('[moderation] batch pinned model/provider failed or mis-shaped, retrying on fallback tier', {
+      count: texts.length,
+    });
+    parsed = await generateStructured<RawBatchModerationResult>({
+      caller: 'moderation-batch-fallback',
+      maxTokens,
+      temperature: 0,
+      system,
+      user,
+    });
+  }
+
+  if (!parsed || !Array.isArray(parsed.results) || parsed.results.length !== texts.length) {
+    logger.error('AI batch moderation unavailable or mis-shaped on pinned and fallback attempts — holding all items for safety', {
+      count: texts.length,
+    });
+    return null;
+  }
+
+  return parsed.results.map((r) => ({ allowed: !!r.allowed, category: r.category, reason: r.reason }));
+}
+
+/**
+ * Batch variant of moderateCharacter(), for callers reviewing many short,
+ * independent pieces of content at once — e.g. content-engine's
+ * generateChatLines(), which used to call moderateCharacter() once per
+ * generated line in a sequential loop (up to 10 separate AI round trips
+ * for a 10-line batch, awaited one at a time). Every line there is
+ * independent, short, and has no personality/backstory/scenario to
+ * combine per-item the way character creation does, so there was no
+ * reason for it to cost N AI calls instead of one.
+ *
+ * Same two-layer shape and same fail-closed guarantee as moderateCharacter():
+ * the sync blocklist still runs per-line first (free — no reason to batch
+ * something that's already sub-millisecond), and only lines that pass the
+ * blocklist go into a single AI call reviewing all of them together. If
+ * that batched call is unavailable on both the pinned and fallback
+ * attempts, every remaining line fails closed with 'moderation_unavailable'
+ * — never auto-allowed — same contract as the single-item path, just one
+ * round trip instead of N.
+ */
+export async function moderateLinesBatch(
+  characterName: string,
+  lines: string[],
+): Promise<ModerationResult[]> {
+  if (lines.length === 0) return [];
+
+  const blocklistResults = lines.map((line) => blocklistCheck(`${characterName} ${line}`));
+  const pending = blocklistResults
+    .map((result, index) => ({ result, index }))
+    .filter(({ result }) => result.allowed);
+
+  if (pending.length === 0) return blocklistResults;
+
+  const aiResults = await aiModerationCheckBatch(pending.map(({ index }) => lines[index]));
+
+  const merged = [...blocklistResults];
+  pending.forEach(({ index }, i) => {
+    merged[index] = aiResults?.[i] ?? {
+      allowed: false,
+      category: 'moderation_unavailable',
+      reason: 'Content review is temporarily unavailable. Please try again in a moment.',
+    };
+  });
+  return merged;
+}
+
 // ── Public API ────────────────────────────────────────────────────────────
 
 export async function moderateCharacter(

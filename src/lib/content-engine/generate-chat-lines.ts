@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import { moderateCharacter } from "@/lib/moderation";
+import { moderateLinesBatch } from "@/lib/moderation";
 import { generateText } from "@/lib/ai/capability";
 import { buildVoiceProfile, type CharacterBibleRow } from "./character-bible";
 
@@ -91,19 +91,24 @@ export async function generateChatLines(
       .map((l) => l.replace(/^[-*\d.)\s]+/, "").trim())
       .filter((l) => l.length > 0);
 
-    // Moderate every line individually — same gate character creation uses.
+    // Moderate every line — same gate character creation uses, but as one
+    // batched AI call reviewing all lines together (see moderateLinesBatch's
+    // own header comment) instead of one AI round trip per line. That used
+    // to mean up to `count` (max 10) sequential AI calls just to moderate a
+    // single content-engine job; now it's one call regardless of count.
+    const candidateLines = candidates.slice(0, count);
+    const results = await moderateLinesBatch(character.name, candidateLines);
     const approved: string[] = [];
-    for (const line of candidates.slice(0, count)) {
-      const result = await moderateCharacter({ name: character.name, description: line });
-      if (result.allowed) {
+    candidateLines.forEach((line, i) => {
+      if (results[i]?.allowed) {
         approved.push(line);
       } else {
         logger.warn("content-engine: chat line rejected by moderation", {
           characterId: character.id,
-          category: result.category,
+          category: results[i]?.category,
         });
       }
-    }
+    });
 
     return { success: true, lines: approved };
   } catch (err) {

@@ -16,6 +16,7 @@ import { logger }                    from "@/lib/logger";
 import { checkActionLimit } from "@/lib/rate-limit";
 import { sanitizeField } from "@/lib/sanitize";
 import { moderateCharacter } from "@/lib/moderation";
+import { getPostsPage } from "@/lib/community/get-posts";
 
 const VALID_TAGS = new Set(["discussion", "question", "theory", "tips", "fan-art", "lore", "milestone"]);
 
@@ -23,6 +24,10 @@ export const dynamic = "force-dynamic";
 
 // ── GET ───────────────────────────────────────────────────────────────────────
 
+// ROOT-CAUSE FIX (2026-09-12): logic moved to lib/community/get-posts.ts so
+// Server Components can call it in-process instead of self-fetching this
+// route (see that file's header comment). This is now a thin wrapper for
+// any client-side/external caller.
 export async function GET(req: NextRequest) {
   try {
     const { user } = await getAuthedUser();
@@ -31,74 +36,13 @@ export async function GET(req: NextRequest) {
     const url    = new URL(req.url);
     const slug   = url.searchParams.get("slug");
     const sort   = (url.searchParams.get("sort") ?? "new") as "new" | "trending" | "top";
-    const cursor = url.searchParams.get("cursor");
+    const cursor = url.searchParams.get("cursor") ?? undefined;
     const rawLimit = parseInt(url.searchParams.get("limit") ?? "20", 10);
     const limit    = Math.min(Number.isFinite(rawLimit) && rawLimit > 0 ? rawLimit : 20, 40);
 
     if (!slug) return NextResponse.json({ error: "slug is required" }, { status: 400 });
 
-    let query = supabaseAdmin
-      .from("community_posts")
-      .select(`
-        id,
-        community_slug,
-        author_id,
-        title,
-        body,
-        tag,
-        likes_count,
-        liked_by,
-        reply_count,
-        is_pinned,
-        created_at,
-        profiles:author_id ( username )
-      `)
-      .eq("community_slug", slug)
-      .limit(limit + 1);
-
-    if (sort === "trending") {
-      query = query.gt("likes_count", 0).order("likes_count", { ascending: false });
-    } else if (sort === "top") {
-      query = query.order("likes_count", { ascending: false });
-    } else {
-      // new — cursor pagination by created_at desc, pinned first
-      if (cursor) query = query.lt("created_at", cursor);
-      query = query.order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      // Table might not exist yet
-      if (error.code === "42P01") {
-        return NextResponse.json({ posts: [], nextCursor: null });
-      }
-      throw error;
-    }
-
-    const rows       = (data ?? []).slice(0, limit);
-    const hasMore    = (data ?? []).length > limit;
-    const nextCursor = hasMore && rows.length > 0
-      ? rows[rows.length - 1].created_at
-      : null;
-
-    const posts = rows.map((p) => ({
-      id:            p.id,
-      communitySlug: p.community_slug,
-      authorId:      p.author_id,
-      authorName:    (p.profiles as { username: string } | null)?.username ?? "Member",
-      title:         p.title,
-      body:          p.body,
-      tag:           p.tag,
-      likesCount:    p.likes_count,
-      replyCount:    p.reply_count,
-      userLiked:     Array.isArray(p.liked_by)
-                       ? (p.liked_by as string[]).includes(user.id)
-                       : false,
-      isPinned:      p.is_pinned,
-      createdAt:     p.created_at,
-    }));
-
+    const { posts, nextCursor } = await getPostsPage(slug, user.id, { sort, cursor, limit });
     return NextResponse.json({ posts, nextCursor });
   } catch (err) {
     logger.error("community:posts-get-error", { error: String(err) });

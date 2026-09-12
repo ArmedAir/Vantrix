@@ -118,9 +118,11 @@ export function AppChrome({
                 a mismatch here means either a gap above the bar or real
                 content clipped underneath it. */}
             {/* TOP-BAR now `fixed` (see top-bar.tsx's FIXED-HEADER FIX) and
-                no longer reserves its own h-12 in flow -- pt-12 replaces
-                that reserved space so content doesn't render under it. */}
-            <main className="flex-1 min-w-0 pt-12 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
+                no longer reserves its own h-11 in flow -- pt-11 replaces
+                that reserved space so content doesn't render under it.
+                (Trimmed from h-12/pt-12 -> h-11/pt-11 alongside top-bar.tsx's
+                NARROWER-BAR fix — must move together with that height.) */}
+            <main className="flex-1 min-w-0 pt-11 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
               {children}
             </main>
           </MainOffset>

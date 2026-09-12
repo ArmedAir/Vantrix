@@ -12,51 +12,23 @@ import { checkActionLimit } from "@/lib/rate-limit";
 import { sanitizeField } from "@/lib/sanitize";
 import { moderateCharacter } from "@/lib/moderation";
 import { emitNotification } from "@/lib/notifications/emit";
+import { getRepliesForPost } from "@/lib/community/get-posts";
 
 export const dynamic = "force-dynamic";
 
 // ── GET ───────────────────────────────────────────────────────────────────────
 
+// ROOT-CAUSE FIX (2026-09-12): logic moved to lib/community/get-posts.ts so
+// Server Components can call it in-process instead of self-fetching this
+// route (see that file's header comment). This is now a thin wrapper for
+// any client-side/external caller.
 export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
     const { user } = await getAuthedUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { data, error } = await supabaseAdmin
-      .from("community_replies")
-      .select(`
-        id,
-        post_id,
-        author_id,
-        body,
-        likes_count,
-        liked_by,
-        created_at,
-        profiles:author_id ( username )
-      `)
-      .eq("post_id", params.id)
-      .order("created_at", { ascending: true })
-      .limit(200);
-
-    if (error) {
-      if (error.code === "42P01") return NextResponse.json({ replies: [] });
-      throw error;
-    }
-
-    const replies = (data ?? []).map((r) => ({
-      id:         r.id,
-      postId:     r.post_id,
-      authorId:   r.author_id,
-      authorName: (r.profiles as { username: string } | null)?.username ?? "Member",
-      body:       r.body,
-      likesCount: r.likes_count,
-      userLiked:  Array.isArray(r.liked_by)
-                    ? (r.liked_by as string[]).includes(user.id)
-                    : false,
-      createdAt:  r.created_at,
-    }));
-
+    const replies = await getRepliesForPost(params.id, user.id);
     return NextResponse.json({ replies });
   } catch (err) {
     logger.error("community:replies-get-error", { error: String(err), postId: params.id });

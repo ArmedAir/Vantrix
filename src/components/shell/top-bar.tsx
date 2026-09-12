@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, Search, Crown } from "lucide-react";
+import { Menu, Crown } from "lucide-react";
 import { useShellStore } from "./shell-store";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { Button } from "@/components/ui/button";
@@ -119,6 +119,11 @@ const ANNUAL_DISCOUNT_LABEL = `${Math.round(BILLING_DISCOUNT_PCT.annual * 100)}%
  * instead, next to the hamburger on every breakpoint — one persistent
  * brand placement in the top nav rather than a rail-only one that
  * disappears on mobile until the drawer is opened.
+ * NARROWER-BAR + SEARCH-REMOVED FIX (2026-09-12): height trimmed h-12 ->
+ * h-11 to match the reference (candy.ai-style) slimmer top bar, and the
+ * standalone Search icon link (which just pointed at /characters, already
+ * reachable via the sidebar/drawer nav) was removed — one fewer redundant
+ * control competing for space in an already-tight row.
  */
 export function TopBar({ profile }: { profile: ShellProfile }) {
   const setDrawerOpen = useShellStore((s) => s.setDrawerOpen);
@@ -128,7 +133,7 @@ export function TopBar({ profile }: { profile: ShellProfile }) {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-40 h-12 flex items-center justify-between gap-3 px-4 md:px-6 bg-base/90 backdrop-blur border-b border-border-hairline transition-[left] duration-200 ease-premium",
+        "fixed inset-x-0 top-0 z-40 h-11 flex items-center justify-between gap-3 px-4 md:px-6 bg-base/90 backdrop-blur border-b border-border-hairline transition-[left] duration-200 ease-premium",
         railCollapsed ? "md:left-[76px]" : "md:left-[240px]"
       )}
     >
@@ -157,14 +162,6 @@ export function TopBar({ profile }: { profile: ShellProfile }) {
           hidden && "opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto"
         )}
       >
-        <Link
-          href="/characters"
-          aria-label="Search"
-          className="h-9 w-9 flex items-center justify-center rounded-xs text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
-        >
-          <Search className="h-5 w-5" strokeWidth={1.75} />
-        </Link>
-
         {profile.tier === "free" && (
           <Button
             asChild

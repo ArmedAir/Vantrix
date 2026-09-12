@@ -9,60 +9,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthedUser } from "@/lib/auth/get-authed-user";
 import { supabaseAdmin }             from "@/lib/supabase/admin";
 import { logger }                    from "@/lib/logger";
+import { getPostById }               from "@/lib/community/get-posts";
 
 export const dynamic = "force-dynamic";
 
+// ROOT-CAUSE FIX (2026-09-12): logic moved to lib/community/get-posts.ts so
+// Server Components can call it in-process instead of self-fetching this
+// route (see that file's header comment). This is now a thin wrapper for
+// any client-side/external caller.
 export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
     const { user } = await getAuthedUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { data, error } = await supabaseAdmin
-      .from("community_posts")
-      .select(`
-        id,
-        community_slug,
-        author_id,
-        title,
-        body,
-        tag,
-        likes_count,
-        liked_by,
-        reply_count,
-        is_pinned,
-        created_at,
-        profiles:author_id ( username )
-      `)
-      .eq("id", params.id)
-      .single();
-
-    if (error) {
-      if (error.code === "PGRST116") {
-        return NextResponse.json({ error: "Post not found" }, { status: 404 });
-      }
-      if (error.code === "42P01") {
-        return NextResponse.json({ error: "Post not found" }, { status: 404 });
-      }
-      throw error;
-    }
-
-    const post = {
-      id:            data.id,
-      communitySlug: data.community_slug,
-      authorId:      data.author_id,
-      authorName:    (data.profiles as { username: string } | null)?.username ?? "Member",
-      title:         data.title,
-      body:          data.body,
-      tag:           data.tag,
-      likesCount:    data.likes_count,
-      replyCount:    data.reply_count,
-      userLiked:     Array.isArray(data.liked_by)
-                       ? (data.liked_by as string[]).includes(user.id)
-                       : false,
-      isPinned:      data.is_pinned,
-      createdAt:     data.created_at,
-    };
+    const post = await getPostById(params.id, user.id);
+    if (!post) return NextResponse.json({ error: "Post not found" }, { status: 404 });
 
     return NextResponse.json({ post });
   } catch (err) {
