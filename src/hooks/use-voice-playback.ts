@@ -59,9 +59,7 @@ interface TtsResponse {
 // getVoices() is async/inconsistent across browsers, so this only ever
 // narrows by name substring on whatever list is already loaded; falling
 // through to the browser's default voice for the given lang is fine.
-function pickVoice(hint: SpeechParams["voiceHint"]): SpeechSynthesisVoice | null {
-  if (typeof window === "undefined" || !window.speechSynthesis) return null;
-  const voices = window.speechSynthesis.getVoices();
+function pickVoice(voices: SpeechSynthesisVoice[], hint: SpeechParams["voiceHint"]): SpeechSynthesisVoice | null {
   if (!voices.length) return null;
   const wantsFemale = hint.startsWith("female");
   const byName = voices.find((v) =>
@@ -71,6 +69,34 @@ function pickVoice(hint: SpeechParams["voiceHint"]): SpeechSynthesisVoice | null
   );
   return byName ?? voices.find((v) => v.lang.startsWith("en")) ?? voices[0] ?? null;
 }
+
+// SILENT-VOICE FIX: getVoices() very commonly returns [] on the FIRST call —
+// especially on Android/mobile Chrome — because the browser loads its voice
+// list asynchronously and only fires 'voiceschanged' once it's ready. Calling
+// speechSynthesis.speak() before that list is populated doesn't throw or
+// fire onerror on many devices; it just produces no audible speech at all,
+// which is exactly the "even with VC it's not speaking" symptom. Wait up to
+// ~1s for a real voice list before speaking, rather than racing it.
+function getVoicesAsync(): Promise<SpeechSynthesisVoice[]> {
+  if (typeof window === "undefined" || !window.speechSynthesis) return Promise.resolve([]);
+  const synth = window.speechSynthesis;
+  const existing = synth.getVoices();
+  if (existing.length) return Promise.resolve(existing);
+
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      synth.removeEventListener("voiceschanged", onVoices);
+      resolve(synth.getVoices()); // whatever's available now, even if still empty
+    }, 1000);
+    function onVoices() {
+      clearTimeout(timeout);
+      synth.removeEventListener("voiceschanged", onVoices);
+      resolve(synth.getVoices());
+    }
+    synth.addEventListener("voiceschanged", onVoices);
+  });
+}
+
 
 export function useVoicePlayback() {
   const [playingId, setPlayingId] = useState<string | null>(null);
@@ -165,17 +191,36 @@ export function useVoicePlayback() {
             setError("Voice isn't supported in this browser.");
             return;
           }
+          const voices = await getVoicesAsync();
           const utterance = new SpeechSynthesisUtterance(body.text);
           utterance.rate = body.speechParams.rate;
           utterance.pitch = body.speechParams.pitch;
           utterance.lang = body.speechParams.lang;
-          const voice = pickVoice(body.speechParams.voiceHint);
+          const voice = pickVoice(voices, body.speechParams.voiceHint);
           if (voice) utterance.voice = voice;
+
+          // SILENT-VOICE FIX: on several Android/Chrome combinations,
+          // speak() neither speaks nor fires onerror when something's wrong
+          // (no voice loaded, audio routed through a muted stream, etc.) —
+          // it just does nothing, forever, with no signal to the user. If
+          // onstart hasn't fired within 1.5s, treat it as failed rather than
+          // leaving the UI stuck showing "playing" with no actual sound.
+          const startWatchdog = setTimeout(() => {
+            if (utteranceRef.current !== utterance) return; // stopped/replaced already
+            utteranceRef.current = null;
+            setPlayingId((cur) => (cur === messageId ? null : cur));
+            setError("Voice didn't play — check your device isn't on silent/muted, or try again.");
+            window.speechSynthesis.cancel();
+          }, 1500);
+
+          utterance.onstart = () => clearTimeout(startWatchdog);
           utterance.onend = () => {
+            clearTimeout(startWatchdog);
             utteranceRef.current = null;
             setPlayingId((cur) => (cur === messageId ? null : cur));
           };
           utterance.onerror = () => {
+            clearTimeout(startWatchdog);
             utteranceRef.current = null;
             setPlayingId((cur) => (cur === messageId ? null : cur));
             setError("Voice playback failed.");
