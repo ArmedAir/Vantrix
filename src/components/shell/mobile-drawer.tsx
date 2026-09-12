@@ -19,7 +19,6 @@ import {
   BarChart3,
 } from "lucide-react";
 import { NAV_ITEMS, ADMIN_NAV_ITEM } from "./nav-config";
-import { Logo } from "./logo";
 import { useShellStore } from "./shell-store";
 import { useNotificationStore } from "@/lib/notifications/store";
 import { NavLink, isNavItemActive } from "@/components/ui/nav-link";
@@ -219,21 +218,25 @@ export function MobileDrawer({
           shaves a bit more off an already-compact drawer without
           crowding the primary nav rows above. */}
       <div className="absolute left-0 top-0 bottom-0 w-[62%] max-w-[240px] bg-base border-r border-border-hairline animate-slide-in-left flex flex-col">
-        <div className="h-12 flex items-center justify-between px-3 border-b border-border-hairline shrink-0">
-          <Link
-            href="/"
-            className="flex items-center gap-2 overflow-hidden"
-            onClick={() => setDrawerOpen(false)}
-          >
-            <Logo size={28} />
-            <span className="font-display text-lg tracking-tight whitespace-nowrap">
-              Vantrix
-            </span>
-          </Link>
+        {/*
+          LOGO-REMOVED-FROM-DRAWER FIX: the wordmark+mark header row (a
+          fixed h-12 band above everything else) is gone per direct
+          request — not just hidden, since leaving the row in place with
+          only its contents removed would have left a dead h-12 gap above
+          the nav. The close (X) control still needs a home; rather than
+          floating it absolutely (which would overlap the account row on
+          very short drawers), it's now an inline row of its own —
+          `justify-end`, tight padding, no border/height reservation
+          beyond what the icon itself needs — so removing the logo
+          actually reclaims the space instead of trading it for empty
+          padding. Account zone and nav now start right below it, which is
+          the "move Home and everything else up" part of the request.
+        */}
+        <div className="flex items-center justify-end px-2 pt-1.5 shrink-0">
           <button
             aria-label="Close menu"
             onClick={() => setDrawerOpen(false)}
-            className="h-9 w-9 flex items-center justify-center rounded-xs text-text-secondary hover:text-text-primary hover:bg-white/[0.04]"
+            className="h-8 w-8 flex items-center justify-center rounded-xs text-text-secondary hover:text-text-primary hover:bg-white/[0.04]"
           >
             <X className="h-5 w-5" />
           </button>

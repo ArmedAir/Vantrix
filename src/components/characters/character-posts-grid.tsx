@@ -5,6 +5,7 @@ import { SafeImage as Image } from "@/components/ui/safe-image";
 import { Heart, MessageCircle, Lock, Loader2, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFeed } from "@/hooks/use-feed";
+import { usePaywall } from "@/components/paywall/paywall-provider";
 import { resolveImageSrc, cn } from "@/lib/utils";
 import { CharacterPostViewerModal } from "./character-post-viewer-modal";
 import type { FeedPost } from "@/types/feed";
@@ -49,6 +50,7 @@ export function CharacterPostsGrid({
   isOwner?: boolean;
 }) {
   const { fetchPosts } = useFeed();
+  const { openPaywall } = usePaywall();
   const [posts, setPosts] = useState(initialPosts);
   const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [loading, setLoading] = useState(false);
@@ -73,6 +75,24 @@ export function CharacterPostsGrid({
   function handleCreated(post: FeedPost) {
     setPosts((prev) => [post, ...prev]);
     setComposerOpen(false);
+  }
+
+  /**
+   * BLURRED-PREVIEW FIX (candy.ai reference pass): a locked post used to
+   * open the same viewer modal as any other post — there was no gate at
+   * all here, just a caption-only tile (see PostTile's hasImage branch
+   * below, pre-fix). Tapping a locked tile now opens the shared paywall
+   * instead, passing the post's own image through as previewImageUrl so
+   * the paywall's blurred-stack header shows the actual locked photo
+   * rather than a generic icon — the same "show them what they're
+   * missing" teaser as the tile itself, carried through into the modal.
+   */
+  function handleOpenPost(post: FeedPost) {
+    if (post.is_locked) {
+      openPaywall("character", { characterName, previewImageUrl: post.image_url });
+      return;
+    }
+    setOpenPost(post);
   }
 
   const ownerControls = isOwner && (
@@ -132,7 +152,7 @@ export function CharacterPostsGrid({
 
       <div className="grid grid-cols-3 gap-1">
         {posts.map((post) => (
-          <PostTile key={post.id} post={post} onOpen={setOpenPost} />
+          <PostTile key={post.id} post={post} onOpen={handleOpenPost} />
         ))}
       </div>
 
@@ -279,13 +299,43 @@ const PostTile = memo(function PostTile({
 
   const hasImage = !!post.image_url && !imgError;
 
+  /* BLURRED-PREVIEW FIX (candy.ai reference pass): a locked post with a
+   * real image used to render as if it had no image at all — the
+   * caption/lock placeholder tile below, same as an image-less post.
+   * That throws away the one thing a locked-content teaser needs to
+   * actually tempt a tap: a glimpse of the real photo. Now a locked post
+   * with an image shows that image, heavily blurred, with a centered lock
+   * badge over it — same visual language as the paywall's own blurred-
+   * stack header (see paywall-modal.tsx), so the tile and the paywall it
+   * opens into read as one continuous moment instead of two different
+   * "locked" treatments. Only the render branch changes; an image-less
+   * locked post still falls through to the caption/lock placeholder.
+   */
   return (
     <button
       type="button"
       onClick={() => onOpen(post)}
       className="group relative aspect-square overflow-hidden rounded-xs bg-white/[0.03]"
     >
-      {hasImage ? (
+      {hasImage && post.is_locked ? (
+        <>
+          <Image
+            src={resolveImageSrc(post.image_url)}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 33vw, 220px"
+            className="object-cover scale-110 blur-md"
+            onError={() => setImgError(true)}
+            aria-hidden
+          />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/60 bg-black/40 backdrop-blur-sm">
+              <Lock className="h-4 w-4 text-gold-400" strokeWidth={1.75} />
+            </span>
+          </div>
+        </>
+      ) : hasImage ? (
         <Image
           src={resolveImageSrc(post.image_url)}
           alt={post.caption ?? "Post"}
