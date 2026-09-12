@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SafeImage as Image } from "@/components/ui/safe-image";
 import { Loader2, Sparkles, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { LivingPortrait } from "@/components/immersive/living-portrait";
 import { saveCharacterFields, addSeedMemory } from "@/hooks/use-studio";
+import { CharacterBirthReveal } from "../character-birth-reveal";
 import type { CharacterDraft } from "../types";
 import { canPublish, fundReadiness } from "../completeness";
 
@@ -32,6 +33,7 @@ export function PreviewStage({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
+  const [reveal, setReveal] = useState<{ characterId: string; warning: string | null } | null>(null);
 
   const ready = canPublish(draft);
   const readiness = fundReadiness(draft);
@@ -87,6 +89,7 @@ export function PreviewStage({
       // From here on, the character exists and has been charged/submitted
       // — a failure in the following steps shouldn't look like a full
       // failure to the creator, since retrying step 1 would double-create.
+      let warningMessage: string | null = null;
       try {
         // Step 2 — the rich fields (full-length personality/backstory,
         // psychology, voice, appearance) that the create schema doesn't
@@ -132,29 +135,33 @@ export function PreviewStage({
         });
 
         // Step 3 — flush any locally-drafted seed memories now that a real
-        // character_id exists.
-        for (let i = 0; i < draft.memories.length; i++) {
-          const m = draft.memories[i];
-          await addSeedMemory(characterId, {
-            headline: m.headline,
-            content: m.content,
-            category: m.category || "general",
-            importance: m.importance,
-            position: i,
-          });
-        }
+        // character_id exists. Parallel, not sequential: each POST is
+        // independent (position is supplied here, not derived from insert
+        // order server-side — see memories/route.ts), so awaiting them one
+        // at a time only added N round-trips of latency for no benefit.
+        await Promise.all(
+          draft.memories.map((m, i) =>
+            addSeedMemory(characterId, {
+              headline: m.headline,
+              content: m.content,
+              category: m.category || "general",
+              importance: m.importance,
+              position: i,
+            }),
+          ),
+        );
       } catch (detailErr) {
         // Character already exists at this point — don't block the
         // creator from reaching it, just be honest that some detail
         // didn't save.
-        setWarning(
+        warningMessage =
           detailErr instanceof Error
             ? `Your character was created, but: ${detailErr.message} You can finish it in Creator Studio.`
-            : "Your character was created, but some details couldn't be saved. You can finish them in Creator Studio.",
-        );
+            : "Your character was created, but some details couldn't be saved. You can finish them in Creator Studio.";
+        setWarning(warningMessage);
       }
 
-      router.push(`/studio/${characterId}`);
+      setReveal({ characterId, warning: warningMessage });
     } catch {
       setError("Something went wrong creating your character. Please try again.");
       setSubmitting(false);
@@ -163,6 +170,15 @@ export function PreviewStage({
 
   return (
     <div className="space-y-6">
+      {reveal && (
+        <CharacterBirthReveal
+          name={draft.name}
+          imageUrl={draft.imageUrl}
+          warning={reveal.warning}
+          onContinue={() => router.push(`/studio/${reveal.characterId}`)}
+        />
+      )}
+
       <div>
         <h2 className="font-display text-lg text-text-primary mb-1">Preview</h2>
         <p className="text-sm text-text-tertiary">One last look before they come to life.</p>
@@ -170,7 +186,7 @@ export function PreviewStage({
 
       <Card interactive={false} className="p-6 flex flex-col items-center text-center gap-3">
         <div className="relative h-40 w-40 rounded-md overflow-hidden border border-border-hairline bg-base">
-          {draft.imageUrl && <Image src={draft.imageUrl} alt="" fill sizes="160px" className="object-cover" />}
+          {draft.imageUrl && <LivingPortrait src={draft.imageUrl} alt={draft.name || "Character"} sizes="160px" />}
         </div>
         <h3 className="font-display text-xl text-text-primary">{draft.name || "Unnamed"}</h3>
         <p className="text-sm text-text-secondary">

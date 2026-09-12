@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EASE_VANTRIX, DURATION } from "@/components/immersive/motion";
 import { StageRail } from "./stage-rail";
 import { CharacterCanvas } from "./character-canvas";
 import { DraftResumeBanner } from "./draft-resume-banner";
@@ -28,6 +30,7 @@ export function CreationStudio({ userId = null }: { userId?: string | null }) {
   const [activeStage, setActiveStage] = useState<StageId>("concept");
   const [furthestIndex, setFurthestIndex] = useState(0);
   const [appearanceNotice, setAppearanceNotice] = useState<string | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   // ── Draft autosave / resume ──────────────────────────────────────────
   // See draft-storage.ts's header for why this exists. `hydrated` gates
@@ -147,7 +150,7 @@ export function CreationStudio({ userId = null }: { userId?: string | null }) {
         </div>
 
         <div className="hidden lg:block lg:order-2">
-          <div className="sticky top-6 rounded-md border border-border-hairline bg-white/[0.015]">
+          <div className="sticky top-6 rounded-md overflow-hidden border border-border-hairline bg-white/[0.015]">
             <CharacterCanvas draft={draft} />
           </div>
         </div>
@@ -157,49 +160,65 @@ export function CreationStudio({ userId = null }: { userId?: string | null }) {
             <DraftResumeBanner savedAt={pendingResume.savedAt} onResume={resumeSavedDraft} onDiscard={discardSavedDraft} />
           )}
 
-          {activeStage === "concept" && (
-            <ConceptStage
-              draft={draft}
-              onChange={setDraft}
-              onContinue={() => advance("identity")}
-              onJumpToPreview={() => advance("preview")}
-              onJumpToAppearance={(notice) => {
-                setAppearanceNotice(notice);
-                advance("appearance");
-              }}
-            />
-          )}
-          {activeStage === "identity" && <IdentityStage draft={draft} onChange={patch} />}
-          {activeStage === "personality" && <PersonalityStage draft={draft} onChange={patch} />}
-          {activeStage === "psychology" && <PsychologyStage draft={draft} onChange={patch} />}
-          {activeStage === "voice" && <VoiceStage draft={draft} onChange={patch} />}
-          {activeStage === "appearance" && (
-            <AppearanceStage
-              draft={draft}
-              onChange={patch}
-              notice={appearanceNotice}
-              onDismissNotice={() => setAppearanceNotice(null)}
-            />
-          )}
-          {activeStage === "memory" && <MemoryStage draft={draft} onChange={patch} />}
-          {activeStage === "preview" && <PreviewStage draft={draft} onPublished={handlePublished} />}
+          {/* Each stage change reads as a deliberate step forward rather
+              than a DOM swap — same page-duration/EASE_VANTRIX language
+              as every other transition in the app (see motion.ts).
+              mode="wait" fully clears the previous stage before the next
+              mounts, which matters here since stages vary a lot in
+              height — overlapping enter/exit would cause a layout jump. */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeStage}
+              initial={shouldReduceMotion ? undefined : { opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={shouldReduceMotion ? undefined : { opacity: 0, x: -10 }}
+              transition={{ duration: DURATION.page, ease: EASE_VANTRIX }}
+            >
+              {activeStage === "concept" && (
+                <ConceptStage
+                  draft={draft}
+                  onChange={setDraft}
+                  onContinue={() => advance("identity")}
+                  onJumpToPreview={() => advance("preview")}
+                  onJumpToAppearance={(notice) => {
+                    setAppearanceNotice(notice);
+                    advance("appearance");
+                  }}
+                />
+              )}
+              {activeStage === "identity" && <IdentityStage draft={draft} onChange={patch} />}
+              {activeStage === "personality" && <PersonalityStage draft={draft} onChange={patch} />}
+              {activeStage === "psychology" && <PsychologyStage draft={draft} onChange={patch} />}
+              {activeStage === "voice" && <VoiceStage draft={draft} onChange={patch} />}
+              {activeStage === "appearance" && (
+                <AppearanceStage
+                  draft={draft}
+                  onChange={patch}
+                  notice={appearanceNotice}
+                  onDismissNotice={() => setAppearanceNotice(null)}
+                />
+              )}
+              {activeStage === "memory" && <MemoryStage draft={draft} onChange={patch} />}
+              {activeStage === "preview" && <PreviewStage draft={draft} onPublished={handlePublished} />}
 
-          {activeStage !== "concept" && activeStage !== "preview" && (
-            <div className="flex items-center justify-between pt-6 mt-8 border-t border-border-hairline">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => canGoBack && setActiveStage(STAGE_ORDER[currentIndex - 1])}
-                disabled={!canGoBack}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <Button type="button" onClick={() => nextStage && advance(nextStage)}>
-                Continue
-              </Button>
-            </div>
-          )}
+              {activeStage !== "concept" && activeStage !== "preview" && (
+                <div className="flex items-center justify-between pt-6 mt-8 border-t border-border-hairline">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => canGoBack && setActiveStage(STAGE_ORDER[currentIndex - 1])}
+                    disabled={!canGoBack}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                  <Button type="button" onClick={() => nextStage && advance(nextStage)}>
+                    Continue
+                  </Button>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>

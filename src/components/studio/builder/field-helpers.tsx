@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 
 const inputClass =
-  "w-full rounded-sm bg-base border border-interactive px-4 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-gold-500/60";
+  "w-full rounded-sm bg-base border border-interactive px-4 text-sm text-text-primary placeholder:text-text-tertiary transition-[border-color,box-shadow] duration-200 ease-premium focus:outline-none focus:border-gold-500/60 focus:shadow-gold-glow";
 
 function FieldWrap({
   label,
@@ -132,17 +132,30 @@ export function SliderField({
 }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="flex items-center justify-between mb-2">
         <label className="text-sm font-medium text-text-secondary">{label}</label>
         <span className="text-xs text-gold-400 font-semibold tabular-nums">{value}</span>
       </div>
+      {/* .vx-slider (globals.css) repaints the native thumb/track from the
+          same gold ramp + shadow-gold-glow token every other premium
+          surface uses, rather than the browser's default accent color
+          rendering (which looks inconsistent across Chrome/Safari/Firefox
+          and doesn't match this app's own control language at all). The
+          filled portion left of the thumb is painted here via an inline
+          gradient stop at `value`% — WebKit/Blink has no equivalent of
+          Firefox's ::-moz-range-progress, so this is computed per-render
+          instead. Keyboard/screen-reader behavior is untouched: it's
+          still a real <input type="range">, only its paint changed. */}
       <input
         type="range"
         min={0}
         max={100}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-gold-500"
+        className="vx-slider w-full"
+        style={{
+          backgroundImage: `linear-gradient(to right, rgb(var(--gold-400)) 0%, rgb(var(--gold-600)) ${value}%, rgba(255,255,255,0.08) ${value}%, rgba(255,255,255,0.08) 100%)`,
+        }}
       />
     </div>
   );

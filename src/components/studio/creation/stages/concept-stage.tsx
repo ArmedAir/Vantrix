@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2, Wand2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SelectField, TextAreaField } from "@/components/studio/builder/field-helpers";
 import { generateCharacterConcept, type ConceptGenerationError } from "@/hooks/use-studio";
 import { QuickStartPicker } from "./quick-start-picker";
@@ -143,6 +144,20 @@ export function ConceptStage({
           {draft.usedAI ? "Regenerate" : "Build Character"}
         </Button>
       </Card>
+
+      {generating && (
+        <div className="rounded-md border border-gold-500/20 bg-gold-500/[0.03] p-4 space-y-3" aria-hidden>
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-3 w-1/3" />
+              <Skeleton className="h-2.5 w-1/2" />
+            </div>
+          </div>
+          <Skeleton className="h-2.5 w-full" />
+          <Skeleton className="h-2.5 w-5/6" />
+        </div>
+      )}
 
       {draft.usedAI && draft.name && (
         <div className="flex items-center justify-between rounded-md border border-gold-500/30 bg-gold-500/5 px-4 py-3">

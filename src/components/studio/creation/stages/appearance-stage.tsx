@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { SafeImage as Image } from "@/components/ui/safe-image";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Loader2, Wand2, ImageOff, Lock, LockOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { LivingPortrait } from "@/components/immersive/living-portrait";
+import { EASE_VANTRIX, DURATION } from "@/components/immersive/motion";
 import { TextField, TextAreaField, SelectField } from "@/components/studio/builder/field-helpers";
 import type { CharacterDraft, ImageStyle } from "../types";
 
@@ -29,6 +31,7 @@ export function AppearanceStage({
   const [scenePrompt, setScenePrompt] = useState("");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const locked = draft.identity_locked;
 
@@ -112,12 +115,31 @@ export function AppearanceStage({
 
       <Card interactive={false} className="p-4 space-y-3">
         <div className="flex gap-4">
-          <div className="relative h-32 w-32 rounded-md overflow-hidden border border-border-hairline shrink-0 bg-base flex items-center justify-center">
-            {draft.imageUrl ? (
-              <Image src={draft.imageUrl} alt="" fill sizes="128px" className="object-cover" />
-            ) : (
-              <ImageOff className="h-6 w-6 text-text-tertiary" />
-            )}
+          <div className="relative h-32 w-32 rounded-md overflow-hidden border border-border-hairline shrink-0 bg-base">
+            <AnimatePresence mode="wait">
+              {draft.imageUrl ? (
+                <motion.div
+                  key={draft.imageUrl}
+                  className="absolute inset-0"
+                  initial={shouldReduceMotion ? undefined : { opacity: 0, scale: 1.04 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: DURATION.page, ease: EASE_VANTRIX }}
+                >
+                  <LivingPortrait src={draft.imageUrl} alt={draft.name || "Character"} sizes="128px" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  className="absolute inset-0 flex items-center justify-center"
+                  initial={shouldReduceMotion ? undefined : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: DURATION.micro }}
+                >
+                  <ImageOff className="h-6 w-6 text-text-tertiary" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           <div className="flex-1 space-y-2">
             <textarea
@@ -126,7 +148,7 @@ export function AppearanceStage({
               placeholder="Describe the shot — a candid moment says more than a generic pose."
               rows={2}
               disabled={locked}
-              className="w-full rounded-sm bg-base border border-interactive px-4 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-gold-500/60 resize-none disabled:opacity-50"
+              className="w-full rounded-sm bg-base border border-interactive px-4 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary transition-[border-color,box-shadow] duration-200 ease-premium focus:outline-none focus:border-gold-500/60 focus:shadow-gold-glow resize-none disabled:opacity-50"
             />
             <div className="flex flex-wrap gap-2">
               <SelectField
