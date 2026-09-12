@@ -82,7 +82,7 @@ const DEFAULT_STYLE: WritingStyleProfile = {
 };
 const DEFAULT_VOICE: VoiceProfile = { pitch: 0, pace: 1.0, warmth: 65, pauses: 'natural', energy: 55 };
 
-function selectPreset(input: DigitalPersonInput): { style: WritingStyleProfile; voice: VoiceProfile; elevenlabsVoiceId: string } {
+async function selectPreset(input: DigitalPersonInput): Promise<{ style: WritingStyleProfile; voice: VoiceProfile; elevenlabsVoiceId: string }> {
   const text = `${input.personality ?? ''} ${input.backstory ?? ''} ${input.occupation ?? ''} ${input.category ?? ''}`.toLowerCase();
 
   const rules: Array<[RegExp, string]> = [
@@ -93,16 +93,20 @@ function selectPreset(input: DigitalPersonInput): { style: WritingStyleProfile; 
     [/companion|devoted|caring|nurtur|gentle|soothing|comfort/, 'companion'],
   ];
 
+  // Voice assignment is now handled entirely by resolveVoiceId's own
+  // gender-bucketed, least-used-in-DB pick (see voice-library.ts) — no
+  // longer keyed off the archetype match, since that was exactly what
+  // caused every character sharing an archetype+gender to get the
+  // identical voice. Archetype still drives writing/voice STYLE presets
+  // below, just not which literal ElevenLabs voice id gets assigned.
+  const elevenlabsVoiceId = await resolveVoiceId(supabaseAdmin, input.characterId, input.gender);
+
   for (const [pattern, key] of rules) {
     if (pattern.test(text)) {
-      return {
-        style: WRITING_STYLE_PRESETS[key],
-        voice: VOICE_PRESETS[key],
-        elevenlabsVoiceId: resolveVoiceId(key, input.gender),
-      };
+      return { style: WRITING_STYLE_PRESETS[key], voice: VOICE_PRESETS[key], elevenlabsVoiceId };
     }
   }
-  return { style: DEFAULT_STYLE, voice: DEFAULT_VOICE, elevenlabsVoiceId: resolveVoiceId(null, input.gender) };
+  return { style: DEFAULT_STYLE, voice: DEFAULT_VOICE, elevenlabsVoiceId };
 }
 
 // ── Knowledge seeding from the creator's own inputs ─────────────────────
@@ -164,7 +168,7 @@ async function seedBaselineKnowledge(input: DigitalPersonInput): Promise<boolean
 export async function initializeDigitalPerson(
   input: DigitalPersonInput,
 ): Promise<BootstrapResult> {
-  const { style, voice, elevenlabsVoiceId } = selectPreset(input);
+  const { style, voice, elevenlabsVoiceId } = await selectPreset(input);
 
   const { error: styleErr } = await supabaseAdmin
     .from('characters')
