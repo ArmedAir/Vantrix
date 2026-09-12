@@ -150,9 +150,11 @@ export async function ensureProfileWithReferralAttribution(
     const ip = getClientIp(req);
     const userAgent = req.headers.get("user-agent") ?? "unknown";
     const visitorHash = hashVisitor(ip ?? "unknown", userAgent, env.IP_HASH_SALT);
+    const refCode = req.cookies.get("vx_ref")?.value ?? null;
     const attribution = await attributeConversion(supabaseAdmin, {
       newUserId: user.id,
       visitorHash,
+      refCode,
     });
     if ("conversionId" in attribution) {
       logger.info("profile.ensure.referral_attributed", {

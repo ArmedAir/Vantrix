@@ -4,6 +4,33 @@ import { getLoginPortraits } from "@/lib/config/login-portraits";
 import { LoginForm } from "./login-form";
 
 /**
+ * BLANK-SCREEN FIX: LoginForm needs useSearchParams (client-only), so it's
+ * wrapped in Suspense — but the fallback was `null`. On a slow or
+ * script-restricted client (in-app browsers like X's are the classic case:
+ * throttled connections, sometimes-delayed hydration) that meant visitors
+ * hitting a referral link saw a totally blank black screen — no spinner, no
+ * card, nothing — for however long hydration took, indistinguishable from
+ * the page being broken. This skeleton mirrors the real card's footprint
+ * (same max-width, same logo mark position) so something visible paints
+ * immediately, before LoginForm itself takes over.
+ */
+function LoginFormSkeleton() {
+  return (
+    <div className="w-full max-w-[400px] animate-pulse" aria-hidden="true">
+      <div className="flex items-center gap-2.5 mb-10 justify-center">
+        <span className="h-9 w-9 rounded-xs bg-gold-fill/40" />
+        <span className="h-6 w-24 rounded bg-white/10" />
+      </div>
+      <div className="space-y-4">
+        <div className="h-11 w-full rounded-lg bg-white/5" />
+        <div className="h-11 w-full rounded-lg bg-white/5" />
+        <div className="h-11 w-full rounded-lg bg-white/10" />
+      </div>
+    </div>
+  );
+}
+
+/**
  * LOGIN-PORTRAITS-WIRE-FIX: the portrait collage described in this
  * config's own backend (20261016_seed_login_portraits_config.sql,
  * /admin/login-portraits, GET /api/config/login-portraits) referenced a
@@ -69,7 +96,7 @@ export default async function LoginPage() {
  )}
 
  <div className="relative flex-1 flex items-center justify-center px-6 py-12">
- <Suspense fallback={null}>
+ <Suspense fallback={<LoginFormSkeleton />}>
  <LoginForm />
  </Suspense>
  </div>

@@ -30,6 +30,7 @@ import { supabaseAdmin }             from '@/lib/supabase/admin';
 import { redis }                     from '@/lib/redis';
 import { getClientIp }               from '@/lib/network/get-client-ip';
 import { hashVisitor, recordClick }  from '@/lib/referral-engine';
+import { ATTRIBUTION_WINDOW_DAYS }   from '@/lib/referral-config';
 import { env }                       from '@/env';
 import { logger }                    from '@/lib/logger';
 
@@ -87,5 +88,28 @@ export async function GET(
     return NextResponse.redirect(new URL(FALLBACK_DESTINATION, req.url), { status: 302 });
   }
 
-  return NextResponse.redirect(new URL(SIGNUP_DESTINATION, req.url), { status: 302 });
+  const redirectResponse = NextResponse.redirect(new URL(SIGNUP_DESTINATION, req.url), { status: 302 });
+
+  // COOKIE-ATTRIBUTION FIX: attributeConversion() previously matched a
+  // signup back to this click ONLY by re-hashing IP+UA at signup time and
+  // looking for an identical hash. That silently fails whenever the click
+  // and the signup don't share both an IP and a User-Agent — which is the
+  // common case, not the edge case, for a link shared on social: the click
+  // happens inside the platform's in-app browser (its own UA), the person
+  // then signs up in their real browser (different UA, often a different
+  // network/IP too by then). Result: real clicks, permanently zero
+  // conversions, no error anywhere.
+  //
+  // Fix: also drop a first-party, readable `vx_ref` cookie naming this
+  // partner code directly. attributeConversion() now checks this cookie
+  // first and only falls back to the IP+UA hash match if it's missing
+  // (e.g. cookies blocked). Expiry matches ATTRIBUTION_WINDOW_DAYS so the
+  // cookie can't outlive the attribution window it's meant to serve.
+  redirectResponse.cookies.set('vx_ref', code, {
+    path: '/',
+    maxAge: ATTRIBUTION_WINDOW_DAYS * 24 * 60 * 60,
+    sameSite: 'lax',
+  });
+
+  return redirectResponse;
 }

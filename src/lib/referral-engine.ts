@@ -107,25 +107,42 @@ export async function recordClick(
  */
 export async function attributeConversion(
   supabase: SupabaseClient,
-  params: { newUserId: string; visitorHash: string }
+  params: { newUserId: string; visitorHash: string; refCode?: string | null }
 ): Promise<{ conversionId: string; partnerId: string } | { skipped: string }> {
   const windowStart = new Date(Date.now() - ATTRIBUTION_WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: clicks } = await supabase
-    .from('referral_clicks')
-    .select('partner_id,created_at')
-    .eq('visitor_hash', params.visitorHash)
-    .gte('created_at', windowStart)
-    .order('created_at', { ascending: ATTRIBUTION_MODEL === 'first-touch' });
+  // COOKIE-ATTRIBUTION FIX: prefer the `vx_ref` cookie the /r/[code] route
+  // now sets, which names the partner directly and survives a UA/IP change
+  // between click and signup (in-app-browser click -> real-browser signup,
+  // or a mobile IP change over time — both silently broke the old
+  // hash-only match). Only fall back to the IP+UA click hash when there's
+  // no cookie (e.g. the visitor has cookies blocked), so existing behavior
+  // is preserved rather than replaced.
+  let winningPartnerId: string | null = null;
 
-  if (!clicks || clicks.length === 0) return { skipped: 'no_click' };
+  if (params.refCode) {
+    const partnerByCode = await resolvePartnerByCodeOrSlug(supabase, params.refCode, 'id,status') as
+      | { id: string; status: string }
+      | null;
+    if (partnerByCode) winningPartnerId = partnerByCode.id;
+  }
 
-  const winningClick = clicks[0]; // first row per the ordering above wins, per ATTRIBUTION_MODEL
+  if (!winningPartnerId) {
+    const { data: clicks } = await supabase
+      .from('referral_clicks')
+      .select('partner_id,created_at')
+      .eq('visitor_hash', params.visitorHash)
+      .gte('created_at', windowStart)
+      .order('created_at', { ascending: ATTRIBUTION_MODEL === 'first-touch' });
+
+    if (!clicks || clicks.length === 0) return { skipped: 'no_click' };
+    winningPartnerId = clicks[0].partner_id; // first row per the ordering above wins, per ATTRIBUTION_MODEL
+  }
 
   const { data: partner } = await supabase
     .from('referral_partners')
     .select('id,user_id,status')
-    .eq('id', winningClick.partner_id)
+    .eq('id', winningPartnerId)
     .single();
 
   if (!partner || partner.status !== 'active') return { skipped: 'partner_inactive' };
