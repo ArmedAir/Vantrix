@@ -1,7 +1,29 @@
 import { Suspense } from "react";
 import { SafeImage as Image } from "@/components/ui/safe-image";
 import { getLoginPortraits } from "@/lib/config/login-portraits";
+import { generateSEOMeta } from "@/lib/seo/meta";
 import { LoginForm } from "./login-form";
+
+/**
+ * SITELINKS FIX: /login is allowed in robots.ts and listed in sitemap.ts,
+ * but had zero page-level metadata — it fell back to the root layout's
+ * template ("Vantrix — A Living Universe of AI Companions Who Remember
+ * You, Always" / the homepage description), giving Google nothing
+ * page-specific to key a "Login" sitelink label/snippet off of. Google's
+ * sitelinks algorithm (site structure + nav anchor text + per-page
+ * title/description + click-through) can't be forced, but every public,
+ * indexable page should at minimum carry its own accurate title and
+ * description so it has something distinct to surface. noIndex stays
+ * false (default) since this page is meant to be found and indexed —
+ * unlike /studio or /characters, which sit behind the authenticated-shell
+ * blanket disallow in robots.ts and are correctly excluded from crawling.
+ */
+export const metadata = generateSEOMeta({
+  title: "Log In or Sign Up",
+  description:
+    "Log in to Vantrix or create a free account to start chatting with AI companions who remember you, always — persistent memory, evolving personalities, and a living world that keeps going.",
+  path: "/login",
+});
 
 /**
  * BLANK-SCREEN FIX: LoginForm needs useSearchParams (client-only), so it's
