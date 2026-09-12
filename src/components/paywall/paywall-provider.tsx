@@ -9,19 +9,13 @@ interface PaywallState {
   reason: UpgradeReason;
   characterName?: string;
   usageStat?: { used: number; limit: number };
-  /** See paywall-modal.tsx's BLURRED-PREVIEW FIX comment. */
-  previewImageUrl?: string | null;
 }
 
 interface PaywallContextValue {
   /** Open the shared paywall modal directly with a known reason. */
   openPaywall: (
     reason: UpgradeReason,
-    opts?: {
-      characterName?: string;
-      usageStat?: { used: number; limit: number };
-      previewImageUrl?: string | null;
-    }
+    opts?: { characterName?: string; usageStat?: { used: number; limit: number } }
   ) => void;
   /**
    * Open the paywall from an API error body's `code` field (see each
@@ -37,7 +31,6 @@ interface PaywallContextValue {
       characterName?: string;
       reasonOverride?: UpgradeReason;
       usageStat?: { used: number; limit: number };
-      previewImageUrl?: string | null;
     }
   ) => boolean;
   closePaywall: () => void;
@@ -75,13 +68,7 @@ export function PaywallProvider({
   const [state, setState] = useState<PaywallState>({ open: false, reason: "messages" });
 
   const openPaywall = useCallback<PaywallContextValue["openPaywall"]>((reason, opts) => {
-    setState({
-      open: true,
-      reason,
-      characterName: opts?.characterName,
-      usageStat: opts?.usageStat,
-      previewImageUrl: opts?.previewImageUrl,
-    });
+    setState({ open: true, reason, characterName: opts?.characterName, usageStat: opts?.usageStat });
   }, []);
 
   const openPaywallForError = useCallback<PaywallContextValue["openPaywallForError"]>(
@@ -89,13 +76,7 @@ export function PaywallProvider({
       if (!code) return false;
       const reason = opts?.reasonOverride ?? ERROR_CODE_TO_UPGRADE_REASON[code];
       if (!reason) return false;
-      setState({
-        open: true,
-        reason,
-        characterName: opts?.characterName,
-        usageStat: opts?.usageStat,
-        previewImageUrl: opts?.previewImageUrl,
-      });
+      setState({ open: true, reason, characterName: opts?.characterName, usageStat: opts?.usageStat });
       return true;
     },
     []
@@ -121,7 +102,6 @@ export function PaywallProvider({
         trialEligible={trialEligible}
         characterName={state.characterName}
         usageStat={state.usageStat}
-        previewImageUrl={state.previewImageUrl}
       />
     </PaywallContext.Provider>
   );

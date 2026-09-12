@@ -112,6 +112,15 @@ const config: Config = {
         // Theme-driven — see the ── Theming ── note above.
         "gold-glow": "var(--gold-glow-shadow)",
         rail: "1px 0 0 0 rgba(255,255,255,0.08)",
+        // Glasscard treatment (premium character cards): inner top sheen for
+        // glass depth + a soft theme-colored gold-edge glow, on top of the
+        // same deep drop shadow as shadow-card. Rest state is subtle; hover
+        // state (shadow-glass-hover) brightens the glow — see Card's `glass`
+        // prop in ui/card.tsx.
+        glass:
+          "0 1px 0 0 rgba(255,255,255,0.08) inset, 0 0 0 1px rgb(var(--gold-500) / 0.06) inset, 0 16px 40px -20px rgba(0,0,0,0.8)",
+        "glass-hover":
+          "0 1px 0 0 rgba(255,255,255,0.12) inset, 0 0 0 1px rgb(var(--gold-500) / 0.12) inset, 0 20px 48px -18px rgba(0,0,0,0.85), var(--gold-glow-shadow)",
       },
       backgroundImage: {
         // Theme-driven — see the ── Theming ── note above.

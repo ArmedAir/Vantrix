@@ -100,6 +100,7 @@ export function AppChrome({
         avatarUrl={profile.avatarUrl}
         tokens={profile.tokens}
         contactEmail={contactEmail}
+        discordUrl={discordUrl}
       />
       {immersive ? (
         <MainOffset className="flex-1 flex flex-col min-w-0">

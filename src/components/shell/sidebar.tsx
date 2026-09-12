@@ -28,11 +28,26 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
 import { resetIdentity } from "@/lib/analytics/client";
+import { BILLING_DISCOUNT_PCT } from "@/lib/tiers/config";
 import { cn, resolveImageSrc } from "@/lib/utils";
 
+// DESKTOP/MOBILE-BALANCE FIX: this used to be a hand-typed "-70%" while
+// top-bar.tsx and mobile-drawer.tsx both compute the exact same figure
+// from BILLING_DISCOUNT_PCT.annual (tiers/config.ts) — the one source of
+// truth for what checkout actually charges. A literal string here meant
+// this banner could silently go stale (or already be wrong right now)
+// relative to the other two premium prompts. Now reads from the same
+// config every other surface does.
+const ANNUAL_DISCOUNT_LABEL = `${Math.round(BILLING_DISCOUNT_PCT.annual * 100)}% OFF`;
+
 const CATEGORY_OPTIONS = [
-  { value: "female", label: "Girls" },
-  { value: "male", label: "Guys" },
+  // DESKTOP/MOBILE-BALANCE FIX: was "Girls"/"Guys" here while
+  // mobile-drawer.tsx's identical female/male/anime values are labeled
+  // "Female"/"Male" — same destinations, two different vocabularies
+  // depending on which nav surface you're on. Matched to mobile's
+  // wording (also what /characters' own gender filter pills say).
+  { value: "female", label: "Female" },
+  { value: "male", label: "Male" },
   { value: "anime", label: "Anime" },
 ] as const;
 
@@ -226,7 +241,7 @@ export function Sidebar({
           </span>
           {!railCollapsed && (
             <span className="rounded-full bg-danger/90 px-1.5 py-0.5 text-[10px] font-bold text-white">
-              -70%
+              {ANNUAL_DISCOUNT_LABEL}
             </span>
           )}
         </Link>

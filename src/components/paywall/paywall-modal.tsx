@@ -17,7 +17,6 @@ import {
   Coins,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SafeImage as Image } from "@/components/ui/safe-image";
 import {
   TIERS,
   getUpgradePrompt,
@@ -27,7 +26,7 @@ import {
 } from "@/lib/tiers/config";
 import { PREMIUM_TRIAL_DAYS } from "@/lib/tiers/limits";
 import { PaywallViewed } from "@/components/premium/paywall-viewed";
-import { cn, resolveImageSrc } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 /**
  * The one paywall surface for the whole app. Every gated action — chat
@@ -82,18 +81,6 @@ export function PaywallModal({
   // users the server's internal rate-limit accounting, which is a production
   // enforcement detail, not something the upgrade prompt should expose.
   usageStat?: { used: number; limit: number };
-  /**
-   * BLURRED-PREVIEW FIX (candy.ai reference pass): when the gated thing is
-   * a specific piece of visual content (a locked character post, a locked
-   * gallery image), show a heavily blurred, lock-badged preview of that
-   * actual image above the headline instead of only the generic icon
-   * medallion — the same "show them what they're missing" teaser several
-   * competitor paywalls use (candy.ai's "Private Content" sheet stacks a
-   * blurred photo above its checklist). Optional and additive: reasons
-   * with no associated image (messages, tokens, twin, etc.) keep the
-   * existing icon-medallion header exactly as before.
-   */
-  previewImageUrl?: string | null;
 }) {
   const premium = TIERS.premium;
   const prompt = getUpgradePrompt(currentTier as never, reason);
@@ -126,9 +113,17 @@ export function PaywallModal({
         */}
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <Dialog.Content
-            className="relative w-full max-w-md max-h-full overflow-y-auto rounded-md border border-gold-500/30 bg-base shadow-gold-glow focus:outline-none before:pointer-events-none before:absolute before:inset-0 before:rounded-md before:bg-gradient-to-b before:from-gold-500/[0.06] before:via-transparent before:to-transparent"
+            className="relative w-full max-w-md max-h-full overflow-y-auto rounded-md border border-gold-500/20 bg-base/70 backdrop-blur-2xl shadow-glass-hover focus:outline-none before:pointer-events-none before:absolute before:inset-0 before:rounded-md before:bg-gradient-to-b before:from-gold-500/[0.08] before:via-transparent before:to-transparent after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:ring-1 after:ring-inset after:ring-white/[0.06]"
             aria-describedby={undefined}
           >
+            {/* Diagonal glass sheen across the top of the card — same
+                "light hitting glass" cue as the character MediaCard glass
+                treatment, kept here purely as a gradient so it costs nothing
+                and re-skins with the theme automatically. */}
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-40 rounded-t-md bg-gradient-to-br from-white/[0.07] via-transparent to-transparent"
+              aria-hidden
+            />
             <Dialog.Close asChild>
               <button
                 type="button"
@@ -141,34 +136,6 @@ export function PaywallModal({
 
             <PaywallViewed surface={reason} currentTier={currentTier} />
 
-            {previewImageUrl && (
-              <div className="relative mx-auto mt-2 h-40 w-full max-w-[220px]">
-                {/* Two faint offset cards behind the real preview — reads as
-                    "a stack of locked content," not just one blurred photo,
-                    same silhouette as the candy.ai reference without
-                    borrowing its copy or colors. Rotation values are fixed,
-                    not random, so this never looks glitchy on re-render. */}
-                <div className="absolute inset-0 -rotate-6 translate-x-2 rounded-md border border-gold-500/20 bg-white/[0.03]" />
-                <div className="absolute inset-0 rotate-3 -translate-x-1 rounded-md border border-gold-500/25 bg-white/[0.04]" />
-                <div className="relative h-full w-full overflow-hidden rounded-md border border-gold-500/40 shadow-gold-glow">
-                  <Image
-                    src={resolveImageSrc(previewImageUrl)}
-                    alt=""
-                    fill
-                    sizes="220px"
-                    className="object-cover blur-xl scale-110"
-                    aria-hidden
-                  />
-                  <div className="absolute inset-0 bg-black/35" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full border border-gold-500/60 bg-black/40 backdrop-blur-sm">
-                      <Lock className="h-4.5 w-4.5 text-gold-400" strokeWidth={1.75} />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             <div className="px-6 pt-8 pb-6">
             <div className="text-center">
               {/* PREMIUM-CRAFT FIX: double-ring medallion instead of a flat
@@ -176,19 +143,13 @@ export function PaywallModal({
                   concentric rings so the header icon reads as a considered
                   badge rather than a plain icon container. The one place
                   this pass spends its "boldness," per frontend-design's
-                  restraint principle; everything else below stays quiet.
-                  BLURRED-PREVIEW FIX: skipped entirely when previewImageUrl
-                  is set — the blurred stack above already fills that role,
-                  and showing both stacked on top of each other duplicated
-                  the same "here's what's locked" signal twice. */}
-              {!previewImageUrl && (
-                <div className="relative mx-auto h-14 w-14">
-                  <div className="absolute -inset-[7px] rounded-full border border-gold-500/15" />
-                  <div className="relative h-14 w-14 rounded-full border border-gold-500/50 flex items-center justify-center">
-                    <ReasonIcon className="h-6 w-6 text-gold-500" strokeWidth={1.75} />
-                  </div>
+                  restraint principle; everything else below stays quiet. */}
+              <div className="relative mx-auto h-14 w-14">
+                <div className="absolute -inset-[7px] rounded-full border border-gold-500/15" />
+                <div className="relative h-14 w-14 rounded-full border border-gold-500/50 bg-gold-500/[0.06] backdrop-blur-md shadow-gold-glow flex items-center justify-center">
+                  <ReasonIcon className="h-6 w-6 text-gold-500" strokeWidth={1.75} />
                 </div>
-              )}
+              </div>
 
               {/* Lucide Crown, not the raw 👑 glyph tiers/config.ts stores
                   for other surfaces (TierCard etc.) — an emoji renders as a
@@ -196,7 +157,7 @@ export function PaywallModal({
                   on iOS, monochrome on Windows), which reads inconsistent
                   rather than premium. Icon inherits the badge's own color
                   instead. */}
-              <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-gold-500/40 bg-gold-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-400">
+              <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-gold-500/40 bg-gold-500/10 backdrop-blur-md px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-400">
                 <Crown className="h-3 w-3" strokeWidth={2} />
                 {premium.badge.label}
               </div>
@@ -222,7 +183,7 @@ export function PaywallModal({
                 .filter((f) => f.included)
                 .map((f) => (
                   <li key={f.label} className="flex items-start gap-3">
-                    <span className="mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full bg-gold-500/15">
+                    <span className="mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full bg-gold-500/15 backdrop-blur-sm ring-1 ring-inset ring-gold-500/20">
                       <Check className="h-3.5 w-3.5 text-gold-400" strokeWidth={2.5} />
                     </span>
                     <span className="text-sm leading-snug text-text-primary">
@@ -246,8 +207,10 @@ export function PaywallModal({
                   <div
                     key={plan.id}
                     className={cn(
-                      "rounded-sm border px-2 py-3.5 text-center",
-                      isBest ? "border-gold-500/60 shadow-gold-glow" : "border-border-hairline"
+                      "rounded-sm border px-2 py-3.5 text-center backdrop-blur-md transition-transform duration-300 ease-premium",
+                      isBest
+                        ? "border-gold-500/60 bg-gold-500/[0.05] shadow-glass-hover -translate-y-0.5"
+                        : "border-border-hairline bg-white/[0.02]"
                     )}
                   >
                     {isBest && (

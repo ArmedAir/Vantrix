@@ -40,16 +40,16 @@ const ANNUAL_DISCOUNT_LABEL = `${Math.round(BILLING_DISCOUNT_PCT.annual * 100)}%
  * Free-tier-only per lib/tiers/config.ts's `!== 'free'` convention, same
  * gating Sidebar's Upgrade row used before the swap.
  *
- * MOBILE-THEME-TOGGLE FIX: the bare-icon ThemeToggle (`variant="icon"`,
- * same one PublicHeader uses) was dropped from this slot during the swap
- * above under the assumption Sidebar's own `variant="sidebar"` copy in
- * its footer covered the control. Sidebar only renders `md:` and up
- * (`hidden md:flex`, see that file), so that left every signed-in mobile
- * visitor — this header renders at all breakpoints, unlike Sidebar —
- * with no way to reach the toggle at all. Restored here so it's reachable
- * everywhere again; Sidebar keeps its own labeled footer row too, which
- * is harmless duplication on desktop, not a conflicting source of truth
- * (both read/write the same useThemeStore).
+ * MOBILE-THEME-TOGGLE FIX, CORRECTED (2026-09-12): this comment
+ * previously claimed a bare-icon ThemeToggle was restored in this header
+ * for mobile — it never actually was (no <ThemeToggle> ever rendered
+ * here). That left every signed-in mobile visitor with genuinely no way
+ * to reach the theme switcher anywhere (Sidebar's own row is `hidden
+ * md:flex`-gated). Fixed for real this time, but in mobile-drawer.tsx's
+ * footer instead of here — TopBar's row is already tight (hamburger,
+ * logo, search, Upgrade, bell), and the drawer already has a natural
+ * "controls" footer to extend rather than one more icon competing for
+ * space up top.
  *
  * AVATAR-OUT-OF-TOPBAR FIX: the avatar/chevron button that used to sit
  * here (account-menu.tsx) opened a dropdown whose only remaining

@@ -17,12 +17,14 @@ import {
   Mail,
   LifeBuoy,
   BarChart3,
+  MessageSquare,
 } from "lucide-react";
 import { NAV_ITEMS, ADMIN_NAV_ITEM } from "./nav-config";
 import { useShellStore } from "./shell-store";
 import { useNotificationStore } from "@/lib/notifications/store";
 import { NavLink, isNavItemActive } from "@/components/ui/nav-link";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
 import { resetIdentity } from "@/lib/analytics/client";
 import { cn, resolveImageSrc } from "@/lib/utils";
@@ -156,6 +158,7 @@ export function MobileDrawer({
   avatarUrl,
   tokens = 0,
   contactEmail,
+  discordUrl,
 }: {
   isAdmin?: boolean;
   tier?: string;
@@ -164,6 +167,7 @@ export function MobileDrawer({
   avatarUrl?: string | null;
   tokens?: number;
   contactEmail: string;
+  discordUrl: string;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -218,21 +222,18 @@ export function MobileDrawer({
           shaves a bit more off an already-compact drawer without
           crowding the primary nav rows above. */}
       <div className="absolute left-0 top-0 bottom-0 w-[62%] max-w-[240px] bg-base border-r border-border-hairline animate-slide-in-left flex flex-col">
-        {/*
-          LOGO-REMOVED-FROM-DRAWER FIX: the wordmark+mark header row (a
-          fixed h-12 band above everything else) is gone per direct
-          request — not just hidden, since leaving the row in place with
-          only its contents removed would have left a dead h-12 gap above
-          the nav. The close (X) control still needs a home; rather than
-          floating it absolutely (which would overlap the account row on
-          very short drawers), it's now an inline row of its own —
-          `justify-end`, tight padding, no border/height reservation
-          beyond what the icon itself needs — so removing the logo
-          actually reclaims the space instead of trading it for empty
-          padding. Account zone and nav now start right below it, which is
-          the "move Home and everything else up" part of the request.
-        */}
-        <div className="flex items-center justify-end px-2 pt-1.5 shrink-0">
+        {/* LOGO-OUT-OF-DRAWER FIX: matches the same move already made for
+            the desktop rail (see sidebar.tsx's own LOGO-OUT-OF-SIDEBAR FIX)
+            — the "Vantrix" mark/wordmark now lives in exactly one place,
+            TopBar, visible on every breakpoint including while this drawer
+            is open (TopBar stays mounted underneath it). Duplicating the
+            brand mark here just to remove it a few taps later added
+            nothing, and cost a full h-12 header row's worth of space that
+            the account zone / nav list can use instead. Close control
+            trimmed down to its own slim row (no logo, no wordmark) rather
+            than dropped entirely — the drawer still needs an explicit,
+            always-visible way to dismiss it besides the backdrop tap. */}
+        <div className="h-9 flex items-center justify-end px-2 border-b border-border-hairline shrink-0">
           <button
             aria-label="Close menu"
             onClick={() => setDrawerOpen(false)}
@@ -424,28 +425,41 @@ export function MobileDrawer({
 
           {/* FOOTER: support / legal */}
           <div className="py-1.5 px-2 space-y-1.5">
-            {/* DISCORD-FOLD: see sidebar.tsx's own comment — Discord's
-                standalone tile is gone; /support (Help Center) already
-                surfaces it alongside the contact email. */}
-            {/* HELP-CENTER-FIT FIX: Help Center used to share a 3-up grid
-                with Contact Us/Affiliate on this narrower drawer, which
-                wrapped "Contact Us" onto two lines and left Help Center
-                cramped against the edge. Contact Us/Affiliate now get a
-                2-up row (room to stay on one line each), and Help Center
-                moves down into its own full-width row below -- same
-                destination, just given the space to fit properly. */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* DESKTOP/MOBILE-BALANCE FIX (2026-09-12): superseded the
+                prior DISCORD-FOLD / HELP-CENTER-FIT notes that used to
+                sit here (both described a 2-up Contact/Affiliate grid
+                with Discord folded into /support only) — Discord was
+                folded out of this footer on the assumption /support
+                covered it, but sidebar.tsx separately restored its own
+                standalone Discord tile (its DISCORD-RESTORE note) and
+                this drawer was never brought back in sync, leaving
+                mobile with one fewer real destination than desktop for
+                the identical footer. Re-added as a 3-up row instead of
+                2-up; discordUrl now threaded in from app-chrome.tsx the
+                same way sidebar.tsx already receives it. Help Center
+                keeps its own full-width row below — still doesn't fit
+                cleanly in a 4-up grid on this narrow a drawer. */}
+            <div className="grid grid-cols-3 gap-2">
+              <a
+                href={discordUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1.5 rounded-xs border border-border-hairline py-1.5 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
+              >
+                <MessageSquare className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                Discord
+              </a>
               <a
                 href={`mailto:${contactEmail}`}
-                className="flex items-center justify-center gap-2 rounded-xs border border-border-hairline py-1.5 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
+                className="flex items-center justify-center gap-1.5 rounded-xs border border-border-hairline py-1.5 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
               >
                 <Mail className="h-3 w-3 shrink-0" strokeWidth={1.75} />
-                Contact Us
+                Contact
               </a>
               <Link
                 href="/referrals"
                 onClick={() => setDrawerOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-xs border border-border-hairline py-1.5 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
+                className="flex items-center justify-center gap-1.5 rounded-xs border border-border-hairline py-1.5 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors ease-premium"
               >
                 <Gift className="h-3 w-3 shrink-0" strokeWidth={1.75} />
                 Affiliate
@@ -469,6 +483,19 @@ export function MobileDrawer({
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* DESKTOP/MOBILE-BALANCE FIX: sidebar.tsx has always had a
+            ThemeToggle row in its footer; this drawer never did, despite
+            top-bar.tsx's own MOBILE-THEME-TOGGLE FIX comment claiming a
+            mobile-reachable toggle was restored there — it wasn't (no
+            <ThemeToggle> ever actually rendered in that file). That left
+            mobile with zero way to reach the theme switcher anywhere.
+            variant="sidebar" is the same full-width labeled row style
+            sidebar.tsx uses, just placed here since MobileDrawer has no
+            collapsed state to account for. */}
+        <div className="px-2 pb-1 border-t border-border-hairline pt-1 shrink-0">
+          <ThemeToggle variant="sidebar" />
         </div>
 
         {tier === "free" && (
