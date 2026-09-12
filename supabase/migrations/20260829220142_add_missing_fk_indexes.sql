@@ -1,0 +1,11 @@
+create index if not exists idx_admin_permissions_granted_by on public.admin_permissions (granted_by);
+create index if not exists idx_character_status_views_character_id on public.character_status_views (character_id);
+create index if not exists idx_conversations_roleplay_session_id on public.conversations (roleplay_session_id);
+create index if not exists idx_date_sessions_character_id on public.date_sessions (character_id);
+create index if not exists idx_date_sessions_conversation_id on public.date_sessions (conversation_id);
+create index if not exists idx_roleplay_beats_message_id on public.roleplay_beats (message_id);
+create index if not exists idx_roleplay_scenario_votes_user_id on public.roleplay_scenario_votes (user_id);
+create index if not exists idx_roleplay_sessions_character_id on public.roleplay_sessions (character_id);
+create index if not exists idx_roleplay_sessions_scenario_id on public.roleplay_sessions (scenario_id);
+create index if not exists idx_subscription_revocation_flags_cleared_by on public.subscription_revocation_flags (cleared_by);
+create index if not exists idx_universe_scenes_created_by on public.universe_scenes (created_by);

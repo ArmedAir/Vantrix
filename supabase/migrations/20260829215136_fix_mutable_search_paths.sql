@@ -1,0 +1,17 @@
+ALTER FUNCTION public.trg_fn_tier_badge() SET search_path = public, pg_temp;
+ALTER FUNCTION public.prune_old_messages(uuid, integer) SET search_path = public, pg_temp;
+ALTER FUNCTION public.get_or_create_daily_quests(uuid, date, jsonb) SET search_path = public, pg_temp;
+ALTER FUNCTION public.consume_streak_shield(uuid, integer) SET search_path = public, pg_temp;
+ALTER FUNCTION public.decrement_community_reply_count(uuid) SET search_path = public, pg_temp;
+ALTER FUNCTION public.append_character_private_media(uuid, text, text) SET search_path = public, pg_temp;
+ALTER FUNCTION public.remove_character_private_media(uuid, text, text) SET search_path = public, pg_temp;
+ALTER FUNCTION public.set_character_evolution_traits_updated_at() SET search_path = public, pg_temp;
+ALTER FUNCTION public.sync_character_visibility() SET search_path = public, pg_temp;
+ALTER FUNCTION public.nudge_desire_fulfillment(uuid, uuid, numeric, numeric, numeric, numeric) SET search_path = public, pg_temp;
+ALTER FUNCTION public.apply_personality_drift(uuid, uuid, numeric, numeric, numeric) SET search_path = public, pg_temp;
+ALTER FUNCTION public.get_journey_signals(uuid) SET search_path = public, pg_temp;
+ALTER FUNCTION public.chat_affinity_tags(uuid, numeric) SET search_path = public, pg_temp;
+ALTER FUNCTION public.collaborative_filter_scores(uuid, integer, integer) SET search_path = public, pg_temp;
+ALTER FUNCTION public.mark_character_status_viewed(uuid, uuid) SET search_path = public, pg_temp;
+ALTER FUNCTION public.increment_conversation_count(uuid) SET search_path = public, pg_temp;
+ALTER FUNCTION public.progress_daily_quest(uuid, date, text, integer) SET search_path = public, pg_temp;
