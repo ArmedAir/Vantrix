@@ -1,0 +1,26 @@
+-- ═══════════════════════════════════════════════════════════════════════
+-- Character Voice — per-character VoiceStudio voice id (self-hosted TTS)
+-- ═══════════════════════════════════════════════════════════════════════
+--
+-- Companion column to elevenlabs_voice_id (20261033_character_elevenlabs_
+-- voice_id.sql), for the self-hosted VoiceStudio fallback tier added in
+-- /api/voice/tts (see src/lib/voice/voicestudio-tts.ts). Before this
+-- column existed, every character that fell through to the VoiceStudio
+-- tier shared one flat VOICESTUDIO_DEFAULT_VOICE — this is what gives
+-- each character a distinct VoiceStudio voice too, not just a distinct
+-- ElevenLabs one.
+--
+-- No SQL-level data backfill here, unlike the ElevenLabs migration: that
+-- one could hardcode real, fixed ElevenLabs premade-voice-library ids
+-- directly into the migration because those ids are the same for every
+-- Vantrix deployment. VoiceStudio has no equivalent universal catalog —
+-- its voice profiles are whatever the operator has cloned/saved on their
+-- own self-hosted instance (VOICESTUDIO_VOICE_POOL env var), which a SQL
+-- migration file has no way to know. Existing characters are instead
+-- backfilled lazily, on first VoiceStudio fallback use, by
+-- src/lib/voice/voicestudio-voice-library.ts's resolveVoiceStudioVoiceId()
+-- — called from /api/voice/tts when this column is still null for a given
+-- character, and persisted immediately so every later request for that
+-- character reuses the same assigned voice.
+
+alter table characters add column if not exists voicestudio_voice_id text;
