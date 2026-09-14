@@ -66,10 +66,6 @@
     {
       "path": "/api/cron/character-fund-distribution",
       "schedule": "0 6 * * 1"
-    },
-    {
-      "path": "/api/cron/revocation-sweep",
-      "schedule": "20 * * * *"
     }
   ],
   "headers": [
