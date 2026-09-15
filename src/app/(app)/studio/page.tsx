@@ -41,12 +41,20 @@ export default async function StudioPage() {
 
       <Tabs defaultValue="mine">
         <TabsList>
-          <TabsTrigger value="mine">My Characters ({mine.length})</TabsTrigger>
+          <TabsTrigger value="mine">My Characters ({mine === null ? "?" : mine.length})</TabsTrigger>
           <TabsTrigger value="market">Market</TabsTrigger>
         </TabsList>
 
         <TabsContent value="mine" className="pt-6">
-          {mine.length === 0 ? (
+          {mine === null ? (
+            <div className="flex flex-col items-center gap-3 py-16 text-center">
+              <Sparkles className="h-10 w-10 text-text-tertiary" />
+              <p className="text-text-secondary">
+                Couldn&rsquo;t load your characters right now &mdash; this isn&rsquo;t the
+                same as having none. Try refreshing, or check that you&rsquo;re signed in.
+              </p>
+            </div>
+          ) : mine.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
               <Sparkles className="h-10 w-10 text-text-tertiary" />
               <p className="text-text-secondary">
