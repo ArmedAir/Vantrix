@@ -132,6 +132,7 @@ export const CRON_JOBS = [
   { id: 'memory-tier-consolidation',  path: '/api/cron/memory-tier-consolidation', schedule: '*/5 * * * *',  maxDuration: 30, description: 'Drains dirty short-term memory-tier pairs into medium/long-term, every 5min' },
   { id: 'comment-moderation-sweep',   path: '/api/cron/comment-moderation-sweep', schedule: '*/5 * * * *',  maxDuration: 30, description: 'Re-reviews feed comments still pending past a 10min grace window (lost after()-task backstop), every 5min' },
   { id: 'embedding-backfill',         path: '/api/cron/embedding-backfill',       schedule: '30 3 * * *',    maxDuration: 60, description: 'Backfills missing pgvector embeddings for memory_graph + characters, daily' },
+  { id: 'recall-accuracy-audit',      path: '/api/cron/recall-accuracy-audit',    schedule: '0 4 * * *',     maxDuration: 60, description: 'Judge-grades a sample of memory_recall_audit rows for contradiction/confabulation, daily (after embedding-backfill)' },
   { id: 'message-archive',            path: '/api/cron/message-archive',          schedule: '0 4 * * *',     maxDuration: 60, description: 'Daily message archive (30-day window)' },
   { id: 'economy-tick',               path: '/api/cron/economy-tick',             schedule: '0 * * * *',     maxDuration: 60, description: 'Hourly world-economy tick' },
   { id: 'governance-tick',            path: '/api/cron/governance-tick',          schedule: '0 */4 * * *',   maxDuration: 60, description: 'Governance simulation, every 4h' },

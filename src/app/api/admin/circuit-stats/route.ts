@@ -32,6 +32,19 @@ export async function GET(_req: NextRequest) {
         paystack:    getCircuitBreaker('paystack').getStats(),
         nowpayments: getCircuitBreaker('nowpayments').getStats(),
         paddle:      getCircuitBreaker('paddle').getStats(),
+        // MEMORY-OPS-VISIBILITY: these two carry the entire semantic-recall
+        // path (semantic-memory.ts's rerank + memory-embeddings.ts's
+        // embed/search) and both fail open by design — a chat reply never
+        // blocks or errors when they trip. That's correct for the user-facing
+        // path, but it also means an open circuit here was previously
+        // invisible to ops: recall silently degrades to emotion/recency-only
+        // for every user, with no signal anywhere an admin would see it.
+        // Names must match the getCircuitBreaker() names actually used at
+        // the real call sites (semantic-memory.ts / memory-embeddings.ts) —
+        // getCircuitBreaker() is a singleton registry keyed by name, so this
+        // reads the same shared instance those call sites report into.
+        brainServiceRerank: getCircuitBreaker('ai:brain-service').getStats(),
+        brainServiceEmbed:  getCircuitBreaker('ai:brain-service-embed').getStats(),
       },
       queue: {
         depths: queueDepths,

@@ -73,6 +73,12 @@ export const MEMORY_WEIGHT_DEFAULT = 6;
 // (see api/cron/memory-archive). Deliberately low — only the bottom third of
 // the 1-10 range ages out, so anything moderately meaningful survives.
 export const MEMORY_ARCHIVE_WEIGHT_CUTOFF = 4;
+// The number of memories formatMemoryGraphForPrompt() actually renders into
+// the system prompt — exported so callers that need to know exactly what
+// the model saw (not just what was fetched/ranked) don't have to duplicate
+// this number and risk it drifting from the real cut. See
+// memory-recall-audit.ts, which logs this exact slice for later grading.
+export const MEMORY_PROMPT_INJECTION_CAP = 8;
 
 // ── Character ambition progressions ──────────────────────────────────────
 // These fire based on character.current_goal and goal_progress
@@ -258,7 +264,7 @@ export function formatMemoryGraphForPrompt(memories: MemoryNode[]): string {
   // has already picked the best available order (similarity-first when
   // pgvector is configured, emotion-affinity otherwise, emotional_weight +
   // recency as the base-case DB order) — trust it and just cap the count.
-  const top = memories.slice(0, 8);
+  const top = memories.slice(0, MEMORY_PROMPT_INJECTION_CAP);
 
   const lines = top.map(m => {
     // Use event_time (when it happened), not created_at/ingestion_time

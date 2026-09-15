@@ -69,6 +69,7 @@ import { assembleFullPrompt, type CharacterData } from '@/lib/ai/prompt';
 import { formatRelationshipTierForPrompt } from '@/lib/commerce/raas';
 import { resolveLanguageState } from '@/lib/ai/language-engine';
 import { semanticRerankMemories, retrieveRelevantMemories }  from '@/lib/ai/semantic-memory';
+import { logMemoryRecallAudit } from '@/lib/ai/memory-recall-audit';
 import { planResponse, formatPlanForPrompt, NEUTRAL_PLAN } from '@/lib/ai/response-planner';
 import { applyPsychologyEvent,
          detectAbsenceEvent }      from '@/lib/ai/attachment-engine';
@@ -2967,6 +2968,25 @@ export async function POST(req: NextRequest) {
           queueForTraining({
             userId, characterId, userMessage: sanitize(message), assistantReply: fullReply,
           }).catch(bg('queueForTraining'));
+          // RECALL-AUDIT: sampled ground truth for whether the reply was
+          // actually faithful to the memory shown, not just whether the
+          // right memory was retrieved (already covered by
+          // semantic-memory-retrieval.test.ts /
+          // memory-graph-format-prompt-ordering.test.ts). Fire-and-forget,
+          // same tolerance model as queueForTraining above — a failure here
+          // must never touch a request that's already long since responded.
+          // semanticMemoryGraph is exactly what went into the prompt this
+          // turn (see its own comment ~line 1400); logMemoryRecallAudit()
+          // applies the same MEMORY_PROMPT_INJECTION_CAP cut
+          // formatMemoryGraphForPrompt() did, so what's logged always
+          // matches what the model actually saw.
+          logMemoryRecallAudit({
+            userId, characterId, conversationId,
+            shownMemories:     semanticMemoryGraph,
+            factConflictCount: companionContext.canonicalMemory.conflicts.length,
+            userMessage:       message,
+            assistantReply:    fullReply,
+          }).catch(bg('logMemoryRecallAudit'));
           const { error: convUpdateErr } = await supabase.from('conversations')
             .update({ last_message_at: new Date().toISOString() })
             .eq('id', conversationId);
