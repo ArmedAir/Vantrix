@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
 import { Logo } from "@/components/shell/logo";
 
@@ -46,8 +47,26 @@ export default function EnterPage() {
           route being the only place with a plain-text version of it.
           LOGO-ANIMATION FIX: wordmark restored via withWordmark
           (animated + theme-reactive, see logo.tsx). */}
-      <div className="px-4 pt-8 flex justify-center">
+      {/* ONE-CLICK-LOGIN FIX: this page previously had zero login entry
+          point — middleware.ts force-routes every first-time signed-out
+          visitor to "/" here, and the only path back to /login was
+          buried 3 steps deep inside the onboarding flow (reveal ->
+          opening -> guest chat -> sign-up prompt). Anyone who actually
+          wanted to log in (a returning user on a new device/browser, a
+          user clicking a "Log In" link shared from elsewhere, etc.) had
+          no way to do it without first playing through the whole funnel.
+          This is a direct, single-hop `/login` link — no redirects, no
+          intermediate steps — kept minimal so it doesn't fight the
+          flow's intentionally chrome-free/curiosity-first design (see
+          the docstring above). */}
+      <div className="px-4 pt-8 flex items-center justify-between">
         <Logo size={28} withWordmark wordmarkClassName="text-lg" />
+        <Link
+          href="/login"
+          className="text-sm font-semibold text-text-secondary hover:text-gold-400 transition-colors ease-premium"
+        >
+          Log In
+        </Link>
       </div>
       <div className="flex-1 flex items-center justify-center">
         <OnboardingFlow />
