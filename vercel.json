@@ -32,6 +32,10 @@
       "schedule": "30 3 * * *"
     },
     {
+      "path": "/api/cron/recall-accuracy-audit",
+      "schedule": "0 4 * * *"
+    },
+    {
       "path": "/api/cron/message-archive",
       "schedule": "0 4 * * *"
     },
@@ -66,6 +70,10 @@
     {
       "path": "/api/cron/character-fund-distribution",
       "schedule": "0 6 * * 1"
+    },
+    {
+      "path": "/api/cron/revocation-sweep",
+      "schedule": "20 * * * *"
     }
   ],
   "headers": [

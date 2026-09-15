@@ -31,6 +31,38 @@ export async function fetchCircuitStats(): Promise<CircuitStats> {
   return res.json();
 }
 
+export interface RecallAccuracyContradiction {
+  id: string;
+  user_id: string;
+  character_id: string;
+  verdict_reasoning: string | null;
+  user_message: string;
+  assistant_reply: string;
+  graded_at: string | null;
+}
+
+export interface RecallAccuracyStats {
+  windowDays: number;
+  target: number;
+  passRate: number | null;
+  healthy: boolean;
+  counts: {
+    pending: number;
+    consistent: number;
+    contradicted: number;
+    unverifiable: number;
+    skipped: number;
+  };
+  recentContradictions: RecallAccuracyContradiction[];
+  ts: string;
+}
+
+export async function fetchRecallAccuracy(): Promise<RecallAccuracyStats> {
+  const res = await fetch("/api/admin/recall-accuracy");
+  if (!res.ok) throw new Error("Failed to load recall-accuracy stats");
+  return res.json();
+}
+
 export interface BackfillSummary {
   [key: string]: unknown;
 }
