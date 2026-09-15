@@ -147,6 +147,23 @@ export default function RootLayout({
           gold-styled element for the browser to paint yet. */}
       <head>
         <Script src="/theme-init.js" strategy="beforeInteractive" />
+        {/* SURFACE-COOKIE-FIX: writes the vantrix-surface cookie
+            ("pwa" | "web") before hydration, so every server-side auth
+            check on this and every later request already knows which
+            Supabase session storage key to look under (see
+            src/lib/supabase/client.ts, .../middleware.ts, and
+            .../server.ts). Nothing else in the app ever wrote this
+            cookie, so those server-side checks always fell back to
+            "web" -- an installed/home-screen user's real session
+            (filed under the "pwa" key) was never found, which is what
+            broke Studio's "Couldn't load your characters" state (and
+            silently degraded every other route going through
+            getAuthedUser()) for every PWA user. Needs to be a real
+            static file loaded the same way as theme-init.js above, for
+            the same CSP + static-layout reasons -- see that file's own
+            header comment, and surface-init.js's own header comment
+            for the full explanation of this fix. */}
+        <Script src="/surface-init.js" strategy="beforeInteractive" />
       </head>
       <body className="bg-base text-text-primary min-h-screen">
         {/* Site-wide Organization + SoftwareApplication JSON-LD. These were
