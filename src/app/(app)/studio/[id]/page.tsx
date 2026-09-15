@@ -10,6 +10,7 @@ import { CharacterActions } from "@/components/studio/builder/character-actions"
 import { VisibilityToggle } from "@/components/studio/visibility-toggle";
 import { MonetizeCharacterCard } from "@/components/studio/creator-dashboard/monetize-character-card";
 import { RaasPricingCard } from "@/components/studio/creator-dashboard/raas-pricing-card";
+import { PricingTabBadge } from "@/components/studio/creator-dashboard/pricing-tab-badge";
 import { FineTuneManager } from "@/components/studio/builder/fine-tune-manager";
 import { ImageGalleryTab } from "@/components/studio/gallery/image-gallery-tab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -83,7 +84,10 @@ export default async function EditCharacterPage({
           <TabsTrigger value="builder">Builder</TabsTrigger>
           <TabsTrigger value="memory">Memory ({memories.length})</TabsTrigger>
           <TabsTrigger value="gallery">Gallery ({character.gallery_image_urls?.length ?? 0})</TabsTrigger>
-          <TabsTrigger value="relationship">Relationship</TabsTrigger>
+          <TabsTrigger value="relationship">
+            Pricing &amp; Tiers
+            <PricingTabBadge characterId={character.id} />
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="builder" className="pt-2">
           <CharacterBuilderForm character={character} />
@@ -101,7 +105,12 @@ export default async function EditCharacterPage({
           {/* RaaS surfacing: paid relationship tiers (bond/soulbound) were
               fully built server-side — pricing, purchase RPC, fine-tune
               packs, creator earnings — but had no Studio UI anywhere.
-              See raas-pricing-card.tsx / fine-tune-manager.tsx for detail. */}
+              See raas-pricing-card.tsx / fine-tune-manager.tsx for detail.
+              DISCOVERABILITY FIX: tab renamed from "Relationship" to
+              "Pricing & Tiers" (it's what's actually in here) and given a
+              PricingTabBadge so an untouched-defaults character shows a
+              visible "Set pricing" nudge, matching the count badges Memory/
+              Gallery already carry on their own tab triggers. */}
           <RaasPricingCard characterId={character.id} />
           <FineTuneManager characterId={character.id} />
         </TabsContent>

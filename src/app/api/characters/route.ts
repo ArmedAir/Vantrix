@@ -80,6 +80,12 @@ const characterCreateSchema = z.object({
   // Wizard fields — mapped to DB columns that were previously unused in creation
   speech_style: z.string().max(50).optional(),   // maps to characters.speech_style
   occupation:   z.string().max(100).optional(),  // maps to characters.occupation
+  // ARCHETYPE-PERSIST FIX: was accepted by the Studio (types.ts's
+  // CharacterDraft.archetype, populated by every Quick Start template)
+  // but never declared on this request schema, so it never survived
+  // validation and `d.archetype` below didn't even type-check — see
+  // this route's `sanitized.archetype` comment for the full story.
+  archetype:    z.string().max(60).optional(),
   // CREATION-STUDIO: Identity stage field + AI Concept-stage provenance —
   // see 20260825_character_creation_studio.sql.
   pronouns:        z.string().max(50).optional(),
@@ -311,6 +317,17 @@ export async function POST(req: NextRequest) {
       scenario:    d.scenario    ? sanitizeField(d.scenario,    500) : null,
       speech_style: d.speech_style ? sanitizeField(d.speech_style, 50) : null,
       occupation:   d.occupation   ? sanitizeField(d.occupation, 100) : null,
+      // ARCHETYPE-PERSIST FIX: this was captured by every Quick Start
+      // template and by the freeform Studio field (types.ts's
+      // CharacterDraft.archetype) but never made it into `sanitized`, so
+      // it never reached the characters.archetype column at all despite
+      // that column already existing and being used for discovery
+      // filtering (GET above, `archetypesParam`). Every character created
+      // through the Studio was silently losing its archetype on save —
+      // and, downstream, initializeDigitalPerson() below had no archetype
+      // to resolve a voice/writing-style role from, only the fuzzier
+      // personality/backstory/occupation/category text.
+      archetype:    d.archetype ? sanitizeField(d.archetype, 60) : null,
       pronouns:        d.pronouns        ? sanitizeField(d.pronouns, 50) : null,
       creation_prompt: d.creation_prompt ? sanitizeField(d.creation_prompt, 500) : null,
       image_url:   d.image_url,
@@ -410,6 +427,7 @@ export async function POST(req: NextRequest) {
       backstory:   sanitized.backstory,
       occupation:  sanitized.occupation,
       category:    sanitized.category,
+      archetype:   sanitized.archetype,
       tags:        sanitized.tags,
       gender:      sanitized.gender,
     });

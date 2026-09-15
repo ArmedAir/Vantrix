@@ -1,6 +1,7 @@
 import "server-only";
 import type { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
+import { redis } from "@/lib/redis";
 
 /**
  * Real "trending" — what visitors have actually been clicking into over
@@ -56,6 +57,15 @@ type RpcCapable = {
 const TRENDING_WINDOW_HOURS = 48;
 const CANDIDATE_POOL = 300; // rows pulled from trending_character_ids() before filtering by live/gender/nsfw
 
+// PERF: trending_character_ids() scans 48h of click events across every
+// visitor hitting the Trending tab (explore-characters.tsx) — global,
+// gender/nsfw-independent data (those filters apply afterward, to the
+// characters query below) that was recomputed from scratch on every
+// single request. Cached for 60s, same TTL class as the other shared
+// World/discover reads in this codebase (see status-legend.ts).
+const CLICK_RANK_CACHE_KEY = "vantrix:trending:click-ranked";
+const CLICK_RANK_TTL = 60;
+
 const CHAR_SELECT =
   "id,name,age,gender,description,image_url,tags,is_premium,min_tier,is_new,is_live,tokens_cost,archetype,opening_line,like_count,follower_count,chat_count,created_at";
 
@@ -65,12 +75,18 @@ export async function getTrendingCharacters(
 ): Promise<TrendingCharacterRow[]> {
   let clickRanked: { character_id: string; click_count: number }[] = [];
   try {
-    const { data, error } = await (supabase as unknown as RpcCapable).rpc("trending_character_ids", {
-      p_hours: TRENDING_WINDOW_HOURS,
-      p_limit: CANDIDATE_POOL,
-    });
-    if (error) throw error;
-    clickRanked = (data ?? []) as { character_id: string; click_count: number }[];
+    const cached = await redis.get<{ character_id: string; click_count: number }[]>(CLICK_RANK_CACHE_KEY);
+    if (cached) {
+      clickRanked = cached;
+    } else {
+      const { data, error } = await (supabase as unknown as RpcCapable).rpc("trending_character_ids", {
+        p_hours: TRENDING_WINDOW_HOURS,
+        p_limit: CANDIDATE_POOL,
+      });
+      if (error) throw error;
+      clickRanked = (data ?? []) as { character_id: string; click_count: number }[];
+      try { await redis.set(CLICK_RANK_CACHE_KEY, clickRanked, { ex: CLICK_RANK_TTL }); } catch { /* ok */ }
+    }
   } catch (err) {
     logger.warn("trending: click-rank RPC failed, using engagement fallback only", {
       error: err instanceof Error ? err.message : String(err),

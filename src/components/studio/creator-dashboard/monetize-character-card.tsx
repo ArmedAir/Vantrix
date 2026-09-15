@@ -57,6 +57,8 @@ export function MonetizeCharacterCard({ characterId }: { characterId: string }) 
           <p className="text-sm text-text-primary">Enrolled in the Creator Fund</p>
           <p className="text-xs text-text-tertiary">
             This character earns a weekly share of the fund pool based on returning-user engagement.
+            {" "}Fans can also unlock deeper relationship tiers directly — see the{" "}
+            <span className="text-gold-400">Pricing &amp; Tiers</span> tab below.
           </p>
         </div>
       </Card>
@@ -85,6 +87,8 @@ export function MonetizeCharacterCard({ characterId }: { characterId: string }) 
               {status.eligible
                 ? `One-time ${status.upgradeFeeTokens.toLocaleString()} Vantrix Coin fee. Earns a weekly share of the fund pool from returning users.`
                 : "Character must be public and approved before it can be monetized."}
+              {" "}Fans can also unlock deeper relationship tiers directly — see the{" "}
+              <span className="text-gold-400">Pricing &amp; Tiers</span> tab below.
             </p>
           </div>
         </div>

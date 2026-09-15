@@ -16,10 +16,26 @@ import { logger }          from '@/lib/logger';
 import { narrate }         from './narrator';
 import { logOfflineEntry } from './life-engine';
 import type { ScarceAsset, AssetType, AssetRarity } from '@/types/legacy-systems';
+import { redis }           from '@/lib/redis';
+
+// PERF: getAllScarceAssets() backs GET /api/universe/artifacts (the World
+// page's Artifacts tab) and was hitting Postgres — with two joins — on
+// every request, uncached, unlike every sibling World-tab lib (see
+// status-legend.ts's getActiveLegends(), world-history.ts). Assets change
+// about as rarely as legends (only via transferAsset/releaseAsset below, or
+// the once-per-tick cron claim), so the same cache-with-invalidation-on-
+// write pattern applies here.
+const CACHE = { all: 'vantrix:scarcity:all-assets' };
+const TTL   = { all: 60 };
 
 // ── Read ───────────────────────────────────────────────────────────────────────
 
 export async function getAllScarceAssets(): Promise<ScarceAsset[]> {
+  try {
+    const cached = await redis.get<ScarceAsset[]>(CACHE.all);
+    if (cached) return cached;
+  } catch { /* fall through to DB on cache-read failure */ }
+
   const { data, error } = await supabaseAdmin
     .from('scarce_assets')
     .select(`
@@ -30,7 +46,9 @@ export async function getAllScarceAssets(): Promise<ScarceAsset[]> {
     .order('rarity', { ascending: false });
 
   if (error) return [];
-  return (data ?? []) as ScarceAsset[];
+  const assets = (data ?? []) as ScarceAsset[];
+  try { await redis.set(CACHE.all, assets, { ex: TTL.all }); } catch { /* ok */ }
+  return assets;
 }
 
 export async function getUnclaimedAssets(): Promise<ScarceAsset[]> {
@@ -89,6 +107,7 @@ export async function createAsset(params: {
     logger.error('scarcity:create:error', { error });
     return null;
   }
+  try { await redis.del(CACHE.all); } catch { /* ok */ }
   return data as ScarceAsset;
 }
 
@@ -111,6 +130,7 @@ export async function transferAsset(
     acquired_at:          new Date().toISOString(),
     history: [...asset.history, reason].slice(-30),
   }).eq('id', assetId);
+  try { await redis.del(CACHE.all); } catch { /* ok */ }
 
   await logOfflineEntry(
     newHolderId,
@@ -140,6 +160,7 @@ export async function releaseAsset(assetId: string, reason: string): Promise<voi
     holder_character_id: null,
     history: [...asset.history, reason].slice(-30),
   }).eq('id', assetId);
+  try { await redis.del(CACHE.all); } catch { /* ok */ }
 }
 
 // ── Tick: occasional claim opportunities ──────────────────────────────────────

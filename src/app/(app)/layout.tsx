@@ -8,6 +8,8 @@ import { getContactEmail, getDiscordUrl } from "@/lib/config/contact";
 import { getTrialEligibility } from "@/lib/frontend/premium";
 import { isProviderEnabled } from "@/lib/payments/provider-gate";
 import { getSidebarAds } from "@/lib/frontend/ads";
+import { getPlatformSettings } from "@/lib/admin/platform-settings";
+import { MaintenanceScreen } from "@/components/shell/maintenance-screen";
 
 /**
  * FORCE-DYNAMIC CLEANUP (2026-09-05, item #11): this layout calls
@@ -84,6 +86,23 @@ export default async function AppLayout({
     session = await getShellSession();
   } catch {
     return <SessionErrorShell />;
+  }
+
+  // MAINTENANCE-MODE: /admin/settings → General → "Maintenance mode".
+  // Checked before the signed-out/signed-in branches below so it covers
+  // both — the three routes this layout renders for a signed-out visitor
+  // ("/", "/premium", "/relationships") as well as every authenticated
+  // route. Admins always pass through (same ShellProfile.isAdmin computed
+  // by getShellSession() that gates ADMIN_NAV_ITEM) so the team can still
+  // use the product to verify things during the maintenance window
+  // itself, same reasoning as every other admin-bypass in this codebase;
+  // a signed-out visitor has no profile to check, so they always see the
+  // maintenance screen when it's on.
+  if (!session?.profile?.isAdmin) {
+    const { maintenanceMode, maintenanceMessage } = await getPlatformSettings();
+    if (maintenanceMode) {
+      return <MaintenanceScreen message={maintenanceMessage} />;
+    }
   }
 
   if (!session) {

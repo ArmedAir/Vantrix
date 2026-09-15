@@ -165,10 +165,10 @@ export const TIERS: Record<TierId, TierConfig> = {
       maxConversations: 10,
     },
     features: [
-      { label: 'Unlimited messages',        included: true, note: 'Rate-limited, not gated' },
+      { label: 'Unlimited messages',        included: true },
       { label: 'All characters',          included: true  },
       { label: 'No ads',                  included: true  },
-      { label: 'Unlimited image scenes',  included: true, note: 'Rate-limited, not gated' },
+      { label: 'Unlimited image scenes',  included: true },
       { label: 'Mood rooms',              included: true  },
       { label: 'Relationship milestones', included: true  },
       { label: 'NSFW unlock',             included: true },
