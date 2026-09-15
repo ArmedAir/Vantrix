@@ -2,6 +2,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { fetchInternal } from "./api";
 import type { DiscoverCharacter } from "./discover";
+import { logger } from "@/lib/logger";
 
 /**
  * GET /api/characters/[id] is creator-only (builder data — see that
@@ -67,14 +68,32 @@ export interface CharacterDetail {
 // were never selected here, so the detail page had no way to render them.
 // These are the public gallery columns, not private_gallery_*, which stay
 // admin-only per 20260720c's column-level REVOKE.
+// SILENT-404-ROOT-CAUSE FIX (2026-09-15): remixed_from_character_id and
+// remix_count used to live in this list. That made the single query that
+// gates whether the ENTIRE page 404s (see below) depend on two columns
+// added by the same-day 2026091402_character_remix_lineage.sql migration.
+// The prior version of this function also never checked the query's
+// `error` — it destructured only `data` — so the moment those columns
+// weren't yet visible to PostgREST (migration not deployed yet, or
+// deployed but the schema cache hadn't reloaded — routine Supabase
+// lag, not a data problem), `.select(CHAR_SELECT)` failed for every
+// row with a real Postgrest "column does not exist" error, `data` came
+// back null for every character with zero visible trace, and
+// `if (!data) return null` turned that into `notFound()` — every
+// character profile in the app 404ing at once, indistinguishable from
+// "this character doesn't exist." Two fixes below: (1) the two lineage
+// columns are now fetched separately and fail open (see
+// getRemixLineage), so a hiccup on that feature can never again take
+// the whole profile down; (2) `error` is now checked and logged here so
+// any future failure of the *core* query is loud instead of silent.
 const CHAR_SELECT =
-  "id,name,age,gender,description,image_url,tags,is_premium,min_tier,is_new,is_live,is_nsfw,tokens_cost,archetype,opening_line,like_count,follower_count,intro_video_url,gallery_image_urls,gallery_video_urls,model_url,hair_color,eye_color,skin_tone,body_type,creator_id,remixed_from_character_id,remix_count";
+  "id,name,age,gender,description,image_url,tags,is_premium,min_tier,is_new,is_live,is_nsfw,tokens_cost,archetype,opening_line,like_count,follower_count,intro_video_url,gallery_image_urls,gallery_video_urls,model_url,hair_color,eye_color,skin_tone,body_type,creator_id";
 
 export async function getCharacterDetail(
   id: string
 ): Promise<CharacterDetail | null> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("characters")
     .select(CHAR_SELECT)
     .eq("id", id)
@@ -83,8 +102,19 @@ export async function getCharacterDetail(
     .eq("is_public", true)
     .maybeSingle();
 
+  if (error) {
+    logger.error("getCharacterDetail: query failed", {
+      error: error.message,
+      code: error.code,
+      characterId: id,
+    });
+    return null;
+  }
   if (!data) return null;
-  const row = data as CharacterDetail;
+  const row = data as Omit<CharacterDetail, "remixed_from_character_id" | "remix_count">;
+
+  const lineage = await getRemixLineage(id);
+
   // DB default is '{}' (empty array) for both, but normalize defensively
   // in case a row was written before the 20260717 migration's default
   // applied, or via a path that set the column to NULL directly.
@@ -92,7 +122,53 @@ export async function getCharacterDetail(
     ...row,
     gallery_image_urls: row.gallery_image_urls ?? [],
     gallery_video_urls: row.gallery_video_urls ?? [],
+    remixed_from_character_id: lineage.remixed_from_character_id,
+    remix_count: lineage.remix_count,
   };
+}
+
+/**
+ * Isolated on purpose — see the SILENT-404-ROOT-CAUSE comment above
+ * CHAR_SELECT. Best-effort: any failure (missing columns, transient
+ * PostgREST error, anything) fails open to "no lineage data" rather than
+ * bubbling up and costing the visitor the entire character profile for
+ * what is purely a cosmetic credit line + count.
+ */
+async function getRemixLineage(
+  id: string
+): Promise<{ remixed_from_character_id: string | null; remix_count: number }> {
+  const FALLBACK = { remixed_from_character_id: null, remix_count: 0 };
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("characters")
+      .select("remixed_from_character_id,remix_count")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) {
+      logger.error("getRemixLineage: query failed, failing open", {
+        error: error.message,
+        code: error.code,
+        characterId: id,
+      });
+      return FALLBACK;
+    }
+    if (!data) return FALLBACK;
+    const row = data as {
+      remixed_from_character_id: string | null;
+      remix_count: number | null;
+    };
+    return {
+      remixed_from_character_id: row.remixed_from_character_id ?? null,
+      remix_count: row.remix_count ?? 0,
+    };
+  } catch (err) {
+    logger.error("getRemixLineage: unexpected error, failing open", {
+      error: err instanceof Error ? err.message : String(err),
+      characterId: id,
+    });
+    return FALLBACK;
+  }
 }
 
 /**
