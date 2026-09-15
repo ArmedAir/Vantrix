@@ -144,7 +144,18 @@ function feedCacheKey(filter: string, charFilter: string | null, cursor: string 
 async function getCachedPage(key: string): Promise<CachedPage | null> {
   try {
     const cached = await redis.get<string>(key);
-    return cached ? (JSON.parse(cached) as CachedPage) : null;
+    if (!cached) return null;
+    // UPSTASH-DOUBLE-PARSE-FIX: @upstash/redis auto-deserializes any
+    // stored value that looks like JSON before returning it, regardless
+    // of the <string> type param above (that's a compile-time-only
+    // assertion — it doesn't change what the client does at runtime).
+    // The corresponding redis.set() below stores via JSON.stringify(),
+    // so `cached` here is already the parsed CachedPage object, not a
+    // string. Calling JSON.parse(cached) unconditionally on an object
+    // stringifies it to the literal text "[object Object]" first, then
+    // fails to parse that — see feed:posts-get-error in prod logs. Only
+    // parse when it actually came back as a string.
+    return (typeof cached === "string" ? JSON.parse(cached) : cached) as CachedPage;
   } catch {
     return null; // fail OPEN — cache miss, fall through to Supabase
   }
@@ -335,7 +346,9 @@ export async function getFeedPostsPage(
 
   const cachedPool = await redis.get<string>(poolCacheKey).catch(() => null);
   if (cachedPool) {
-    pool = JSON.parse(cachedPool) as RawFeedPost[];
+    // Same Upstash auto-deserialization behavior as getCachedPage() above
+    // — only parse if it actually came back as a string.
+    pool = (typeof cachedPool === "string" ? JSON.parse(cachedPool) : cachedPool) as RawFeedPost[];
   } else {
     let query = supabaseAdmin
       .from('character_posts')

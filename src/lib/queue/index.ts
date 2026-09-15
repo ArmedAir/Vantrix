@@ -17,7 +17,7 @@
 // FIX: this file used `redis.*` throughout (pipeline, get, set, del, setex,
 // rpop, lpush) with no import at all — a build-breaking TS2304 plus a runtime
 // ReferenceError on first call. Restored the shared singleton import.
-import { redis } from '@/lib/redis';
+import { redis, parseRedisJson } from '@/lib/redis';
 import { logger } from '@/lib/logger';
 
 
@@ -200,8 +200,7 @@ export async function writeJobResult(result: JobResult): Promise<void> {
 export async function getJobResult(jobId: string): Promise<JobResult | null> {
   try {
     const raw = await redis.get<string>(resultKey(jobId));
-    if (!raw) return null;
-    return JSON.parse(raw) as JobResult;
+    return parseRedisJson<JobResult>(raw);
   } catch { return null; }
 }
 
@@ -231,7 +230,7 @@ export async function dequeueNextJob(): Promise<ChatJob | null> {
     try {
       const raw = await redis.rpop(QUEUE[priority]);
       if (raw) {
-        const job = JSON.parse(raw as string) as ChatJob;
+        const job = parseRedisJson<ChatJob>(raw)!;
         await redis.setex(statusKey(job.id), RESULT_TTL_SECONDS, 'processing');
         await acquireJobLease(job);
         return job;

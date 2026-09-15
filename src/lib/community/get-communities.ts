@@ -36,7 +36,7 @@
  */
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
-import { redis } from "@/lib/redis";
+import { redis, parseRedisJson } from "@/lib/redis";
 import type { Community, CommunityType } from "@/types/community";
 
 const STATIC_COMMUNITIES: Community[] = [
@@ -109,7 +109,8 @@ async function fetchFullCommunityList(): Promise<Community[]> {
 async function getFullCommunityListCached(): Promise<Community[]> {
   try {
     const cached = await redis.get<string>(FULL_LIST_CACHE_KEY);
-    if (cached) return JSON.parse(cached) as Community[];
+    const parsed = parseRedisJson<Community[]>(cached);
+    if (parsed) return parsed;
   } catch {
     // fail OPEN — cache miss/error, fall through to Supabase
   }

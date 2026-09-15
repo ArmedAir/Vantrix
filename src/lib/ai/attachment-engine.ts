@@ -33,7 +33,7 @@ function psychCacheKey(userId: string, characterId: string): string {
   return `vantrix:psych:${userId}:${characterId}`;
 }
 import { logger, bg }    from '@/lib/logger';
-import { redis }              from '@/lib/redis';
+import { redis, parseRedisJson } from '@/lib/redis';
 
 export interface PsychologyState {
   // Hidden attachment variables (0-100)
@@ -115,7 +115,8 @@ export async function getPsychology(
   // psychology changes only when applyPsychologyEvent/applyDelta is called
   try {
     const cached = await redis.get<string>(psychCacheKey(userId, characterId));
-    if (cached) return JSON.parse(cached) as PsychologyState;
+    const parsed = parseRedisJson<PsychologyState>(cached);
+    if (parsed) return parsed;
   } catch { /* cache miss — fall through to DB */ }
 
   const { data } = await supabaseAdmin

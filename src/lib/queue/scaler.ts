@@ -25,7 +25,7 @@
 
 import { logger }  from '@/lib/logger';
 import type { ChatJob, JobResult } from './index';
-import { redis }              from '@/lib/redis';
+import { redis, parseRedisJson } from '@/lib/redis';
 import { env }                 from '@/env';
 
 
@@ -129,7 +129,7 @@ export async function getLiveWorkers(): Promise<WorkerInfo[]> {
   try {
     const all = await redis.hgetall(WORKERS_KEY) as Record<string, string> | null;
     if (!all) return [];
-    const workers = Object.values(all).map(v => JSON.parse(v) as WorkerInfo);
+    const workers = Object.values(all).map(v => parseRedisJson<WorkerInfo>(v)!);
     const pipe = redis.pipeline();
     for (const w of workers) pipe.exists(`${WORKER_HB_PREFIX}${w.id}`);
     const exists = await pipe.exec() as number[];
@@ -223,7 +223,7 @@ export async function getDLQEntries(limit = 50): Promise<DLQEntry[]> {
   const safeLimit = Math.min(Math.max(1, limit), 200);
   try {
     const raw = await redis.lrange(DLQ_KEY, 0, safeLimit - 1);
-    return (raw as string[]).map(v => JSON.parse(v) as DLQEntry);
+    return (raw as unknown[]).map(v => parseRedisJson<DLQEntry>(v)!);
   } catch { return []; }
 }
 
@@ -236,8 +236,8 @@ export async function replayDLQJob(index: number): Promise<ChatJob | null> {
   if (!Number.isInteger(index) || index < 0 || index > 999) return null;
   try {
     const raw = await redis.lindex(DLQ_KEY, index);
-    if (!raw) return null;
-    const entry = JSON.parse(raw as string) as DLQEntry;
+    const entry = parseRedisJson<DLQEntry>(raw);
+    if (!entry) return null;
     return { ...entry.job, attempts: 0, enqueuedAt: Date.now() };
   } catch { return null; }
 }

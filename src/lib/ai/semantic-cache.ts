@@ -54,7 +54,7 @@
 
 import { createHash } from 'crypto';
 import type { Tier }  from '@/lib/rate-limit';
-import { redis }              from '@/lib/redis';
+import { redis, parseRedisJson } from '@/lib/redis';
 import { bg }                 from '@/lib/logger';
 
 
@@ -317,8 +317,9 @@ async function lshBestMatch(bandKeys: string[], words: Set<string>, scope: strin
     if (!candidateKey.startsWith(`ai:sresp:${scope}:`)) continue;
     try {
       const storedWordsJson = await redis.get<string>(`${candidateKey}:words`);
-      if (!storedWordsJson) continue;
-      const storedWords = new Set(JSON.parse(storedWordsJson) as string[]);
+      const storedWordsArr = parseRedisJson<string[]>(storedWordsJson);
+      if (!storedWordsArr) continue;
+      const storedWords = new Set(storedWordsArr);
       if (jaccard(words, storedWords) >= SIMILARITY_THRESHOLD) return candidateKey;
     } catch { /* skip unreadable candidate, try the next */ }
   }

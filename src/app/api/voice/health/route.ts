@@ -40,7 +40,7 @@ import { VOICE_LIBRARY, DEFAULT_ELEVENLABS_VOICE_IDS } from '@/lib/ai/voice-libr
 import { logger } from '@/lib/logger';
 import { toErrorBody, errorLogFields } from '@/lib/errors';
 import { env } from '@/env';
-import { redis } from '@/lib/redis';
+import { redis, parseRedisJson } from '@/lib/redis';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -146,8 +146,8 @@ export async function GET(_req: NextRequest) {
         const name = `voice:elevenlabs:${id}`;
         try {
           const raw = await redis.get<string>(`vantrix:cb:${name}`);
-          if (!raw) return { voiceId: id, state: 'CLOSED' as const };
-          const stored = JSON.parse(raw) as { state: string };
+          const stored = parseRedisJson<{ state: string }>(raw);
+          if (!stored) return { voiceId: id, state: 'CLOSED' as const };
           return { voiceId: id, state: stored.state };
         } catch {
           return { voiceId: id, state: 'UNKNOWN' as const };

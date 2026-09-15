@@ -20,7 +20,7 @@
 
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { logger }        from '@/lib/logger';
-import { redis }              from '@/lib/redis';
+import { redis, parseRedisJson } from '@/lib/redis';
 import { USER_MOODS, isUserMood, MOOD_TAGS, type UserMood } from './moods';
 
 export { USER_MOODS, isUserMood, type UserMood };
@@ -324,10 +324,8 @@ export async function getRecommendations(
   // Check cache
   try {
     const cached = await redis.get<string>(cacheKey);
-    if (cached) {
-      const parsed = JSON.parse(cached) as RecommendedCharacter[];
-      return parsed.slice(0, limit);
-    }
+    const parsed = parseRedisJson<RecommendedCharacter[]>(cached);
+    if (parsed) return parsed.slice(0, limit);
   } catch { /* cache miss */ }
 
   try {

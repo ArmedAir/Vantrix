@@ -19,7 +19,7 @@
 
 import { logger, bg } from '@/lib/logger';
 import { CircuitOpenError } from '@/lib/errors';
-import { redis }              from '@/lib/redis';
+import { redis, parseRedisJson } from '@/lib/redis';
 
 
 type CBState = 'CLOSED' | 'OPEN' | 'HALF_OPEN';
@@ -112,7 +112,8 @@ export class CircuitBreaker {
       const raw   = await redis.get<string>(key);
       if (!raw) return;
 
-      const stored = JSON.parse(raw) as { state: CBState; openedAt: number };
+      const stored = parseRedisJson<{ state: CBState; openedAt: number }>(raw);
+      if (!stored) return;
       // Promote local state to OPEN if Redis says it's open and we're currently CLOSED
       if (stored.state === 'OPEN' && this.state === 'CLOSED') {
         this.state    = 'OPEN';

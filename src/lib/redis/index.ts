@@ -38,3 +38,28 @@ export const redis = new Proxy({} as Redis, {
     return (getRedis() as unknown as Record<string | symbol, unknown>)[prop];
   },
 });
+
+/**
+ * DOUBLE-PARSE-FIX: @upstash/redis auto-deserializes any stored value
+ * that looks like JSON before returning it from .get() — regardless of
+ * a `redis.get<string>(key)` call's type param, which is compile-time
+ * only and has no effect on this runtime behavior. Every call site that
+ * stores via `redis.set(key, JSON.stringify(x))` and then unconditionally
+ * does `JSON.parse(await redis.get(key))` is therefore calling
+ * JSON.parse on an already-parsed object roughly however often Upstash's
+ * auto-parse kicks in — which stringifies the object to the literal text
+ * "[object Object]" first, then fails to parse THAT, throwing
+ * `SyntaxError: Unexpected token 'o', "[object Obj"...`. Confirmed live
+ * in production logs (feed:posts-get-error) and, separately, already
+ * independently worked around with an inline `typeof x === 'string' ? ...`
+ * guard in a few other files (lib/ai/memory.ts, emotion-state.ts,
+ * memory-tiers/*) before this shared helper existed to consolidate it.
+ *
+ * Use this instead of a bare `JSON.parse(await redis.get(key))` at every
+ * call site that round-trips JSON through Redis.
+ */
+export function parseRedisJson<T>(value: unknown): T | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "string") return JSON.parse(value) as T;
+  return value as T;
+}

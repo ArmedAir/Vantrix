@@ -39,7 +39,7 @@
 import { getCircuitBreaker } from '@/lib/circuit-breaker';
 import { logger } from '@/lib/logger';
 import { supabaseAdmin } from '@/lib/supabase/admin';
-import { redis } from '@/lib/redis';
+import { redis, parseRedisJson } from '@/lib/redis';
 import { env } from '@/env';
 import { brainServiceAuthHeaders } from '@/lib/ai/brain-service-auth';
 import { searchCharactersBySimilarity } from '@/lib/ai/character-embeddings';
@@ -117,7 +117,8 @@ async function fetchCandidatesCached(filters: RecommendFilters): Promise<Recomme
   const key = filterCacheKey(filters);
   try {
     const cached = await redis.get<string>(key);
-    if (cached) return JSON.parse(cached) as RecommendableCharacter[];
+    const parsed = parseRedisJson<RecommendableCharacter[]>(cached);
+    if (parsed) return parsed;
   } catch (err) {
     // Redis unavailable/misconfigured, or a malformed cache entry — fall
     // through to a normal DB fetch either way. Never let a cache failure
@@ -200,7 +201,8 @@ export async function recommendCharacters(
   const resultCacheKey = `char-rec:result:v1:${filterCacheKey(filters)}:${hashQuery(query)}:${limit}`;
   try {
     const cached = await redis.get<string>(resultCacheKey);
-    if (cached) return JSON.parse(cached) as RecommendationResult[];
+    const parsed = parseRedisJson<RecommendationResult[]>(cached);
+    if (parsed) return parsed;
   } catch (err) {
     logger.warn('recommendCharacters: result cache read failed', { error: err instanceof Error ? err.message : String(err) });
   }
