@@ -80,6 +80,12 @@ const characterCreateSchema = z.object({
   // Wizard fields — mapped to DB columns that were previously unused in creation
   speech_style: z.string().max(50).optional(),   // maps to characters.speech_style
   occupation:   z.string().max(100).optional(),  // maps to characters.occupation
+  // ARCHETYPE-PERSIST FIX: was accepted by the Studio (types.ts's
+  // CharacterDraft.archetype, populated by every Quick Start template)
+  // but never declared on this request schema, so it never survived
+  // validation and `d.archetype` below didn't even type-check — see
+  // this route's `sanitized.archetype` comment for the full story.
+  archetype:    z.string().max(60).optional(),
   // CREATION-STUDIO: Identity stage field + AI Concept-stage provenance —
   // see 20260825_character_creation_studio.sql.
   pronouns:        z.string().max(50).optional(),
