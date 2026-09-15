@@ -1,8 +1,31 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import { SafeImage as Image } from "@/components/ui/safe-image";
 import { getLoginPortraits } from "@/lib/config/login-portraits";
 import { generateSEOMeta } from "@/lib/seo/meta";
+import { getAuthedUser } from "@/lib/auth/get-authed-user";
 import { LoginForm } from "./login-form";
+
+/**
+ * ALREADY-SIGNED-IN FIX (ad-audit follow-up): this page never checked
+ * whether the visitor already had a session — it rendered the full
+ * sign-in/sign-up form unconditionally. That's harmless for a genuinely
+ * signed-out visitor, but anything that links here for an already
+ * *authenticated* user (e.g. HeroAdsCarousel's acquisition-only "She
+ * Remembers Everything" → /login?mode=sign-up banner, before this same
+ * fix filtered it out of the signed-in carousel — see (app)/page.tsx) sent
+ * a logged-in user to a page asking them to log in again, which reads
+ * exactly like being signed out even though their session was never
+ * touched. This is the same open-redirect-safe sanitization as
+ * login-form.tsx's SEC-01 guard (only a same-origin "/..." path is ever
+ * honored) duplicated here rather than imported, since that file is a
+ * "use client" component and this one needs to stay a Server Component to
+ * redirect before any client JS runs.
+ */
+function sanitizeRedirect(raw: string | undefined): string {
+  const candidate = raw ?? "/";
+  return candidate.startsWith("/") && !candidate.startsWith("//") ? candidate : "/";
+}
 
 /**
  * SITELINKS FIX: /login is allowed in robots.ts and listed in sitemap.ts,
@@ -75,7 +98,21 @@ function LoginFormSkeleton() {
  * doubling as a blurred full-bleed backdrop on mobile where there's no
  * room for a second panel.
  */
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect?: string }>;
+}) {
+ // ALREADY-SIGNED-IN FIX: bounce an authenticated visitor straight back
+ // into the app instead of showing them the login form — see the header
+ // comment above. Checked first, before the portraits fetch, so a signed-in
+ // visitor never even pays for that query.
+ const { user } = await getAuthedUser();
+ if (user) {
+   const { redirect: redirectParam } = await searchParams;
+   redirect(sanitizeRedirect(redirectParam));
+ }
+
  const portraits = await getLoginPortraits();
  const backdrop = portraits[0];
  const gridPortraits = portraits.slice(0, 4);

@@ -244,7 +244,10 @@ async function creditPaystackTokenPack(params: {
     type: 'token_purchase',
     title: 'Tokens purchased',
     body: `${tokens.toLocaleString()} tokens have been added to your balance.`,
-    ctaUrl: '/premium',
+    // ROUTE-FIX (notification audit): same fix as the stripe webhook's
+    // identical notification — this should land on the balance/history
+    // page (/profile/tokens), not the pricing page.
+    ctaUrl: '/profile/tokens',
     urgency: 'low',
     metadata: { tokens, packId },
   }).catch(bg('emitNotification.tokenPurchase'));
