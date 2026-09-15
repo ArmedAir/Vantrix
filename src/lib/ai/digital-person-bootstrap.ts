@@ -61,6 +61,10 @@ export interface DigitalPersonInput {
   backstory?:   string | null;
   occupation?:  string | null;
   category?:    string | null; // used as a loose signal for style preset selection
+  // The Studio's named archetype (e.g. "The Bad Boy") — highest-confidence
+  // signal for role/voice resolution, see character-role.ts's own doc on
+  // why it's checked ahead of the blended personality/backstory text.
+  archetype?:   string | null;
   tags?:        string[];
   // characters.gender ('female' | 'male' | 'anime' | 'other') — feeds
   // resolveVoiceId() so the assigned ElevenLabs voice actually matches
@@ -97,6 +101,7 @@ async function selectPreset(input: DigitalPersonInput): Promise<{ style: Writing
     backstory:   input.backstory,
     occupation:  input.occupation,
     category:    input.category,
+    archetype:   input.archetype,
   });
 
   // PERF: these two resolvers are independent — different tables/columns,

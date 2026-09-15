@@ -17,6 +17,7 @@
 import { supabaseAdmin }        from '@/lib/supabase/admin';
 import { checkCharacterTierAccess, resolveEffectiveTier, type Tier } from '@/lib/rate-limit';
 import { canAccessNSFW } from '@/lib/tiers/config';
+import { getPlatformSettings } from '@/lib/admin/platform-settings';
 
 export interface CharacterGateResult {
   allowed: boolean;
@@ -52,6 +53,19 @@ export async function checkMatureContentAccess(
   tier: Tier = 'free',
 ): Promise<{ allowed: boolean; reason?: string }> {
   if (!isNsfw) return { allowed: true };
+
+  // Platform-wide master override (/admin/settings → General → "Global
+  // mature-content gate"). Checked first and ahead of any per-user state:
+  // when an admin flips this off, mature content must be unavailable to
+  // everyone immediately, including users who are already age-verified
+  // and have nsfw_enabled — this is a kill switch, not a default.
+  const { matureContentEnabled } = await getPlatformSettings();
+  if (!matureContentEnabled) {
+    return {
+      allowed: false,
+      reason:  'Mature content is temporarily unavailable platform-wide',
+    };
+  }
 
   if (!userId) {
     return {

@@ -53,9 +53,23 @@ export function isCharacterRoleKey(value: string): value is CharacterRoleKey {
 
 // ── Layer 1: text → role, at character-creation time ───────────────────────
 // Moved verbatim from digital-person-bootstrap.ts's old inline `rules`
-// array — same five patterns, same order (first match wins), just given a
-// name other modules can import instead of re-declaring their own copy.
+// array — same five patterns, same order (first match wins) — then
+// extended (2026-09-15) with seven more roles matching the Studio's own
+// Quick Start archetype vocabulary (quick-start-templates.ts), plus
+// `archetype` added as an input the match runs against. `mentor` is
+// listed ahead of `professor` on purpose: a template-built "Mentor" like
+// Elena Voss has occupation "Philosophy professor," which would otherwise
+// satisfy the professor pattern first and mask the more specific, more
+// intentional archetype signal — first-match-wins means order encodes
+// priority here.
 const ROLE_RULES: ReadonlyArray<[RegExp, CharacterRoleKey]> = [
+  [/mentor/, 'mentor'],
+  [/bad.?boy|troublemaker|rebel/, 'bad_boy'],
+  [/mysterious|enigmatic|stranger/, 'mysterious_stranger'],
+  [/best.?friend|childhood friend/, 'best_friend'],
+  [/ice.?queen|high.?achiever|aloof exec/, 'ice_queen'],
+  [/yandere|obsess|possessive/, 'yandere'],
+  [/protector|guardian|sworn|bodyguard|knight/, 'protector'],
   [/poet|writer|novelist|literary/, 'poet'],
   [/gam(er|ing)|streamer|esports/, 'gamer'],
   [/professor|academic|research|scientist|teacher/, 'professor'],
@@ -68,14 +82,31 @@ export interface CharacterRoleTextInput {
   backstory?:   string | null;
   occupation?:  string | null;
   category?:    string | null;
+  // The Studio's own named archetype field (e.g. "The Bad Boy", "Ice
+  // Queen / High Achiever" — see quick-start-templates.ts and the
+  // characters.archetype column). This is the single highest-confidence
+  // signal available: it's the exact taxonomy the product already shows
+  // the creator, not a guess reconstructed from prose. Checked on its own
+  // first, ahead of the blended-text fallback below, so a character whose
+  // freeform personality/backstory text happens to not use any of these
+  // keywords still resolves correctly off its archetype alone.
+  archetype?:   string | null;
 }
 
 /** Returns null (not a fallback key) when nothing matches — "no strong role
- *  signal" is a real, distinct outcome from any of the five named roles,
- *  and callers (voice resolvers, selectPreset) each decide their own
- *  no-role default rather than this function guessing one for them. */
+ *  signal" is a real, distinct outcome from any of the named roles, and
+ *  callers (voice resolvers, selectPreset) each decide their own no-role
+ *  default rather than this function guessing one for them. */
 export function resolveCharacterRole(input: CharacterRoleTextInput): CharacterRoleKey | null {
+  if (input.archetype) {
+    const archetypeMatch = matchRoleRules(input.archetype.toLowerCase());
+    if (archetypeMatch) return archetypeMatch;
+  }
   const text = `${input.personality ?? ''} ${input.backstory ?? ''} ${input.occupation ?? ''} ${input.category ?? ''}`.toLowerCase();
+  return matchRoleRules(text);
+}
+
+function matchRoleRules(text: string): CharacterRoleKey | null {
   for (const [pattern, key] of ROLE_RULES) {
     if (pattern.test(text)) return key;
   }

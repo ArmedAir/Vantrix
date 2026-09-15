@@ -912,6 +912,7 @@ export async function POST(req: NextRequest) {
       backstory:   character.backstory,
       occupation:  character.occupation,
       category:    undefined,
+      archetype:   character.archetype,
     });
     if (!healed.success) {
       logger.error('chat/stream: character missing brain and self-heal failed', {
@@ -2463,6 +2464,29 @@ export async function POST(req: NextRequest) {
   // timeout) — never blocks or breaks the stream. See response-planner.ts.
   const plan = await planPromise;
   systemPrompt = systemPrompt + formatPlanForPrompt(plan);
+
+  // VOICE-DISCIPLINE CAPSTONE: everything above stacks a lot of generic
+  // rapport/curiosity/depth guidance (conversational-technique.ts,
+  // deep-listening.ts, unforgettable-presence.ts, the Core Rules block in
+  // prompt.ts) on top of this character's own Writing Style profile
+  // (writing-style.ts, injected far earlier in this same assembly). In
+  // long prompts a model tends to weight what it read most recently, so
+  // with nothing after Writing Style to say so, the generic layers — each
+  // independently nudging toward asking a question, reaching for a
+  // philosophical register, adding a physical beat — win by sheer
+  // repetition and recency, and the reply drifts toward a generic
+  // "thoughtful AI companion" voice instead of this character's specific
+  // one (a `gamer` preset ending in a string of therapist-style questions
+  // is the visible symptom). This is deliberately the LAST thing in the
+  // prompt so it's the most recent instruction the model sees: a short,
+  // explicit reminder that Writing Style governs, not one more rule to
+  // weigh against the others.
+  systemPrompt = systemPrompt + '\n\n' + [
+    '── Voice Discipline (read this last) ──',
+    `Before replying, re-check against your Writing Style above — sentence_length: ${writingStyle.sentence_length}, vocabulary: ${writingStyle.vocabulary}, humor: ${writingStyle.humor}, curiosity_level: ${writingStyle.curiosity_level}.`,
+    'Everything above about curiosity, depth, and follow-up questions is a technique to filter through that voice, not a separate instruction to obey on top of it. If curiosity_level is under 60, do not end your reply with a question just because an earlier section suggested one — a statement, observation, or silence is often more in-voice.',
+    'Do not stack more than one question in a single reply, regardless of how many earlier sections mentioned asking one.',
+  ].join('\n');
 
   const messagesPayload = [
     { role: 'system'    as const, content: systemPrompt },
