@@ -296,7 +296,12 @@ export async function POST(req: NextRequest) {
           type: 'token_purchase',
           title: 'Tokens purchased',
           body: `${tokens.toLocaleString()} tokens have been added to your balance.`,
-          ctaUrl: '/premium',
+          // ROUTE-FIX (notification audit): this pointed at /premium — the
+          // pricing/subscription page, not where a token purchase actually
+          // shows up. /profile/tokens is the balance/history page (see the
+          // paddle webhook's identical notification, which already had this
+          // right).
+          ctaUrl: '/profile/tokens',
           urgency: 'low',
           metadata: { tokens, packId: session.metadata?.packId },
         }).catch(bg('emitNotification.tokenPurchase'));
