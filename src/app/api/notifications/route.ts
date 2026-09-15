@@ -162,13 +162,33 @@ export async function GET(_req: NextRequest) {
         // rather than a plain bubble.
         if (surprisesResult.status === 'fulfilled') {
           for (const surprise of surprisesResult.value) {
+            // CHAT-LINK-404-FIX: this used to link straight to
+            // `/chat/${characterId}`, but chat/[id]/page.tsx keys on a
+            // *conversationId* (see that file's own header comment), not a
+            // characterId — there is no conversations row with that id, so
+            // getChatConversation() always missed and the page 404'd for
+            // every milestone/surprise notification. A surprise can only
+            // fire from an existing chat relationship, so the conversation
+            // is expected to already exist; this looks it up rather than
+            // creating one (conversations/ensure/route.ts's header comment
+            // is explicit that it's meant to be the one place that creates
+            // conversations). Falls back to the chat list on the rare miss
+            // instead of building another guaranteed-404 link.
+            const { data: conversation } = await supabaseAdmin
+              .from('conversations')
+              .select('id')
+              .eq('user_id', userId)
+              .eq('character_id', surprise.characterId)
+              .maybeSingle();
+            const ctaUrl = conversation ? `/chat/${conversation.id}` : '/chats';
+
             enqueue!(sseEvent('surprise', {
               type:          'character_surprise',
               characterId:   surprise.characterId,
               characterName: surprise.characterName,
               surpriseType:  surprise.type,
               message:       surprise.message,
-              ctaUrl:        `/chat/${surprise.characterId}`,
+              ctaUrl,
             }));
             markSurpriseDelivered(surprise.id).catch(bg('markSurpriseDelivered'));
             // 'anniversary' surprises map to character_birthday; the
@@ -184,7 +204,7 @@ export async function GET(_req: NextRequest) {
                   : 'character_initiative',
               title: surprise.characterName,
               body: surprise.message,
-              ctaUrl: `/chat/${surprise.characterId}`,
+              ctaUrl,
               urgency: 'medium',
               metadata: { characterId: surprise.characterId, surpriseType: surprise.type },
             }).catch(bg('emitNotification.characterSurprise'));
