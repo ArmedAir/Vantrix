@@ -125,6 +125,20 @@ export default async function HomePage() {
     return <LandingPage characters={allCharacters} experiences={experiences} dailyWorldChoice={dailyWorldChoice} />;
   }
 
+  // SIGNED-IN-AD-FIX (ad audit): getHeroAds() has no concept of viewer auth
+  // state (see its own PERF comment — it's cached and shared across the
+  // anon LandingPage and this signed-in HomePage), so it can return rows
+  // like "She Remembers Everything" whose whole point is driving an
+  // anonymous visitor to /login?mode=sign-up. An already-signed-in user
+  // has nothing to sign up for — showing them that banner and sending a
+  // tap to the login form reads exactly like being logged out, even though
+  // their session was never touched (see /login/page.tsx's own
+  // ALREADY-SIGNED-IN FIX, added as a second layer of defense for any
+  // other stray /login link). Filtered here, not at the cache layer,
+  // since the same cached `heroAds` array is still exactly right for the
+  // anon LandingPage branch above.
+  const heroAdsForViewer = heroAds.filter((ad) => !ad.link.startsWith("/login"));
+
   // CHARACTER-POOL DEDUP — see header comment. One filtered pool, three
   // disjoint slices, nothing shown twice.
   const featuredIds = new Set(featured.map((f) => f.characterId));
@@ -176,7 +190,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <HeroAdsCarousel ads={heroAds} />
+      <HeroAdsCarousel ads={heroAdsForViewer} />
 
       <MotionWrapper><PopularScenarios scenarios={popularScenarios} /></MotionWrapper>
       <MotionWrapper><FeaturedScenes scenes={featuredScenes} /></MotionWrapper>
