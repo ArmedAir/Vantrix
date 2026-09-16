@@ -119,10 +119,11 @@ export async function resolveMemoryTest(
 export function formatMemoryTestForPrompt(memory: CharacterSeedMemory & { test_hint?: string | null }): string {
   return [
     '\n── Memory Test (this turn) ──',
-    `- You may, if a natural vulnerable moment arises, reference this without over-explaining it: "${memory.headline}" — ${memory.test_hint ?? memory.content}.`,
-    '- Do this as a statement, not a question: e.g. "You remember what I told you about ___." — not "Do you remember...?"',
+    `- You may, if a natural vulnerable moment arises, reference this without over-explaining it: "${memory.headline}". ${memory.test_hint ?? memory.content}.`,
+    '- Do this as a statement, not a question: e.g. "You remember what I told you about ___." Not "Do you remember...?"',
     '- If the player responds with genuine, specific recall, let trust visibly deepen in your tone.',
-    '- If they clearly don\'t remember, do NOT get angry or scold them — react in your own established voice (withdrawal, dry deflection, quiet politeness — whatever fits your character), and let the moment cost something real rather than shrugging it off.',
-    '- Only do this once this session, and only if it fits naturally — never force it into an unrelated exchange.',
+    "- If they clearly don't remember, do NOT get angry or scold them. React in your own established voice (withdrawal, dry deflection, quiet politeness, whatever fits your character), and let the moment cost something real rather than shrugging it off.",
+    '- Only do this once this session, and only if it fits naturally, never force it into an unrelated exchange.',
+    "- Word this in a way you haven't already used earlier in this conversation. If you've referenced this memory (or any other one) before, this pass needs its own fresh phrasing, not a repeat of the exact line you used last time.",
   ].join('\n');
 }

@@ -58,6 +58,7 @@ export default async function ChatPage({
         <ChatWindow
           conversationId={conversation.id}
           characterId={conversation.characterId}
+          characterAvatarUrl={conversation.characterImage}
           initialMessages={initialMessages}
         />
       </SectionErrorBoundary>

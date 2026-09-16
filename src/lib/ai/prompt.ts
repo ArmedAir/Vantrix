@@ -48,6 +48,7 @@ import { CONVERSATIONAL_TECHNIQUE_BLOCK } from '@/lib/ai/conversational-techniqu
 import { HUMAN_NATURE_FOUNDATION_BLOCK } from '@/lib/ai/human-nature-foundation';
 import { DEEP_LISTENING_BLOCK } from '@/lib/ai/deep-listening';
 import { UNFORGETTABLE_PRESENCE_BLOCK } from '@/lib/ai/unforgettable-presence';
+import { OUTPUT_FORMAT_RULES_BLOCK } from '@/lib/ai/output-format-rules';
 import type { PsychologyState }   from '@/lib/ai/attachment-engine';
 import type { RelationshipState } from '@/lib/ai/relationship-engine';
 import type { MemoryNode }        from '@/lib/ai/memory-graph';
@@ -448,6 +449,12 @@ export function assembleFullPrompt(opts: AssembleOptions): string {
     name:         character.name,
   });
   if (voiceSection) sections.push(voiceSection);
+
+  // 3.5. Output format rules — always on, independent of speech_style:
+  // no dash-as-punctuation, and never repeat the exact phrasing already
+  // used earlier in this conversation when recalling/referencing it
+  // again. See output-format-rules.ts.
+  sections.push('\n' + OUTPUT_FORMAT_RULES_BLOCK);
 
   // ── Prompt-cache boundary ──────────────────────────────────────────────
   // Everything above this line is static per-character content (identity,

@@ -86,10 +86,17 @@ function toLocal(m: ChatMessage): LocalMessage {
 export function ChatWindow({
   conversationId,
   characterId,
+  characterAvatarUrl,
   initialMessages,
 }: {
   conversationId: string;
   characterId: string;
+  // AVATAR-EVERY-REPLY: character's portrait, shown next to every assistant
+  // bubble (not just messages that happen to carry generated media) —
+  // see message-bubble.tsx's `avatarUrl` prop. Optional/nullable because
+  // some characters have no portrait yet; MessageBubble renders nothing
+  // in that case rather than a broken image.
+  characterAvatarUrl?: string | null;
   initialMessages: ChatMessage[];
 }) {
   const [messages, setMessages] = useState<LocalMessage[]>(
@@ -665,6 +672,7 @@ export function ChatWindow({
                 imageUrl={m.imageUrl}
                 videoUrl={m.videoUrl}
                 characterId={characterId}
+                avatarUrl={characterAvatarUrl}
                 messageId={m.id}
                 status={m.status}
                 createdAt={m.createdAt}
@@ -680,7 +688,7 @@ export function ChatWindow({
             ))}
           </AnimatePresence>
           {isStreaming && streamingText && (
-            <MessageBubble role="assistant" content={streamingText} />
+            <MessageBubble role="assistant" content={streamingText} avatarUrl={characterAvatarUrl} />
           )}
           {isStreaming && !streamingText && (
             <div className="flex justify-start animate-fade-in">

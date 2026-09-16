@@ -27,6 +27,7 @@ import { supabaseAdmin }           from '@/lib/supabase/admin';
 import { detectCrisisSignal, logCrisisEvent } from '@/lib/safety/crisis-detection';
 import { buildCrisisReply, buildCrisisReplyShort } from '@/lib/safety/crisis-response';
 import { guardReply, stripLeakedMeta, looksLikePotentialMetaLeakPrefix } from '@/lib/moderation/reply-guard';
+import { stripDashPunctuation } from '@/lib/ai/output-format-rules';
 import { watchKeywords } from '@/lib/moderation/keyword-watch';
 import { getRuptureState, evaluateRepair, markRuptureRaised } from '@/lib/ai/repair-engine';
 import { computeTrustState } from '@/lib/ai/trust-engine';
@@ -2728,7 +2729,7 @@ export async function POST(req: NextRequest) {
       // the live-stream cleaning still landed in chat history verbatim and
       // rendered as its own bubble on every reload. Clean fullReply once,
       // here, before anything downstream reads it.
-      fullReply = stripLeakedMeta(fullReply);
+      fullReply = stripDashPunctuation(stripLeakedMeta(fullReply));
 
       // ── Reply guard — defense-in-depth check on the completed reply ────
       // Runs here (after the loop, not per-chunk) because it needs the full
