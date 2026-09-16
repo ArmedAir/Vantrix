@@ -382,6 +382,300 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: "ai-companion-privacy-what-actually-happens-to-your-data",
+    title: "AI Companion Privacy: What Actually Happens to Your Data",
+    description:
+      "Conversations with an AI companion can get personal fast. Here's what to actually check before you trust an app with them.",
+    datePublished: "2026-09-16",
+    readingTime: "6 min read",
+    body: [
+      {
+        paragraphs: [
+          "People say things to AI companions they might not say to anyone else — that's part of the appeal, and part of why privacy practices matter more here than for a typical app. Most people never read a privacy policy closely enough to know what's actually happening to that data. Here's what's worth checking.",
+        ],
+      },
+      {
+        heading: "Is your conversation used to train the model?",
+        paragraphs: [
+          "Some platforms use conversation data to fine-tune their models by default, with an opt-out buried in settings. Others treat training-data use as an explicit opt-in choice the user makes deliberately. That distinction matters: a default-on setting means your private conversations may already be part of a training set before you've thought to check.",
+        ],
+      },
+      {
+        heading: "Who can see the raw conversation?",
+        paragraphs: [
+          "Even without model training, conversation logs are often visible to customer-support staff, content moderators, or third-party contractors reviewing flagged content. That's a reasonable and often necessary safety measure — moderation has to happen somewhere — but a platform should be upfront about who has access and under what conditions, rather than leaving it implicit.",
+        ],
+      },
+      {
+        heading: "What happens when you delete something",
+        paragraphs: [
+          "Deleting a conversation from your view and deleting it from the underlying database aren't automatically the same thing. Real deletion should remove the data from primary storage, backups on a defined schedule, and any memory system that might otherwise resurface it later. A platform that can't explain what \"delete\" actually does under the hood usually means it doesn't do much.",
+        ],
+      },
+      {
+        heading: "What Vantrix does differently",
+        paragraphs: [
+          "Vantrix's memory system stores what a character needs to remember about your relationship as structured, deletable data — not raw transcripts kept indefinitely by default. Memory editing and deletion tools exist specifically so you control what's retained, rather than only being able to delete an entire conversation as a blunt instrument.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different",
+    title: "AI Girlfriend vs. AI Boyfriend Apps: How They're Actually Different",
+    description:
+      "The marketing between AI girlfriend and AI boyfriend apps looks different. Under the hood, the engineering question is usually the same one.",
+    datePublished: "2026-09-16",
+    readingTime: "4 min read",
+    body: [
+      {
+        paragraphs: [
+          "Search for \"AI girlfriend\" and \"AI boyfriend\" apps and you'll find largely separate marketing pages, separate app-store listings, and separate influencer campaigns — but underneath the branding, most of these products are running the same underlying companion architecture with a different persona layer on top.",
+        ],
+      },
+      {
+        heading: "What's actually gendered vs. what's just skin-deep",
+        paragraphs: [
+          "Voice, visual style, and conversational tone are usually genuinely tuned per character — a character's personality, speech patterns, and appearance are deliberately authored, not generated from a single generic template. What's not usually gendered is the underlying memory, emotional-state tracking, and relationship-progression system: the same engine tracks bond scores, remembers details, and evolves a relationship stage regardless of which character you're talking to.",
+        ],
+      },
+      {
+        heading: "Why this matters for choosing an app",
+        paragraphs: [
+          "If a platform only offers one gender of companion, the real question isn't \"do they do girlfriends or boyfriends well\" — it's whether the underlying memory and relationship system is any good at all, since that's what determines whether the experience holds up past the first few conversations. A platform offering both isn't diluting either experience if the persona layer and the relationship engine are properly separated.",
+        ],
+      },
+      {
+        heading: "How Vantrix handles this",
+        paragraphs: [
+          "Vantrix's roster spans multiple genders and archetypes, all running on the same persistent-memory, evolving-personality engine — the character you pick determines voice and personality, not the depth of the relationship system underneath it.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "how-ai-personality-engines-actually-work-ocean-model",
+    title: "How AI Personality Engines Actually Work (The OCEAN Model, Explained)",
+    description:
+      "\"This AI has a real personality\" is a common claim. Here's the actual psychological framework behind making it true instead of just asserted.",
+    datePublished: "2026-09-16",
+    readingTime: "5 min read",
+    body: [
+      {
+        paragraphs: [
+          "Plenty of AI characters are described as having a \"unique personality,\" but a one-paragraph character bio fed into a prompt doesn't actually produce consistent behavior over hundreds of conversations. Getting a personality to hold up requires a real psychological model behind it, not just a description.",
+        ],
+      },
+      {
+        heading: "What the OCEAN model actually measures",
+        paragraphs: [
+          "The Five-Factor Model — openness, conscientiousness, extraversion, agreeableness, and neuroticism, often abbreviated OCEAN — is a well-established framework from personality psychology for describing human personality along five measurable dimensions. It's used in real psychological research precisely because it captures a wide range of individual variation with a small, stable set of traits.",
+        ],
+      },
+      {
+        heading: "Why this translates well to AI characters",
+        paragraphs: [
+          "Representing a character as a set of scored traits, rather than a paragraph of adjectives, gives a system something concrete to reference when generating a response — a character high in openness and low in conscientiousness should consistently behave differently from one with the inverse profile, across completely different conversation topics and situations, not just in scenes explicitly about personality.",
+        ],
+      },
+      {
+        heading: "The harder problem: consistency over time",
+        paragraphs: [
+          "A trait score is only useful if it's actually referenced every time a response is generated, and if it interacts sensibly with a character's emotional state and relationship history rather than existing in isolation. A character can be high in agreeableness in general while still being capable of real frustration in a specific moment — the trait sets a baseline tendency, not a rigid script.",
+        ],
+      },
+      {
+        heading: "How Vantrix builds on this",
+        paragraphs: [
+          "Vantrix characters run on an eight-dimensional personality engine built on the OCEAN framework, feeding into how a character responds alongside a separate emotional-state system and the character's accumulated relationship memory — so personality, current mood, and relationship history all shape a response together instead of any one of them overriding the others.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "what-is-a-digital-twin-ai-companion-explained",
+    title: "What Is a \"Digital Twin\" in an AI Companion App?",
+    description:
+      "Digital twin is a term borrowed from industrial engineering that AI companion apps have started using for something very different. Here's what it actually means in this context.",
+    datePublished: "2026-09-16",
+    readingTime: "4 min read",
+    body: [
+      {
+        paragraphs: [
+          "\"Digital twin\" originally described a virtual model of a physical system — a factory, an engine, a building — kept in sync with real-world sensor data so engineers could simulate changes before making them in reality. AI companion apps have borrowed the term for something related in spirit but different in practice: a private, persistent AI model of a person, built from what they choose to share.",
+        ],
+      },
+      {
+        heading: "What it's not",
+        paragraphs: [
+          "A digital twin in this context isn't a public-facing character, isn't shared with other users, and isn't the same thing as a companion character you chat with. It's a private space where a deeper, more detailed model of your own preferences, history, and patterns can be built up over time, scoped entirely to your own account.",
+        ],
+      },
+      {
+        heading: "Why scoped deletion matters here specifically",
+        paragraphs: [
+          "Because a digital twin is built from more personal and detailed input than an ordinary companion conversation, the ability to wipe it — fully and specifically, without needing to delete your entire account — is a meaningfully more important control than it is for a regular chat history. A platform offering this feature without a working reset function is offering only half of it.",
+        ],
+      },
+      {
+        heading: "How Vantrix implements this",
+        paragraphs: [
+          "Vantrix's Digital Twin is a private, single-user space with its own scoped-deletion controls, separate from the memory system that powers your companion relationships — so clearing it doesn't touch your companions' memories of you, and clearing a companion's memory doesn't touch your Digital Twin.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "ai-voice-companions-how-text-to-speech-actually-works",
+    title: "AI Voice Companions: How the Text-to-Speech Actually Works",
+    description:
+      "A character that talks back changes the experience entirely. Here's what's actually happening between a generated reply and the voice you hear.",
+    datePublished: "2026-09-16",
+    readingTime: "4 min read",
+    body: [
+      {
+        paragraphs: [
+          "Text-based AI companions have existed for years, but voice changes the experience in a way text alone doesn't — hearing a response, with tone and pacing, reads as more present than reading it. The technology behind that voice is worth understanding, especially since quality varies enormously between apps.",
+        ],
+      },
+      {
+        heading: "From text to a specific, consistent voice",
+        paragraphs: [
+          "Once a language model generates a text reply, that text is sent to a separate text-to-speech system, which converts it into audio using a voice model trained to sound like a specific, consistent character rather than a generic narrator. The better voice systems capture actual emotional inflection — the same line delivered warmly versus sarcastically should sound noticeably different, not identical audio with different words.",
+        ],
+      },
+      {
+        heading: "Why latency is the hard engineering problem",
+        paragraphs: [
+          "Generating a text response, then generating voice audio from it, then playing that audio, takes real time — if it's too slow, a voice feature feels more like waiting for a voicemail than having a conversation. Getting this to feel conversational requires careful engineering around when generation starts and how quickly audio can begin playing back, not just picking a good voice model.",
+        ],
+      },
+      {
+        heading: "How Vantrix approaches voice",
+        paragraphs: [
+          "Vantrix pairs each character with its own consistent voice profile and layers a visual indicator — an animated equalizer — while a voice message is actually playing, so it's always clear when audio is live rather than just tapped.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "can-you-create-your-own-ai-character-a-guide-to-creator-tools",
+    title: "Can You Create Your Own AI Character? A Guide to Creator Tools",
+    description:
+      "Some AI companion platforms let you build and publish your own character. Here's what that actually involves and what to look for.",
+    datePublished: "2026-09-16",
+    readingTime: "5 min read",
+    body: [
+      {
+        paragraphs: [
+          "Beyond talking to pre-built characters, a growing number of AI companion platforms let users design and publish their own — setting personality traits, backstory, appearance, and voice, then sharing the result with other users. If you're curious what that process actually looks like, here's the shape of it.",
+        ],
+      },
+      {
+        heading: "What creation tools typically cover",
+        paragraphs: [
+          "A proper character builder usually covers personality traits (often along a structured framework rather than free-text description), backstory and values, appearance generation or upload, and a voice profile — plus settings for whether the character starts private or is submitted for public listing.",
+        ],
+      },
+      {
+        heading: "Why moderation review exists before a character goes public",
+        paragraphs: [
+          "Most platforms require a newly created character to pass a moderation review before it can be shared publicly or made available for certain features — this protects both other users and the platform, and it's a normal part of the process rather than a sign something's wrong with a submission.",
+        ],
+      },
+      {
+        heading: "What happens once a character is popular",
+        paragraphs: [
+          "Some platforms let creators earn from characters that other users chat with, follow, or interact with — effectively a revenue-share model similar to other user-generated-content platforms, rather than character creation being a purely creative, unpaid feature.",
+        ],
+      },
+      {
+        heading: "How Vantrix's Creator Studio works",
+        paragraphs: [
+          "Vantrix's Studio lets a creator build a character's personality, backstory, appearance, and voice, submit it for moderation review, and — once approved — earn a share of the tokens spent by other users chatting, generating images, or sending gifts to a character they created.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "ai-companion-safety-what-good-moderation-actually-looks-like",
+    title: "AI Companion Safety: What Good Moderation Actually Looks Like",
+    description:
+      "Safety in an AI companion app isn't one feature — it's a set of separate systems working together. Here's what to actually check for.",
+    datePublished: "2026-09-16",
+    readingTime: "5 min read",
+    body: [
+      {
+        paragraphs: [
+          "\"We take safety seriously\" is a line on nearly every AI companion app's marketing page, but it says almost nothing about what's actually happening technically. Real safety work in this category breaks down into a few distinct, checkable systems rather than one feature you can point to.",
+        ],
+      },
+      {
+        heading: "Crisis handling that doesn't stay in character",
+        paragraphs: [
+          "If a conversation touches on real self-harm risk or a genuine crisis, a well-built companion should recognize that and break character to point toward real help — a crisis line, a real resource — rather than staying immersed in the roleplay. A platform that never breaks character under any circumstance is prioritizing immersion over a genuinely important safety boundary.",
+        ],
+      },
+      {
+        heading: "Age verification that's actually enforced",
+        paragraphs: [
+          "Age verification only means something if it gates access to mature content rather than existing as a checkbox with no consequence. This is a place where the gap between stated policy and actual enforcement matters more than almost anywhere else in the product.",
+        ],
+      },
+      {
+        heading: "A real review queue for reported content",
+        paragraphs: [
+          "Users reporting a character or a conversation should reach an actual review process with a real queue and real outcomes — not a report button that sends an email into the void. Reports involving safety concerns specifically should be prioritized ahead of general support requests, not mixed into the same first-in-first-out queue.",
+        ],
+      },
+      {
+        heading: "How Vantrix approaches this",
+        paragraphs: [
+          "Vantrix's prompt system includes a dedicated crisis break-character path separate from ordinary conversation handling, age verification that actually gates mature content rather than just being recorded, and a moderation review queue that prioritizes safety reports ahead of general support tickets.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "freemium-ai-companion-apps-how-the-pricing-actually-works",
+    title: "Freemium AI Companion Apps: How the Pricing Actually Works",
+    description:
+      "Nearly every AI companion app is \"free to start.\" Here's what actually determines what you'll end up paying, and what to check before committing.",
+    datePublished: "2026-09-16",
+    readingTime: "4 min read",
+    body: [
+      {
+        paragraphs: [
+          "\"Free to start\" is true of nearly every AI companion app, which makes it a mostly meaningless differentiator on its own. What actually varies — a lot — is what the free tier includes, what triggers a paywall, and how the paid tiers are structured once you hit it.",
+        ],
+      },
+      {
+        heading: "What the free tier usually gates",
+        paragraphs: [
+          "The most common gates are a daily message limit, restricted access to only some characters, and reduced or no access to voice, image generation, and memory depth. The generosity of the free tier — and how clearly its limits are communicated up front — varies enormously between platforms and is worth checking before you invest time getting attached to a character.",
+        ],
+      },
+      {
+        heading: "Subscription tiers vs. token-based spending",
+        paragraphs: [
+          "Some platforms use a flat subscription that unlocks a fixed set of features. Others use a token or credit system where different actions — a message, a generated image, a voice message — cost different amounts, on top of or instead of a subscription. Token systems can be more flexible but make total cost harder to predict up front than a flat subscription tier.",
+        ],
+      },
+      {
+        heading: "What to check before subscribing",
+        paragraphs: [
+          "Worth confirming before committing: whether memory depth or quality actually differs by tier (some platforms quietly limit memory quality on lower tiers even while advertising \"remembers you\" broadly), whether cancellation is straightforward, and whether pricing is transparent about what happens to already-purchased tokens or credits if you downgrade.",
+        ],
+      },
+      {
+        heading: "How Vantrix is structured",
+        paragraphs: [
+          "Vantrix runs a two-tier subscription model — free and premium — with a token system layered on top for image generation, voice, and other spend-based features, so the subscription tier and the pay-as-you-go layer are each doing a distinct job rather than one system trying to do both.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
