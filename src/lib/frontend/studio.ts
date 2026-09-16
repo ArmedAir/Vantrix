@@ -87,7 +87,11 @@ export async function getMyCharacters(): Promise<MyCharacter[] | null> {
       .limit(50);
 
     if (error) throw error;
-    return data ?? [];
+    return (data ?? []).map((c) => ({
+      ...c,
+      category: c.category ?? '',
+      created_at: c.created_at ?? '',
+    }));
   } catch {
     // MYCHARACTERS-ERROR-VISIBILITY: this used to return [] on any
     // fetch failure (401 from a stale/missing session, a transient 500,
