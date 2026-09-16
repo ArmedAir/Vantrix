@@ -42,8 +42,19 @@ import { metrics, MSG_LEN_BUCKETS } from '@/lib/observability';
 export const OPENROUTER_MODELS = {
   DEEPSEEK_V4_PRO:   'deepseek/deepseek-v4-pro',
   DEEPSEEK_V4_FLASH: 'deepseek/deepseek-v4-flash',
-  VENICE_UNCENSORED: 'venice/venice-uncensored',
   EURYALE_70B:       'sao10k/l3-70b-euryale-v2.1',
+  // MODEL-ID FIX: this WAS listed under a second key, VENICE_UNCENSORED
+  // ('venice/venice-uncensored') — but that string is not a real OpenRouter
+  // model ID; "Venice: Uncensored" is the marketing name Venice/OpenRouter
+  // use for this exact model (Dolphin Mistral 24B, Venice Edition), not a
+  // separate model with its own slug. VENICE_UNCENSORED was included in
+  // OPENROUTER_MODEL_PRIORITY, which every OpenRouter call sends as its
+  // native `models` fallback array (buildOpenRouterFallbackChain) — since
+  // OpenRouter validates every ID in that array up front and 400s the
+  // *entire* request if any entry is invalid, this was breaking the primary
+  // paid 'openrouter' provider on every tier, platform-wide, not just for
+  // accounts without OpenRouter credit (where the free-tier fallback
+  // happened to mask it some of the time).
   DOLPHIN_MISTRAL:   'cognitivecomputations/dolphin-mistral-24b-venice-edition',
   MYTHOMAX:          'gryphe/mythomax-l2-13b',
 } as const;
@@ -51,7 +62,6 @@ export const OPENROUTER_MODELS = {
 export const OPENROUTER_MODEL_PRIORITY: string[] = [
   OPENROUTER_MODELS.DEEPSEEK_V4_PRO,
   OPENROUTER_MODELS.DEEPSEEK_V4_FLASH,
-  OPENROUTER_MODELS.VENICE_UNCENSORED,
   OPENROUTER_MODELS.EURYALE_70B,
   OPENROUTER_MODELS.DOLPHIN_MISTRAL,
   OPENROUTER_MODELS.MYTHOMAX,
@@ -79,7 +89,12 @@ export const ROLEPLAY_MODELS = {
   FAST:  OPENROUTER_MODELS.DEEPSEEK_V4_FLASH,
   SMART: OPENROUTER_MODELS.EURYALE_70B,
   POWER: OPENROUTER_MODELS.EURYALE_70B,
-  PEAK:  OPENROUTER_MODELS.VENICE_UNCENSORED,
+  // MODEL-ID FIX: was OPENROUTER_MODELS.VENICE_UNCENSORED, a phantom key
+  // pointing at a model ID that never existed on OpenRouter — see the
+  // OPENROUTER_MODELS comment above. DOLPHIN_MISTRAL is the real model
+  // that name was always meant to refer to (Venice's uncensored model IS
+  // Dolphin Mistral 24B, Venice Edition).
+  PEAK:  OPENROUTER_MODELS.DOLPHIN_MISTRAL,
 } as const;
 
 // Lower-cost fallbacks tried after the tier's primary model fails upstream on
