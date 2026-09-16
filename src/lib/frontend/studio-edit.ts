@@ -14,6 +14,7 @@ export interface EditableCharacter {
   name: string;
   image_url: string;
   is_public: boolean;
+  dating_enabled: boolean;
   moderation_status: string;
   monetization_status: string;
   lora_training_status: string | null;

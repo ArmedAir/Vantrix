@@ -2,6 +2,7 @@ import { SafeImage as Image } from "@/components/ui/safe-image";
 import Link from "next/link";
 import { resolveImageSrc } from "@/lib/utils";
 import { VisibilityToggle } from "./visibility-toggle";
+import { DatingToggle } from "./dating-toggle";
 import { cn } from "@/lib/utils";
 import type { MyCharacter, MarketCharacter } from "@/lib/frontend/studio";
 
@@ -49,11 +50,18 @@ export function MyCharacterRow({ character }: { character: MyCharacter }) {
           </div>
         )}
       </Link>
-      <VisibilityToggle
-        characterId={character.id}
-        isPublic={character.is_public}
-        canGoPublic={status === "approved"}
-      />
+      <div className="flex flex-col items-end gap-2">
+        <VisibilityToggle
+          characterId={character.id}
+          isPublic={character.is_public}
+          canGoPublic={status === "approved"}
+        />
+        <DatingToggle
+          characterId={character.id}
+          datingEnabled={character.dating_enabled}
+          canEnable={status === "approved"}
+        />
+      </div>
     </div>
   );
 }

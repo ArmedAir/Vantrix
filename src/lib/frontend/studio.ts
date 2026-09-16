@@ -14,6 +14,7 @@ export interface MyCharacter {
   category: string;
   active: boolean;
   is_public: boolean;
+  dating_enabled: boolean;
   moderation_status: string;
   moderation_note: string | null;
   created_at: string;

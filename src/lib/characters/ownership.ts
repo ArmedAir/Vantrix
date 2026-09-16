@@ -64,3 +64,29 @@ export function canSetVisibility(
   }
   return { allowed: true };
 }
+
+/**
+ * DATING-OPT-IN: characters/route.ts's create schema deliberately defaults
+ * `dating_enabled` to false for creator-submitted characters (see its
+ * ACTIVATION-FIX comment) so a still-pending character isn't silently
+ * dating-eligible the moment it exists — the creator opts in once it's
+ * been reviewed. That comment assumed a follow-up toggle would exist for
+ * the creator to actually do that opt-in; this is that gate, mirroring
+ * canSetVisibility's shape exactly. Turning dating ON requires the same
+ * moderation bar as going public (an unreviewed character shouldn't enter
+ * the dating pool any more than it should be publicly listed); turning it
+ * OFF has no such gate — an owner can always pull their own character out
+ * of dating.
+ */
+export function canSetDatingEnabled(
+  character: Pick<CharacterRow, 'creator_id' | 'moderation_status'>,
+  userId: string | null | undefined,
+  target: boolean,
+): { allowed: boolean; reason?: string } {
+  if (!isOwner(character, userId)) return { allowed: false, reason: 'Only the creator can change dating settings.' };
+  if (!target) return { allowed: true };
+  if (character.moderation_status !== 'approved') {
+    return { allowed: false, reason: 'Character must pass moderation before dating can be enabled.' };
+  }
+  return { allowed: true };
+}

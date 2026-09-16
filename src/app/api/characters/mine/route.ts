@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabaseAdmin
       .from('characters')
-      .select('id,name,image_url,category,active,is_public,moderation_status,moderation_note,created_at')
+      .select('id,name,image_url,category,active,is_public,dating_enabled,moderation_status,moderation_note,created_at')
       .eq('creator_id', user.id)
       .order('created_at', { ascending: false })
       .limit(limit);
