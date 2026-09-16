@@ -88,7 +88,13 @@ function FeaturedHero({ item }: { item: DiscoverFeaturedItem }) {
  alt={item.title}
  fill
  sizes="(min-width: 768px) 1152px, 100vw"
- className="object-cover transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
+ // FEATURED-HERO-CROP-FIX: object-cover was cropping the source
+ // image to fill the fixed 16/11 / 16/8 box (cutting off the top of
+ // James Coleman's portrait, e.g.) -- object-contain shows the
+ // whole image letterboxed against the card's own bg-black instead.
+ // Scoped to this hero card only; FeaturedTile's 3/4 grid tiles
+ // below are unaffected and stay object-cover.
+ className="object-contain transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
  priority
  />
  <div
