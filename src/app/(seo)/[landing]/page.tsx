@@ -9,7 +9,7 @@ import {
 } from "@/lib/seo/landing-pages";
 import { getDiscoverHome } from "@/lib/frontend/discover";
 import { generateFAQSchema, safeJsonLd } from "@/lib/seo/structured";
-import { resolveImageSrc, absoluteUrl } from "@/lib/utils";
+import { resolveImageSrc } from "@/lib/utils";
 import { PublicHeader } from "@/components/public/public-header";
 import { Footer } from "@/components/home/footer";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,16 @@ export function generateStaticParams() {
   return getLandingPageSlugs().map((landing) => ({ landing }));
 }
 
+/**
+ * INCOMPLETE-OG-FIX: this hand-rolled Metadata object duplicated most of
+ * what generateSEOMeta() (lib/seo/meta.ts) already does, but left out
+ * openGraph.images/twitter.images entirely — a real crawl flagged every
+ * one of these programmatic landing pages for incomplete Open Graph tags
+ * as a result. Delegating to generateSEOMeta() instead of hand-duplicating
+ * its shape means this can't drift from the platform default again, and
+ * picks up the og:image (plus robots/verification tags) every other
+ * public page already gets for free.
+ */
 export async function generateMetadata({
   params,
 }: {
@@ -54,25 +64,12 @@ export async function generateMetadata({
   const page = getLandingPage(landing);
   if (!page) return {};
 
-  const url = absoluteUrl(`/${page.slug}`);
-  return {
+  return generateSEOMeta({
     title: page.title,
     description: page.description,
     keywords: page.keywords,
-    alternates: { canonical: url },
-    openGraph: {
-      title: page.title,
-      description: page.description,
-      url,
-      siteName: "Vantrix",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: page.title,
-      description: page.description,
-    },
-  };
+    path: `/${page.slug}`,
+  });
 }
 
 export default async function LandingPage({

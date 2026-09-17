@@ -1,7 +1,7 @@
 import { Crown } from "lucide-react";
-import type { Metadata } from "next";
 import { getPremiumTiers, getTrialEligibility, getPremiumBillingOptions } from "@/lib/frontend/premium";
 import { getShellSession } from "@/lib/frontend/session";
+import { generateSEOMeta } from "@/lib/seo/meta";
 import { TierCard } from "@/components/premium/tier-card";
 import { TrialButton } from "@/components/premium/trial-button";
 import { PaywallViewed } from "@/components/premium/paywall-viewed";
@@ -15,11 +15,20 @@ import { PublicHeader } from "@/components/public/public-header";
  * title/description every other public page in app/ sets — previously
  * skipped entirely since an auth-gated page is never indexed anyway.
  */
-export const metadata: Metadata = {
+/**
+ * MISSING-CANONICAL-FIX: this hand-rolled Metadata object had no
+ * alternates.canonical (or OpenGraph/Twitter tags) — every other public
+ * page uses generateSEOMeta() (lib/seo/meta.ts) specifically so canonical
+ * and social tags are never something a page author has to remember to
+ * add by hand. Switched to it here for the same guarantee, keeping the
+ * exact same title/description this page already had.
+ */
+export const metadata = generateSEOMeta({
   title: "Pricing — Vantrix Premium",
   description:
     "See Vantrix Premium pricing: unlimited conversations, LoRA character training, and the full depth of Vantrix's living world.",
-};
+  path: "/premium",
+});
 
 /**
  * §12 Phase 7 — "checkout flow off the upsell banner." Home's

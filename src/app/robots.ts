@@ -55,6 +55,14 @@ import { getLandingPageSlugs } from "@/lib/seo/landing-pages";
  * RAAS-PUBLIC FIX: "/relationships" (the tier explainer page, see
  * (app)/relationships/page.tsx) is allowed the same way.
  */
+// WWW-CANONICAL-STALENESS-FIX: same reasoning as sitemap.ts's own comment —
+// this route also builds every URL via absoluteUrl()/NEXT_PUBLIC_APP_URL
+// with no dynamic/revalidate export, so it's equally exposed to serving a
+// statically-cached build's URLs after the env value has since been
+// corrected. Forced dynamic for the same reason: always reflect the live
+// env value, never a stale build's.
+export const dynamic = 'force-dynamic';
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
