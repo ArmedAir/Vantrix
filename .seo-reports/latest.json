@@ -1,305 +1,129 @@
 {
   "baseUrl": "https://vantrix.ink",
-  "crawledAt": "2026-09-17T07:33:56.024Z",
+  "crawledAt": "2026-09-17T14:10:50.728Z",
   "robotsFindings": [],
   "results": [
     {
-      "url": "https://vantrix.ink/",
+      "url": "https://www.vantrix.ink/",
       "ok": true,
       "status": 200,
-      "ms": 1585,
-      "wordCount": 16,
+      "ms": 3334,
+      "wordCount": 1404,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/enter - point the sitemap at the final URL directly"
+          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Vantrix — A Living Universe of AI Companions Who Remember You, Always\""
         },
         {
           "severity": "warn",
-          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"Someone Has Been Trying to Figure You Out — Vantrix AI Companions\""
-        },
-        {
-          "severity": "warn",
-          "message": "Missing rel=\"canonical\" - leaves Google to guess which URL variant is authoritative"
-        },
-        {
-          "severity": "warn",
-          "message": "No <h1> found - every indexable page should have exactly one"
-        },
-        {
-          "severity": "info",
-          "message": "~16 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "Meta description is 210 chars, over 160 - will be truncated in results"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/ai-girlfriend",
+      "url": "https://www.vantrix.ink/ai-girlfriend",
       "ok": true,
       "status": 200,
-      "ms": 2550,
+      "ms": 4889,
+      "wordCount": 450,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/ai-boyfriend",
+      "ok": true,
+      "status": 200,
+      "ms": 4675,
+      "wordCount": 413,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/anime-ai-chat",
+      "ok": true,
+      "status": 200,
+      "ms": 5003,
+      "wordCount": 361,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/ai-dating-app-africa",
+      "ok": true,
+      "status": 200,
+      "ms": 5115,
+      "wordCount": 387,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/ai-friend",
+      "ok": true,
+      "status": 200,
+      "ms": 1147,
+      "wordCount": 376,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/virtual-companion",
+      "ok": true,
+      "status": 200,
+      "ms": 1134,
+      "wordCount": 364,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/web-login",
+      "ok": true,
+      "status": 200,
+      "ms": 1042,
       "wordCount": 454,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/ai-girlfriend - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 70 chars, over 60 - Google will truncate it in results: \"AI Girlfriend — Always There for You | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/ai-girlfriend) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        }
-      ]
+      "findings": []
     },
     {
-      "url": "https://vantrix.ink/ai-boyfriend",
+      "url": "https://www.vantrix.ink/character-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 2536,
-      "wordCount": 417,
+      "ms": 861,
+      "wordCount": 474,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/ai-boyfriend - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 84 chars, over 60 - Google will truncate it in results: \"AI Boyfriend — Deep Conversations, Real Connection | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/ai-boyfriend) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/anime-ai-chat",
-      "ok": true,
-      "status": 200,
-      "ms": 3311,
-      "wordCount": 365,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/anime-ai-chat - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 74 chars, over 60 - Google will truncate it in results: \"Anime AI Chat — Talk to Anime Characters | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/anime-ai-chat) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/ai-dating-app-africa",
-      "ok": true,
-      "status": 200,
-      "ms": 1915,
-      "wordCount": 391,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/ai-dating-app-africa - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"AI Dating App Africa — Meet Real People | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/ai-dating-app-africa) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/ai-friend",
-      "ok": true,
-      "status": 200,
-      "ms": 1867,
-      "wordCount": 380,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/ai-friend - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"AI Friend — Always There to Talk | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/ai-friend) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/virtual-companion",
-      "ok": true,
-      "status": 200,
-      "ms": 806,
-      "wordCount": 368,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/virtual-companion - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/virtual-companion) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/web-login",
-      "ok": true,
-      "status": 200,
-      "ms": 862,
-      "wordCount": 458,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/web-login - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Vantrix Web Login — Sign In to Your AI Companions — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/web-login) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/character-ai-alternative",
-      "ok": true,
-      "status": 200,
-      "ms": 920,
-      "wordCount": 478,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/character-ai-alternative - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 88 chars, over 60 - Google will truncate it in results: \"Character.AI Alternative — AI Companions That Remember | Vantrix — Vantrix AI Companions\""
+          "message": "<title> is 64 chars, over 60 - Google will truncate it in results: \"Character.AI Alternative — AI Companions That Remember | Vantrix\""
         },
         {
           "severity": "warn",
           "message": "Meta description is 161 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/character-ai-alternative) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/candy-ai-alternative",
+      "url": "https://www.vantrix.ink/candy-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 619,
-      "wordCount": 450,
+      "ms": 1063,
+      "wordCount": 446,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/kindroid-alternative",
+      "ok": true,
+      "status": 200,
+      "ms": 738,
+      "wordCount": 443,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/candy-ai-alternative - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 81 chars, over 60 - Google will truncate it in results: \"Candy.AI Alternative — Persistent AI Companions | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/candy-ai-alternative) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
+          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Kindroid Alternative — AI Companions With Persistent Memory | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/kindroid-alternative",
+      "url": "https://www.vantrix.ink/login",
       "ok": true,
       "status": 200,
-      "ms": 862,
-      "wordCount": 447,
+      "ms": 633,
+      "wordCount": 42,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/kindroid-alternative - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 93 chars, over 60 - Google will truncate it in results: \"Kindroid Alternative — AI Companions With Persistent Memory | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/kindroid-alternative) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/login",
-      "ok": true,
-      "status": 200,
-      "ms": 414,
-      "wordCount": 46,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/login - point the sitemap at the final URL directly"
-        },
         {
           "severity": "warn",
           "message": "Meta description is 186 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/login) points elsewhere - confirm that's intentional, not a stale copy-paste"
         },
         {
           "severity": "warn",
@@ -307,1026 +131,339 @@
         },
         {
           "severity": "info",
-          "message": "~46 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~42 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/premium",
+      "url": "https://www.vantrix.ink/premium",
       "ok": true,
       "status": 200,
-      "ms": 493,
-      "wordCount": 108,
+      "ms": 954,
+      "wordCount": 104,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/premium - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "Missing rel=\"canonical\" - leaves Google to guess which URL variant is authoritative"
-        },
-        {
           "severity": "info",
-          "message": "2 <h1> tags found - one clear primary heading per page reads better to both crawlers and users"
-        },
-        {
-          "severity": "info",
-          "message": "~108 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~104 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/relationships",
+      "url": "https://www.vantrix.ink/relationships",
       "ok": true,
       "status": 200,
-      "ms": 317,
-      "wordCount": 167,
+      "ms": 386,
+      "wordCount": 163,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/relationships - point the sitemap at the final URL directly"
-        },
         {
           "severity": "warn",
           "message": "Meta description is 167 chars, over 160 - will be truncated in results"
         },
         {
-          "severity": "warn",
-          "message": "Missing rel=\"canonical\" - leaves Google to guess which URL variant is authoritative"
-        },
-        {
           "severity": "info",
-          "message": "~167 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~163 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/discover",
+      "url": "https://www.vantrix.ink/discover",
       "ok": true,
       "status": 200,
-      "ms": 512,
-      "wordCount": 435,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/discover - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/discover) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
+      "ms": 854,
+      "wordCount": 431,
+      "findings": []
     },
     {
-      "url": "https://vantrix.ink/about",
+      "url": "https://www.vantrix.ink/about",
       "ok": true,
       "status": 200,
-      "ms": 129,
-      "wordCount": 173,
+      "ms": 240,
+      "wordCount": 169,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/about - point the sitemap at the final URL directly"
-        },
         {
           "severity": "warn",
           "message": "Meta description is 180 chars, over 160 - will be truncated in results"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/about) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~173 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~169 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/careers",
+      "url": "https://www.vantrix.ink/careers",
       "ok": true,
       "status": 200,
-      "ms": 133,
-      "wordCount": 56,
+      "ms": 232,
+      "wordCount": 52,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/careers - point the sitemap at the final URL directly"
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/careers) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~56 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~52 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog",
+      "url": "https://www.vantrix.ink/blog",
       "ok": true,
       "status": 200,
-      "ms": 251,
-      "wordCount": 795,
+      "ms": 267,
+      "wordCount": 791,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "<title> is 14 chars, under 15 - likely too thin to describe the page: \"Blog | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/why-most-ai-companions-forget-you",
+      "url": "https://www.vantrix.ink/blog/why-most-ai-companions-forget-you",
       "ok": true,
       "status": 200,
-      "ms": 281,
-      "wordCount": 516,
+      "ms": 503,
+      "wordCount": 512,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/why-most-ai-companions-forget-you - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 96 chars, over 60 - Google will truncate it in results: \"Why Most AI Companions Forget You (And What We Do Differently) | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/why-most-ai-companions-forget-you) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Why Most AI Companions Forget You (And What We Do Differently) | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/ai-companion-with-memory-what-to-look-for",
+      "url": "https://www.vantrix.ink/blog/ai-companion-with-memory-what-to-look-for",
       "ok": true,
       "status": 200,
-      "ms": 297,
-      "wordCount": 431,
+      "ms": 535,
+      "wordCount": 427,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/ai-companion-with-memory-what-to-look-for - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 85 chars, over 60 - Google will truncate it in results: \"AI Companion With Memory: What to Actually Look For | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/ai-companion-with-memory-what-to-look-for) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "<title> is 61 chars, over 60 - Google will truncate it in results: \"AI Companion With Memory: What to Actually Look For | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/the-case-for-ai-characters-that-have-a-life-of-their-own",
+      "url": "https://www.vantrix.ink/blog/the-case-for-ai-characters-that-have-a-life-of-their-own",
       "ok": true,
       "status": 200,
-      "ms": 493,
-      "wordCount": 464,
+      "ms": 505,
+      "wordCount": 460,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/the-case-for-ai-characters-that-have-a-life-of-their-own - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 90 chars, over 60 - Google will truncate it in results: \"The Case for AI Characters That Have a Life of Their Own | Vantrix — Vantrix AI Companions\""
+          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"The Case for AI Characters That Have a Life of Their Own | Vantrix\""
         },
         {
           "severity": "warn",
           "message": "Meta description is 166 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/the-case-for-ai-characters-that-have-a-life-of-their-own) points elsewhere - confirm that's intentional, not a stale copy-paste"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/how-ai-character-memory-actually-works",
+      "url": "https://www.vantrix.ink/blog/how-ai-character-memory-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 299,
-      "wordCount": 426,
+      "ms": 597,
+      "wordCount": 422,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/how-ai-character-memory-actually-works - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 90 chars, over 60 - Google will truncate it in results: \"How AI Character Memory Actually Works, Explained Simply | Vantrix — Vantrix AI Companions\""
+          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"How AI Character Memory Actually Works, Explained Simply | Vantrix\""
         },
         {
           "severity": "warn",
           "message": "Meta description is 168 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/how-ai-character-memory-actually-works) points elsewhere - confirm that's intentional, not a stale copy-paste"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/signs-youre-talking-to-a-stateless-chatbot",
+      "url": "https://www.vantrix.ink/blog/signs-youre-talking-to-a-stateless-chatbot",
       "ok": true,
       "status": 200,
-      "ms": 281,
-      "wordCount": 383,
+      "ms": 472,
+      "wordCount": 379,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/signs-youre-talking-to-a-stateless-chatbot - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 111 chars, over 60 - Google will truncate it in results: \"5 Signs You&#x27;re Talking to a Stateless Chatbot (Not a Real Memory System) | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/signs-youre-talking-to-a-stateless-chatbot) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "<title> is 87 chars, over 60 - Google will truncate it in results: \"5 Signs You&#x27;re Talking to a Stateless Chatbot (Not a Real Memory System) | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/why-persistent-memory-changes-how-you-write-characters",
+      "url": "https://www.vantrix.ink/blog/why-persistent-memory-changes-how-you-write-characters",
       "ok": true,
       "status": 200,
-      "ms": 474,
-      "wordCount": 330,
+      "ms": 321,
+      "wordCount": 326,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/why-persistent-memory-changes-how-you-write-characters - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 89 chars, over 60 - Google will truncate it in results: \"Why Persistent Memory Changes How You Write a Character | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/why-persistent-memory-changes-how-you-write-characters) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"Why Persistent Memory Changes How You Write a Character | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/the-difference-between-a-chatbot-and-a-companion",
+      "url": "https://www.vantrix.ink/blog/the-difference-between-a-chatbot-and-a-companion",
       "ok": true,
       "status": 200,
-      "ms": 496,
-      "wordCount": 364,
+      "ms": 535,
+      "wordCount": 360,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/blog/what-a-living-universe-means-for-ai-characters",
+      "ok": true,
+      "status": 200,
+      "ms": 607,
+      "wordCount": 370,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/the-difference-between-a-chatbot-and-a-companion - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 82 chars, over 60 - Google will truncate it in results: \"The Difference Between a Chatbot and a Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/the-difference-between-a-chatbot-and-a-companion) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"What \"Living Universe\" Actually Means for AI Characters | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/what-a-living-universe-means-for-ai-characters",
-      "ok": true,
-      "status": 200,
-      "ms": 317,
-      "wordCount": 374,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/what-a-living-universe-means-for-ai-characters - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 89 chars, over 60 - Google will truncate it in results: \"What \"Living Universe\" Actually Means for AI Characters | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/what-a-living-universe-means-for-ai-characters) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/browse-companions-by-personality-tag",
-      "ok": true,
-      "status": 200,
-      "ms": 257,
-      "wordCount": 346,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/browse-companions-by-personality-tag - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 103 chars, over 60 - Google will truncate it in results: \"You Can Now Browse Vantrix Companions by Personality, Not Just Gender | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/browse-companions-by-personality-tag) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/how-vantrix-approaches-search-and-discoverability",
-      "ok": true,
-      "status": 200,
-      "ms": 268,
-      "wordCount": 322,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/how-vantrix-approaches-search-and-discoverability - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 93 chars, over 60 - Google will truncate it in results: \"How Vantrix Approaches Search Engine and AI Discoverability | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "warn",
-          "message": "Meta description is 164 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/how-vantrix-approaches-search-and-discoverability) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/ai-companion-privacy-what-actually-happens-to-your-data",
-      "ok": true,
-      "status": 200,
-      "ms": 273,
-      "wordCount": 408,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/ai-companion-privacy-what-actually-happens-to-your-data - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 90 chars, over 60 - Google will truncate it in results: \"AI Companion Privacy: What Actually Happens to Your Data | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/ai-companion-privacy-what-actually-happens-to-your-data) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different",
-      "ok": true,
-      "status": 200,
-      "ms": 266,
-      "wordCount": 340,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 106 chars, over 60 - Google will truncate it in results: \"AI Girlfriend vs. AI Boyfriend Apps: How They&#x27;re Actually Different | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/how-ai-personality-engines-actually-work-ocean-model",
+      "url": "https://www.vantrix.ink/blog/browse-companions-by-personality-tag",
       "ok": true,
       "status": 200,
       "ms": 282,
-      "wordCount": 413,
+      "wordCount": 342,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/how-ai-personality-engines-actually-work-ocean-model - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 103 chars, over 60 - Google will truncate it in results: \"How AI Personality Engines Actually Work (The OCEAN Model, Explained) | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/how-ai-personality-engines-actually-work-ocean-model) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "<title> is 79 chars, over 60 - Google will truncate it in results: \"You Can Now Browse Vantrix Companions by Personality, Not Just Gender | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/blog/what-is-a-digital-twin-ai-companion-explained",
+      "url": "https://www.vantrix.ink/blog/how-vantrix-approaches-search-and-discoverability",
       "ok": true,
       "status": 200,
-      "ms": 243,
-      "wordCount": 358,
+      "ms": 282,
+      "wordCount": 318,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/what-is-a-digital-twin-ai-companion-explained - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 82 chars, over 60 - Google will truncate it in results: \"What Is a \"Digital Twin\" in an AI Companion App? | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "warn",
-          "message": "Meta description is 183 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/what-is-a-digital-twin-ai-companion-explained) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/ai-voice-companions-how-text-to-speech-actually-works",
-      "ok": true,
-      "status": 200,
-      "ms": 239,
-      "wordCount": 343,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/ai-voice-companions-how-text-to-speech-actually-works - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 92 chars, over 60 - Google will truncate it in results: \"AI Voice Companions: How the Text-to-Speech Actually Works | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/ai-voice-companions-how-text-to-speech-actually-works) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/can-you-create-your-own-ai-character-a-guide-to-creator-tools",
-      "ok": true,
-      "status": 200,
-      "ms": 270,
-      "wordCount": 365,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/can-you-create-your-own-ai-character-a-guide-to-creator-tools - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 96 chars, over 60 - Google will truncate it in results: \"Can You Create Your Own AI Character? A Guide to Creator Tools | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/can-you-create-your-own-ai-character-a-guide-to-creator-tools) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/ai-companion-safety-what-good-moderation-actually-looks-like",
-      "ok": true,
-      "status": 200,
-      "ms": 246,
-      "wordCount": 376,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/ai-companion-safety-what-good-moderation-actually-looks-like - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 95 chars, over 60 - Google will truncate it in results: \"AI Companion Safety: What Good Moderation Actually Looks Like | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/ai-companion-safety-what-good-moderation-actually-looks-like) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/blog/freemium-ai-companion-apps-how-the-pricing-actually-works",
-      "ok": true,
-      "status": 200,
-      "ms": 276,
-      "wordCount": 402,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/blog/freemium-ai-companion-apps-how-the-pricing-actually-works - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 92 chars, over 60 - Google will truncate it in results: \"Freemium AI Companion Apps: How the Pricing Actually Works | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/blog/freemium-ai-companion-apps-how-the-pricing-actually-works) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/support",
-      "ok": true,
-      "status": 200,
-      "ms": 171,
-      "wordCount": 214,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/support - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/support) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~214 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/press",
-      "ok": true,
-      "status": 200,
-      "ms": 143,
-      "wordCount": 285,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/press - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "Meta description is 166 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/press) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~285 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/terms",
-      "ok": true,
-      "status": 200,
-      "ms": 168,
-      "wordCount": 615,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/terms - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "info",
-          "message": "Meta description is 25 chars, under 50 - room to say more"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/terms) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/privacy",
-      "ok": true,
-      "status": 200,
-      "ms": 161,
-      "wordCount": 885,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/privacy - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "info",
-          "message": "Meta description is 23 chars, under 50 - room to say more"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/privacy) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/3d48a930-8f40-483c-b68b-37f1900ec51c",
-      "ok": true,
-      "status": 200,
-      "ms": 457,
-      "wordCount": 205,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/3d48a930-8f40-483c-b68b-37f1900ec51c - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"Chat with Carter — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/3d48a930-8f40-483c-b68b-37f1900ec51c) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~205 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/02378d6a-371c-426e-ae2f-b23e3d68e79e",
-      "ok": true,
-      "status": 200,
-      "ms": 408,
-      "wordCount": 166,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/02378d6a-371c-426e-ae2f-b23e3d68e79e - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"Chat with Natalie — AI Companion | Vantrix — Vantrix AI Companions\""
+          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"How Vantrix Approaches Search Engine and AI Discoverability | Vantrix\""
         },
         {
           "severity": "warn",
           "message": "Meta description is 164 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/02378d6a-371c-426e-ae2f-b23e3d68e79e) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~166 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/d4138c58-92b7-4328-b4a8-21fbcf92caaf",
+      "url": "https://www.vantrix.ink/blog/ai-companion-privacy-what-actually-happens-to-your-data",
       "ok": true,
       "status": 200,
-      "ms": 792,
-      "wordCount": 190,
+      "ms": 325,
+      "wordCount": 404,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/d4138c58-92b7-4328-b4a8-21fbcf92caaf - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 67 chars, over 60 - Google will truncate it in results: \"Chat with Victoria — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/d4138c58-92b7-4328-b4a8-21fbcf92caaf) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~190 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"AI Companion Privacy: What Actually Happens to Your Data | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/b11fac85-2678-48d4-b2e9-694460ad00f8",
+      "url": "https://www.vantrix.ink/blog/ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different",
       "ok": true,
       "status": 200,
-      "ms": 351,
-      "wordCount": 165,
+      "ms": 515,
+      "wordCount": 336,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/b11fac85-2678-48d4-b2e9-694460ad00f8 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 68 chars, over 60 - Google will truncate it in results: \"Chat with Charlotte — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/b11fac85-2678-48d4-b2e9-694460ad00f8) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~165 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "<title> is 82 chars, over 60 - Google will truncate it in results: \"AI Girlfriend vs. AI Boyfriend Apps: How They&#x27;re Actually Different | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/e6cec2c7-6ffa-486f-8b36-e0b2d69766a6",
+      "url": "https://www.vantrix.ink/blog/how-ai-personality-engines-actually-work-ocean-model",
       "ok": true,
       "status": 200,
-      "ms": 357,
-      "wordCount": 166,
+      "ms": 515,
+      "wordCount": 409,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/e6cec2c7-6ffa-486f-8b36-e0b2d69766a6 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Chat with Madison Cole — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/e6cec2c7-6ffa-486f-8b36-e0b2d69766a6) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~166 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "<title> is 79 chars, over 60 - Google will truncate it in results: \"How AI Personality Engines Actually Work (The OCEAN Model, Explained) | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/2030d9d7-9e86-4c4b-938f-15f89bebf6b7",
+      "url": "https://www.vantrix.ink/blog/what-is-a-digital-twin-ai-companion-explained",
       "ok": true,
       "status": 200,
-      "ms": 781,
-      "wordCount": 248,
+      "ms": 263,
+      "wordCount": 354,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/2030d9d7-9e86-4c4b-938f-15f89bebf6b7 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Chat with Countess Chloe — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/2030d9d7-9e86-4c4b-938f-15f89bebf6b7) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~248 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "Meta description is 183 chars, over 160 - will be truncated in results"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/e8413970-dbad-4dd7-88e4-3e0abb2ef675",
+      "url": "https://www.vantrix.ink/blog/ai-voice-companions-how-text-to-speech-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 592,
-      "wordCount": 240,
+      "ms": 392,
+      "wordCount": 339,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/e8413970-dbad-4dd7-88e4-3e0abb2ef675 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 75 chars, over 60 - Google will truncate it in results: \"Chat with Alexander Wright — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/e8413970-dbad-4dd7-88e4-3e0abb2ef675) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~240 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "<title> is 68 chars, over 60 - Google will truncate it in results: \"AI Voice Companions: How the Text-to-Speech Actually Works | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/126dc769-d0b0-4fc8-9b80-03ee8c9c7970",
+      "url": "https://www.vantrix.ink/blog/can-you-create-your-own-ai-character-a-guide-to-creator-tools",
       "ok": true,
       "status": 200,
-      "ms": 403,
-      "wordCount": 247,
+      "ms": 315,
+      "wordCount": 361,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/126dc769-d0b0-4fc8-9b80-03ee8c9c7970 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Chat with Mason Reed — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/126dc769-d0b0-4fc8-9b80-03ee8c9c7970) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~247 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Can You Create Your Own AI Character? A Guide to Creator Tools | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/b1c77b1c-f923-46f8-8ab5-3d1da16ec73d",
+      "url": "https://www.vantrix.ink/blog/ai-companion-safety-what-good-moderation-actually-looks-like",
       "ok": true,
       "status": 200,
-      "ms": 370,
-      "wordCount": 219,
+      "ms": 330,
+      "wordCount": 372,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/b1c77b1c-f923-46f8-8ab5-3d1da16ec73d - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Chat with Jasmine Ortiz — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/b1c77b1c-f923-46f8-8ab5-3d1da16ec73d) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~219 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"AI Companion Safety: What Good Moderation Actually Looks Like | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/c9487a6b-9dda-4799-bb00-f6193ed22b4e",
+      "url": "https://www.vantrix.ink/blog/freemium-ai-companion-apps-how-the-pricing-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 376,
-      "wordCount": 207,
+      "ms": 329,
+      "wordCount": 398,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/c9487a6b-9dda-4799-bb00-f6193ed22b4e - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Chat with Nicole Barrett — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/c9487a6b-9dda-4799-bb00-f6193ed22b4e) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~207 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "<title> is 68 chars, over 60 - Google will truncate it in results: \"Freemium AI Companion Apps: How the Pricing Actually Works | Vantrix\""
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/552e7bbd-53f1-467b-b4eb-754127625181",
+      "url": "https://www.vantrix.ink/support",
       "ok": true,
       "status": 200,
-      "ms": 351,
-      "wordCount": 199,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/552e7bbd-53f1-467b-b4eb-754127625181 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Chat with Hailey Morgan — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/552e7bbd-53f1-467b-b4eb-754127625181) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~199 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/e35fcb8e-1b6d-43fb-9cb0-ee475357cbee",
-      "ok": true,
-      "status": 200,
-      "ms": 783,
-      "wordCount": 218,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/e35fcb8e-1b6d-43fb-9cb0-ee475357cbee - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Chat with Ethan Walker — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/e35fcb8e-1b6d-43fb-9cb0-ee475357cbee) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~218 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/b4ece831-aae2-4a72-af94-22d34f19521c",
-      "ok": true,
-      "status": 200,
-      "ms": 355,
-      "wordCount": 187,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/b4ece831-aae2-4a72-af94-22d34f19521c - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Chat with Isabella Reyes — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/b4ece831-aae2-4a72-af94-22d34f19521c) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~187 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/6166db2c-99dc-4025-99a4-2da40dd0407e",
-      "ok": true,
-      "status": 200,
-      "ms": 475,
+      "ms": 240,
       "wordCount": 210,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/6166db2c-99dc-4025-99a4-2da40dd0407e - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Chat with Jacob Turner — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/6166db2c-99dc-4025-99a4-2da40dd0407e) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~210 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -1334,23 +471,75 @@
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/6b79f90e-3020-4bba-ae84-a53f8f15e91c",
+      "url": "https://www.vantrix.ink/press",
       "ok": true,
       "status": 200,
-      "ms": 539,
-      "wordCount": 192,
+      "ms": 178,
+      "wordCount": 281,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/6b79f90e-3020-4bba-ae84-a53f8f15e91c - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Chat with Grace Foster — AI Companion | Vantrix — Vantrix AI Companions\""
+          "message": "Meta description is 166 chars, over 160 - will be truncated in results"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/6b79f90e-3020-4bba-ae84-a53f8f15e91c) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "~281 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/terms",
+      "ok": true,
+      "status": 200,
+      "ms": 179,
+      "wordCount": 611,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "Meta description is 25 chars, under 50 - room to say more"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/privacy",
+      "ok": true,
+      "status": 200,
+      "ms": 317,
+      "wordCount": 881,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "Meta description is 23 chars, under 50 - room to say more"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/3d48a930-8f40-483c-b68b-37f1900ec51c",
+      "ok": true,
+      "status": 200,
+      "ms": 463,
+      "wordCount": 201,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~201 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/02378d6a-371c-426e-ae2f-b23e3d68e79e",
+      "ok": true,
+      "status": 200,
+      "ms": 513,
+      "wordCount": 162,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "Meta description is 164 chars, over 160 - will be truncated in results"
         },
         {
           "severity": "warn",
@@ -1358,381 +547,17 @@
         },
         {
           "severity": "info",
-          "message": "~192 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~162 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/790d69d7-cf49-4c34-8c63-b489ee06ec6e",
+      "url": "https://www.vantrix.ink/companions/d4138c58-92b7-4328-b4a8-21fbcf92caaf",
       "ok": true,
       "status": 200,
-      "ms": 353,
-      "wordCount": 235,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/790d69d7-cf49-4c34-8c63-b489ee06ec6e - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Chat with Kai Bishop — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/790d69d7-cf49-4c34-8c63-b489ee06ec6e) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~235 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/528d3015-50dd-441c-aed8-96e566e0fda2",
-      "ok": true,
-      "status": 200,
-      "ms": 364,
-      "wordCount": 207,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/528d3015-50dd-441c-aed8-96e566e0fda2 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 74 chars, over 60 - Google will truncate it in results: \"Chat with Michael Sanchez — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/528d3015-50dd-441c-aed8-96e566e0fda2) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~207 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/968b2b0f-0574-4968-8dd3-0bbe2d2bc4fc",
-      "ok": true,
-      "status": 200,
-      "ms": 365,
-      "wordCount": 188,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/968b2b0f-0574-4968-8dd3-0bbe2d2bc4fc - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 70 chars, over 60 - Google will truncate it in results: \"Chat with Emma Carter — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/968b2b0f-0574-4968-8dd3-0bbe2d2bc4fc) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~188 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/ea700c95-7a64-4ebc-b46b-3ab45d258117",
-      "ok": true,
-      "status": 200,
-      "ms": 360,
-      "wordCount": 224,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/ea700c95-7a64-4ebc-b46b-3ab45d258117 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 70 chars, over 60 - Google will truncate it in results: \"Chat with Liam Cooper — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/ea700c95-7a64-4ebc-b46b-3ab45d258117) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~224 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/98bf6241-d4b7-4085-9e32-5b5e5faf16bb",
-      "ok": true,
-      "status": 200,
-      "ms": 352,
-      "wordCount": 207,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/98bf6241-d4b7-4085-9e32-5b5e5faf16bb - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Chat with Sophia Ramirez — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/98bf6241-d4b7-4085-9e32-5b5e5faf16bb) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~207 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/78839bcc-5af5-4c0b-add3-c756b1d57e8a",
-      "ok": true,
-      "status": 200,
-      "ms": 376,
-      "wordCount": 215,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/78839bcc-5af5-4c0b-add3-c756b1d57e8a - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 74 chars, over 60 - Google will truncate it in results: \"Chat with Benjamin Hughes — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/78839bcc-5af5-4c0b-add3-c756b1d57e8a) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~215 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/d30833ef-ba8f-41ac-8e6d-da773e2909de",
-      "ok": true,
-      "status": 200,
-      "ms": 373,
-      "wordCount": 204,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/d30833ef-ba8f-41ac-8e6d-da773e2909de - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Chat with Aubrey Simmons — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/d30833ef-ba8f-41ac-8e6d-da773e2909de) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~204 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/bfd14dbc-1629-4293-91ef-aec42526a26c",
-      "ok": true,
-      "status": 200,
-      "ms": 575,
-      "wordCount": 225,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/bfd14dbc-1629-4293-91ef-aec42526a26c - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Chat with Tyler Nguyen — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/bfd14dbc-1629-4293-91ef-aec42526a26c) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~225 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/1b8d43d8-8c8a-438d-96bc-fde255b35fc6",
-      "ok": true,
-      "status": 200,
-      "ms": 395,
-      "wordCount": 204,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/1b8d43d8-8c8a-438d-96bc-fde255b35fc6 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Chat with James Coleman — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "warn",
-          "message": "Meta description is 165 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/1b8d43d8-8c8a-438d-96bc-fde255b35fc6) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~204 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/b6de5ebc-b2ba-4a86-8536-ab780c9618b1",
-      "ok": true,
-      "status": 200,
-      "ms": 410,
-      "wordCount": 223,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/b6de5ebc-b2ba-4a86-8536-ab780c9618b1 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Chat with Noah Sullivan — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/b6de5ebc-b2ba-4a86-8536-ab780c9618b1) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~223 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/47b4a177-d469-4004-aa69-606892bf88ab",
-      "ok": true,
-      "status": 200,
-      "ms": 358,
-      "wordCount": 221,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/47b4a177-d469-4004-aa69-606892bf88ab - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Chat with Samantha Ellis — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/47b4a177-d469-4004-aa69-606892bf88ab) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~221 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/db0cf362-4e37-4463-83ad-f73b17245ba7",
-      "ok": true,
-      "status": 200,
-      "ms": 575,
-      "wordCount": 236,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/db0cf362-4e37-4463-83ad-f73b17245ba7 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Chat with Riley Nakamura — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/db0cf362-4e37-4463-83ad-f73b17245ba7) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
-        {
-          "severity": "info",
-          "message": "~236 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/companions/394d47a1-c6f8-46f9-aeb5-422b5975a8e3",
-      "ok": true,
-      "status": 200,
-      "ms": 346,
+      "ms": 495,
       "wordCount": 186,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/394d47a1-c6f8-46f9-aeb5-422b5975a8e3 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Chat with Daniel Price — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/394d47a1-c6f8-46f9-aeb5-422b5975a8e3) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
         {
           "severity": "warn",
           "message": "1/2 <img> tags missing (or empty) alt text"
@@ -1744,52 +569,355 @@
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/3d273314-8a27-4d9f-9293-2b2e4d95797f",
+      "url": "https://www.vantrix.ink/companions/b11fac85-2678-48d4-b2e9-694460ad00f8",
       "ok": true,
       "status": 200,
-      "ms": 342,
-      "wordCount": 212,
+      "ms": 619,
+      "wordCount": 161,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/3d273314-8a27-4d9f-9293-2b2e4d95797f - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 73 chars, over 60 - Google will truncate it in results: \"Chat with Chloe Anderson — AI Companion | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/3d273314-8a27-4d9f-9293-2b2e4d95797f) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
         {
           "severity": "warn",
           "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
-          "message": "~212 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~161 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/companions/5ff3ab87-e70e-457b-9114-5fe8d7fbfe12",
+      "url": "https://www.vantrix.ink/companions/e6cec2c7-6ffa-486f-8b36-e0b2d69766a6",
       "ok": true,
       "status": 200,
-      "ms": 358,
+      "ms": 610,
+      "wordCount": 162,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~162 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/2030d9d7-9e86-4c4b-938f-15f89bebf6b7",
+      "ok": true,
+      "status": 200,
+      "ms": 392,
+      "wordCount": 244,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~244 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/e8413970-dbad-4dd7-88e4-3e0abb2ef675",
+      "ok": true,
+      "status": 200,
+      "ms": 679,
+      "wordCount": 236,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~236 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/126dc769-d0b0-4fc8-9b80-03ee8c9c7970",
+      "ok": true,
+      "status": 200,
+      "ms": 433,
+      "wordCount": 243,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~243 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/b1c77b1c-f923-46f8-8ab5-3d1da16ec73d",
+      "ok": true,
+      "status": 200,
+      "ms": 1417,
+      "wordCount": 215,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~215 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/c9487a6b-9dda-4799-bb00-f6193ed22b4e",
+      "ok": true,
+      "status": 200,
+      "ms": 876,
+      "wordCount": 203,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~203 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/552e7bbd-53f1-467b-b4eb-754127625181",
+      "ok": true,
+      "status": 200,
+      "ms": 769,
+      "wordCount": 195,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~195 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/e35fcb8e-1b6d-43fb-9cb0-ee475357cbee",
+      "ok": true,
+      "status": 200,
+      "ms": 414,
+      "wordCount": 214,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~214 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/b4ece831-aae2-4a72-af94-22d34f19521c",
+      "ok": true,
+      "status": 200,
+      "ms": 418,
+      "wordCount": 183,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~183 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/6166db2c-99dc-4025-99a4-2da40dd0407e",
+      "ok": true,
+      "status": 200,
+      "ms": 845,
+      "wordCount": 206,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~206 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/6b79f90e-3020-4bba-ae84-a53f8f15e91c",
+      "ok": true,
+      "status": 200,
+      "ms": 913,
+      "wordCount": 188,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~188 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/790d69d7-cf49-4c34-8c63-b489ee06ec6e",
+      "ok": true,
+      "status": 200,
+      "ms": 390,
+      "wordCount": 231,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~231 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/528d3015-50dd-441c-aed8-96e566e0fda2",
+      "ok": true,
+      "status": 200,
+      "ms": 455,
+      "wordCount": 203,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~203 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/968b2b0f-0574-4968-8dd3-0bbe2d2bc4fc",
+      "ok": true,
+      "status": 200,
+      "ms": 381,
+      "wordCount": 184,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~184 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/ea700c95-7a64-4ebc-b46b-3ab45d258117",
+      "ok": true,
+      "status": 200,
+      "ms": 433,
+      "wordCount": 220,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~220 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/98bf6241-d4b7-4085-9e32-5b5e5faf16bb",
+      "ok": true,
+      "status": 200,
+      "ms": 375,
+      "wordCount": 203,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~203 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/78839bcc-5af5-4c0b-add3-c756b1d57e8a",
+      "ok": true,
+      "status": 200,
+      "ms": 452,
+      "wordCount": 211,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~211 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/d30833ef-ba8f-41ac-8e6d-da773e2909de",
+      "ok": true,
+      "status": 200,
+      "ms": 671,
       "wordCount": 200,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/companions/5ff3ab87-e70e-457b-9114-5fe8d7fbfe12 - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Chat with Henry Watson — AI Companion | Vantrix — Vantrix AI Companions\""
+          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/companions/5ff3ab87-e70e-457b-9114-5fe8d7fbfe12) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "~200 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/bfd14dbc-1629-4293-91ef-aec42526a26c",
+      "ok": true,
+      "status": 200,
+      "ms": 626,
+      "wordCount": 221,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "1/2 <img> tags missing (or empty) alt text"
+        },
+        {
+          "severity": "info",
+          "message": "~221 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/1b8d43d8-8c8a-438d-96bc-fde255b35fc6",
+      "ok": true,
+      "status": 200,
+      "ms": 390,
+      "wordCount": 200,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "Meta description is 165 chars, over 160 - will be truncated in results"
         },
         {
           "severity": "warn",
@@ -1802,253 +930,127 @@
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/the-capital",
+      "url": "https://www.vantrix.ink/companions/b6de5ebc-b2ba-4a86-8536-ab780c9618b1",
       "ok": true,
       "status": 200,
-      "ms": 479,
-      "wordCount": 120,
+      "ms": 471,
+      "wordCount": 219,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/the-capital - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"The Capital — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
+          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/the-capital) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~120 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~219 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/iron-reach",
+      "url": "https://www.vantrix.ink/companions/47b4a177-d469-4004-aa69-606892bf88ab",
       "ok": true,
       "status": 200,
-      "ms": 515,
-      "wordCount": 137,
+      "ms": 679,
+      "wordCount": 217,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/iron-reach - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Iron Reach — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
+          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/iron-reach) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~137 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~217 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/the-undercroft",
+      "url": "https://www.vantrix.ink/companions/db0cf362-4e37-4463-83ad-f73b17245ba7",
       "ok": true,
       "status": 200,
-      "ms": 490,
-      "wordCount": 120,
+      "ms": 837,
+      "wordCount": 232,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/the-undercroft - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 75 chars, over 60 - Google will truncate it in results: \"The Undercroft — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
+          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/the-undercroft) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~120 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~232 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/cloudspire",
+      "url": "https://www.vantrix.ink/companions/394d47a1-c6f8-46f9-aeb5-422b5975a8e3",
       "ok": true,
       "status": 200,
-      "ms": 460,
-      "wordCount": 109,
+      "ms": 824,
+      "wordCount": 182,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/cloudspire - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"Cloudspire — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
+          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/cloudspire) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~109 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~182 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/the-archive",
+      "url": "https://www.vantrix.ink/companions/3d273314-8a27-4d9f-9293-2b2e4d95797f",
       "ok": true,
       "status": 200,
-      "ms": 686,
-      "wordCount": 107,
+      "ms": 473,
+      "wordCount": 208,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/the-archive - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"The Archive — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
+          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/the-archive) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~107 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~208 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/obsidian-tower",
+      "url": "https://www.vantrix.ink/companions/5ff3ab87-e70e-457b-9114-5fe8d7fbfe12",
       "ok": true,
       "status": 200,
-      "ms": 462,
-      "wordCount": 117,
+      "ms": 454,
+      "wordCount": 196,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/obsidian-tower - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 75 chars, over 60 - Google will truncate it in results: \"Obsidian Tower — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
+          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/obsidian-tower) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~117 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~196 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/the-ruins",
+      "url": "https://www.vantrix.ink/locations/the-capital",
       "ok": true,
       "status": 200,
-      "ms": 484,
-      "wordCount": 108,
+      "ms": 757,
+      "wordCount": 116,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/the-ruins - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 70 chars, over 60 - Google will truncate it in results: \"The Ruins — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/the-ruins) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~108 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~116 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/wing-of-the-root",
+      "url": "https://www.vantrix.ink/locations/iron-reach",
       "ok": true,
       "status": 200,
-      "ms": 482,
-      "wordCount": 147,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-root - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 77 chars, over 60 - Google will truncate it in results: \"Wing of the Root — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "warn",
-          "message": "Meta description is 165 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-root) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~147 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/locations/wing-of-the-drowned-court",
-      "ok": true,
-      "status": 200,
-      "ms": 470,
-      "wordCount": 138,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-drowned-court - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 86 chars, over 60 - Google will truncate it in results: \"Wing of the Drowned Court — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-drowned-court) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~138 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/locations/wing-of-the-ash-camps",
-      "ok": true,
-      "status": 200,
-      "ms": 665,
+      "ms": 842,
       "wordCount": 133,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-ash-camps - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 82 chars, over 60 - Google will truncate it in results: \"Wing of the Ash Camps — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-ash-camps) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
         {
           "severity": "info",
           "message": "~133 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -2056,190 +1058,89 @@
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/wing-of-the-long-sky",
+      "url": "https://www.vantrix.ink/locations/the-undercroft",
       "ok": true,
       "status": 200,
-      "ms": 485,
-      "wordCount": 137,
+      "ms": 1013,
+      "wordCount": 116,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-long-sky - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 81 chars, over 60 - Google will truncate it in results: \"Wing of the Long Sky — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-long-sky) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~137 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~116 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/wing-of-the-fallen-stair",
+      "url": "https://www.vantrix.ink/locations/cloudspire",
       "ok": true,
       "status": 200,
-      "ms": 489,
-      "wordCount": 147,
+      "ms": 538,
+      "wordCount": 105,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-fallen-stair - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 85 chars, over 60 - Google will truncate it in results: \"Wing of the Fallen Stair — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-fallen-stair) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~147 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~105 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/wing-of-the-crack",
+      "url": "https://www.vantrix.ink/locations/the-archive",
       "ok": true,
       "status": 200,
-      "ms": 849,
-      "wordCount": 149,
+      "ms": 989,
+      "wordCount": 103,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-crack - point the sitemap at the final URL directly"
-        },
+          "severity": "info",
+          "message": "~103 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/obsidian-tower",
+      "ok": true,
+      "status": 200,
+      "ms": 780,
+      "wordCount": 113,
+      "findings": [
         {
-          "severity": "warn",
-          "message": "<title> is 78 chars, over 60 - Google will truncate it in results: \"Wing of the Crack — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
+          "severity": "info",
+          "message": "~113 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/the-ruins",
+      "ok": true,
+      "status": 200,
+      "ms": 543,
+      "wordCount": 104,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~104 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/wing-of-the-root",
+      "ok": true,
+      "status": 200,
+      "ms": 509,
+      "wordCount": 143,
+      "findings": [
         {
           "severity": "warn",
           "message": "Meta description is 165 chars, over 160 - will be truncated in results"
         },
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-crack) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~149 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~143 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/wing-of-the-crossroads",
-      "ok": true,
-      "status": 200,
-      "ms": 893,
-      "wordCount": 147,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-crossroads - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 83 chars, over 60 - Google will truncate it in results: \"Wing of the Crossroads — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-crossroads) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~147 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/locations/wing-of-between-light",
-      "ok": true,
-      "status": 200,
-      "ms": 465,
-      "wordCount": 134,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-between-light - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 82 chars, over 60 - Google will truncate it in results: \"Wing of Between-Light — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-between-light) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~134 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/locations/wing-of-the-storm-wall",
-      "ok": true,
-      "status": 200,
-      "ms": 498,
-      "wordCount": 144,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-storm-wall - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 83 chars, over 60 - Google will truncate it in results: \"Wing of the Storm Wall — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-storm-wall) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~144 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/locations/wing-of-the-long-market",
-      "ok": true,
-      "status": 200,
-      "ms": 690,
-      "wordCount": 142,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-the-long-market - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 84 chars, over 60 - Google will truncate it in results: \"Wing of the Long Market — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "warn",
-          "message": "Meta description is 170 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-the-long-market) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~142 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/locations/the-ashen-cloister",
+      "url": "https://www.vantrix.ink/locations/wing-of-the-drowned-court",
       "ok": true,
       "status": 200,
       "ms": 517,
@@ -2247,15 +1148,7 @@
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/the-ashen-cloister - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 79 chars, over 60 - Google will truncate it in results: \"The Ashen Cloister — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/the-ashen-cloister) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "<title> is 62 chars, over 60 - Google will truncate it in results: \"Wing of the Drowned Court — A Vantrix World Location | Vantrix\""
         },
         {
           "severity": "info",
@@ -2264,48 +1157,114 @@
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/wing-of-hidden-names",
+      "url": "https://www.vantrix.ink/locations/wing-of-the-ash-camps",
       "ok": true,
       "status": 200,
-      "ms": 646,
-      "wordCount": 131,
+      "ms": 583,
+      "wordCount": 129,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/wing-of-hidden-names - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 81 chars, over 60 - Google will truncate it in results: \"Wing of Hidden Names — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/wing-of-hidden-names) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~131 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~129 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/the-fourth-wall-wing",
+      "url": "https://www.vantrix.ink/locations/wing-of-the-long-sky",
       "ok": true,
       "status": 200,
-      "ms": 1105,
+      "ms": 717,
+      "wordCount": 133,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~133 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/wing-of-the-fallen-stair",
+      "ok": true,
+      "status": 200,
+      "ms": 544,
+      "wordCount": 143,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "<title> is 61 chars, over 60 - Google will truncate it in results: \"Wing of the Fallen Stair — A Vantrix World Location | Vantrix\""
+        },
+        {
+          "severity": "info",
+          "message": "~143 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/wing-of-the-crack",
+      "ok": true,
+      "status": 200,
+      "ms": 489,
+      "wordCount": 145,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "Meta description is 165 chars, over 160 - will be truncated in results"
+        },
+        {
+          "severity": "info",
+          "message": "~145 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/wing-of-the-crossroads",
+      "ok": true,
+      "status": 200,
+      "ms": 552,
+      "wordCount": 143,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~143 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/wing-of-between-light",
+      "ok": true,
+      "status": 200,
+      "ms": 534,
+      "wordCount": 130,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~130 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/wing-of-the-storm-wall",
+      "ok": true,
+      "status": 200,
+      "ms": 500,
+      "wordCount": 140,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~140 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/wing-of-the-long-market",
+      "ok": true,
+      "status": 200,
+      "ms": 657,
       "wordCount": 138,
       "findings": [
         {
           "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/the-fourth-wall-wing - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 81 chars, over 60 - Google will truncate it in results: \"The Fourth-Wall Wing — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/the-fourth-wall-wing) points elsewhere - confirm that's intentional, not a stale copy-paste"
+          "message": "Meta description is 170 chars, over 160 - will be truncated in results"
         },
         {
           "severity": "info",
@@ -2314,310 +1273,129 @@
       ]
     },
     {
-      "url": "https://vantrix.ink/locations/the-research-wing",
+      "url": "https://www.vantrix.ink/locations/the-ashen-cloister",
       "ok": true,
       "status": 200,
-      "ms": 699,
-      "wordCount": 136,
+      "ms": 516,
+      "wordCount": 130,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/locations/the-research-wing - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 78 chars, over 60 - Google will truncate it in results: \"The Research Wing — A Vantrix World Location | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/locations/the-research-wing) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "~136 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~130 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/legendary",
+      "url": "https://www.vantrix.ink/locations/wing-of-hidden-names",
       "ok": true,
       "status": 200,
-      "ms": 820,
-      "wordCount": 303,
+      "ms": 523,
+      "wordCount": 127,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/legendary - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Legendary AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/legendary) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
+          "message": "~127 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/slow-burn",
+      "url": "https://www.vantrix.ink/locations/the-fourth-wall-wing",
       "ok": true,
       "status": 200,
-      "ms": 717,
-      "wordCount": 268,
+      "ms": 539,
+      "wordCount": 134,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/slow-burn - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Slow-burn AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/slow-burn) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~268 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~134 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/intellectual",
+      "url": "https://www.vantrix.ink/locations/the-research-wing",
       "ok": true,
       "status": 200,
-      "ms": 768,
-      "wordCount": 171,
+      "ms": 544,
+      "wordCount": 132,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/intellectual - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Intellectual AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/intellectual) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~171 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~132 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/profound",
+      "url": "https://www.vantrix.ink/tags/legendary",
       "ok": true,
       "status": 200,
-      "ms": 577,
-      "wordCount": 163,
+      "ms": 1130,
+      "wordCount": 299,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/profound - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 68 chars, over 60 - Google will truncate it in results: \"Profound AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/profound) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~163 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~299 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/warm",
+      "url": "https://www.vantrix.ink/tags/slow-burn",
       "ok": true,
       "status": 200,
-      "ms": 569,
-      "wordCount": 160,
+      "ms": 869,
+      "wordCount": 264,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/warm - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 64 chars, over 60 - Google will truncate it in results: \"Warm AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/warm) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~160 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~264 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/mysterious",
+      "url": "https://www.vantrix.ink/tags/intellectual",
       "ok": true,
       "status": 200,
-      "ms": 561,
-      "wordCount": 145,
+      "ms": 896,
+      "wordCount": 167,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/mysterious - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 70 chars, over 60 - Google will truncate it in results: \"Mysterious AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/mysterious) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~145 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~167 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/precise",
+      "url": "https://www.vantrix.ink/tags/profound",
       "ok": true,
       "status": 200,
-      "ms": 545,
-      "wordCount": 155,
+      "ms": 859,
+      "wordCount": 159,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/precise - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 67 chars, over 60 - Google will truncate it in results: \"Precise AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/precise) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~155 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~159 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/anime",
+      "url": "https://www.vantrix.ink/tags/warm",
       "ok": true,
       "status": 200,
-      "ms": 572,
-      "wordCount": 140,
+      "ms": 815,
+      "wordCount": 156,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/anime - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"Anime AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/anime) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~140 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~156 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/architect",
+      "url": "https://www.vantrix.ink/tags/mysterious",
       "ok": true,
       "status": 200,
-      "ms": 582,
-      "wordCount": 145,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/architect - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Architect AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/architect) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~145 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://vantrix.ink/tags/direct",
-      "ok": true,
-      "status": 200,
-      "ms": 627,
+      "ms": 1224,
       "wordCount": 141,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/direct - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"Direct AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
-          "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/direct) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
         {
           "severity": "info",
           "message": "~141 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -2625,67 +1403,87 @@
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/grief",
+      "url": "https://www.vantrix.ink/tags/precise",
       "ok": true,
       "status": 200,
-      "ms": 583,
-      "wordCount": 140,
+      "ms": 1270,
+      "wordCount": 151,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/grief - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"Grief AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
-        {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/grief) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
-        {
-          "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
-        {
-          "severity": "info",
-          "message": "~140 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~151 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://vantrix.ink/tags/wry",
+      "url": "https://www.vantrix.ink/tags/anime",
       "ok": true,
       "status": 200,
-      "ms": 543,
-      "wordCount": 146,
+      "ms": 866,
+      "wordCount": 136,
       "findings": [
         {
-          "severity": "warn",
-          "message": "Redirected to https://www.vantrix.ink/tags/wry - point the sitemap at the final URL directly"
-        },
-        {
-          "severity": "warn",
-          "message": "<title> is 63 chars, over 60 - Google will truncate it in results: \"Wry AI Companions — Chat Free | Vantrix — Vantrix AI Companions\""
-        },
+          "severity": "info",
+          "message": "~136 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/architect",
+      "ok": true,
+      "status": 200,
+      "ms": 908,
+      "wordCount": 141,
+      "findings": [
         {
           "severity": "info",
-          "message": "Canonical (https://vantrix.ink/tags/wry) points elsewhere - confirm that's intentional, not a stale copy-paste"
-        },
+          "message": "~141 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/direct",
+      "ok": true,
+      "status": 200,
+      "ms": 900,
+      "wordCount": 137,
+      "findings": [
         {
           "severity": "info",
-          "message": "Incomplete Open Graph tags (og:title/og:description/og:image) - affects how the page looks when shared, not ranking directly"
-        },
+          "message": "~137 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/grief",
+      "ok": true,
+      "status": 200,
+      "ms": 715,
+      "wordCount": 136,
+      "findings": [
         {
           "severity": "info",
-          "message": "~146 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~136 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/wry",
+      "ok": true,
+      "status": 200,
+      "ms": 874,
+      "wordCount": 142,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~142 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     }
   ],
   "counts": {
     "critical": 0,
-    "warn": 243,
-    "info": 195
+    "warn": 68,
+    "info": 72
   }
 }
