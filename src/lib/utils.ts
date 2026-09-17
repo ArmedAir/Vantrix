@@ -120,6 +120,35 @@ export function absoluteUrl(path: string) {
   if (process.env.NODE_ENV !== "production") {
     base = base.replace(/^(https?:\/\/)localhost(:\d+)?/i, "$1127.0.0.1$2");
   }
+  // WWW-CANONICALIZATION-FIX: the live site's www subdomain is what
+  // Vercel's domain config actually serves content on directly — the
+  // bare apex (vantrix.ink) 301/302-redirects there on every request.
+  // NEXT_PUBLIC_APP_URL is set to the apex host, though, and this
+  // function is the single source every SEO surface builds its URLs
+  // from (sitemap.ts and robots.ts directly; every canonical/OG/JSON-LD
+  // tag via lib/seo/meta.ts + lib/seo/structured.ts) — so every one of
+  // them was emitting apex URLs while the pages they describe are only
+  // ever actually served at the www host. Confirmed live via
+  // scripts/seo-crawler.mjs: every one of 103 sitemap URLs redirected to
+  // its own www equivalent, and each page's own canonical tag (also
+  // built from this function) pointed at the pre-redirect apex URL
+  // rather than the page it was sitting on — a self-contradicting
+  // canonical on every single indexable page. Rewriting the bare apex to
+  // www here, in the one shared place, fixes the sitemap, robots.txt's
+  // sitemap: line, and every canonical/OG/JSON-LD URL at once, and is a
+  // no-op for every other caller (the cron self-fetches, webhook return
+  // URLs, share links, etc.) beyond skipping a now-unnecessary redirect
+  // hop. Deliberately just this one apex<->www pair, not a generic
+  // scheme/host rewrite — if the canonical host ever changes for real,
+  // change NEXT_PUBLIC_APP_URL itself, not this.
+  //
+  // REGEX-FIX: \b after "ink" doesn't anchor to end-of-host — \b only
+  // requires a word/non-word transition, which "ink." still has
+  // regardless of what follows the dot. That matched lookalike hosts too
+  // (vantrix.ink.evil.com -> www.vantrix.ink.evil.com), rewriting a
+  // completely different domain. Anchored instead to what can actually
+  // end a host here: end of string, a port's ":", or the path's "/".
+  base = base.replace(/^(https?:\/\/)vantrix\.ink(?=[:/]|$)/i, "$1www.vantrix.ink");
   // TRAILING-SLASH-FIX: NEXT_PUBLIC_APP_URL is very commonly copy-pasted
   // with a trailing slash (e.g. "http://127.0.0.1:3000/", or a prod value
   // like "https://vantrix.ink/"). Without stripping it, `${base}${path}`
