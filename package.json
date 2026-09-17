@@ -31,7 +31,8 @@
     "worker:dev": "tsx watch src/lib/queue/worker-runner.ts",
     "verify:prod": "tsx --env-file=.env.production scripts/verify-production-config.mjs",
     "images:optimize": "node scripts/optimize-images.mjs",
-    "scenes:backfill-legendary": "tsx --env-file=.env.local scripts/backfill-legendary-scenes.ts"
+    "scenes:backfill-legendary": "tsx --env-file=.env.local scripts/backfill-legendary-scenes.ts",
+    "seo:crawl": "node scripts/seo-crawler.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1075.0",

@@ -1,0 +1,37 @@
+# Runs scripts/seo-crawler.mjs against the live site on a schedule so
+# technical-SEO regressions (missing titles/descriptions, broken sitemap
+# links, robots.txt misconfig, etc.) get caught automatically instead of
+# only when someone happens to run `npm run seo:crawl` by hand.
+#
+# Optional repo secret: VANTRIX_BASE_URL (defaults to https://vantrix.ink
+# if unset — same fallback the script itself uses).
+#
+# Fails the run (red X, default GitHub email/UI notification) only on a
+# CRITICAL finding (broken page, missing title, robots.txt blocking
+# everything, etc.) — see seo-crawler.mjs's own exit-code convention.
+# Warnings/info findings never fail the job; they're in the report either
+# way.
+name: SEO crawl
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 9 * * 1' # Mondays, 09:00 UTC
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run SEO crawler
+        env:
+          BASE_URL: ${{ secrets.VANTRIX_BASE_URL || 'https://vantrix.ink' }}
+        run: node scripts/seo-crawler.mjs
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-crawler-report
+          path: seo-crawler-report.json
+          retention-days: 90
