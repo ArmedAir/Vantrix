@@ -11,11 +11,19 @@
 # everything, etc.) — see seo-crawler.mjs's own exit-code convention.
 # Warnings/info findings never fail the job; they're in the report either
 # way.
+#
+# Also commits the latest report to .seo-reports/latest.json on main (not
+# just the transient Actions artifact) so it's readable via a normal git
+# pull/GitHub UI browse — Actions artifacts resolve through Azure Blob
+# Storage, which isn't reachable from every environment that wants to read
+# these results.
 name: SEO crawl
 on:
   workflow_dispatch: {}
   schedule:
     - cron: '0 9 * * 1' # Mondays, 09:00 UTC
+permissions:
+  contents: write
 jobs:
   crawl:
     runs-on: ubuntu-latest
@@ -35,3 +43,15 @@ jobs:
           name: seo-crawler-report
           path: seo-crawler-report.json
           retention-days: 90
+      - name: Commit report to repo
+        if: always()
+        run: |
+          if [ ! -f seo-crawler-report.json ]; then exit 0; fi
+          git config user.name "seo-crawler-bot"
+          git config user.email "seo-crawler-bot@users.noreply.github.com"
+          mkdir -p .seo-reports
+          cp seo-crawler-report.json .seo-reports/latest.json
+          git add .seo-reports/latest.json
+          git diff --staged --quiet && exit 0
+          git commit -m "seo-crawl: update latest report [skip ci]"
+          git push
