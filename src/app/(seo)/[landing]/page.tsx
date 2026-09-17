@@ -9,6 +9,7 @@ import {
 } from "@/lib/seo/landing-pages";
 import { getDiscoverHome } from "@/lib/frontend/discover";
 import { generateFAQSchema, safeJsonLd } from "@/lib/seo/structured";
+import { generateSEOMeta } from "@/lib/seo/meta";
 import { resolveImageSrc } from "@/lib/utils";
 import { PublicHeader } from "@/components/public/public-header";
 import { Footer } from "@/components/home/footer";
