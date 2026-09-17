@@ -83,17 +83,30 @@ function FeaturedHero({ item }: { item: DiscoverFeaturedItem }) {
  href={`/characters/${item.characterId}`}
  className="group relative block w-full aspect-[16/11] sm:aspect-[16/8] rounded-lg overflow-hidden border border-border-hairline bg-black shadow-card transition-[border-color,box-shadow] duration-300 ease-premium hover:border-gold-500/40 hover:shadow-gold-glow"
  >
+ {/* FEATURED-HERO-CROP-FIX v2: plain object-cover cropped the source
+ portrait to fill the box (cut off the top of James Coleman's head).
+ A first pass switched the foreground to object-contain, which fixed
+ the crop but left flat black letterbox bars on any off-ratio image,
+ which read as broken rather than fixed. This keeps that object-contain
+ foreground (full photo, never cropped) and adds a blurred, scaled-up
+ copy of the same image as a backdrop layer behind it: the backdrop
+ fills every edge of the box (no black bars), the foreground shows the
+ complete, uncropped photo centered on top of it. Scoped to this hero
+ card only -- FeaturedTile's 3/4 grid tiles below stay plain
+ object-cover, unchanged. */}
+ <Image
+ src={resolveImageSrc(item.image)}
+ alt=""
+ aria-hidden
+ fill
+ sizes="(min-width: 768px) 1152px, 100vw"
+ className="object-cover scale-110 blur-2xl opacity-60"
+ />
  <Image
  src={resolveImageSrc(item.image)}
  alt={item.title}
  fill
  sizes="(min-width: 768px) 1152px, 100vw"
- // FEATURED-HERO-CROP-FIX: object-cover was cropping the source
- // image to fill the fixed 16/11 / 16/8 box (cutting off the top of
- // James Coleman's portrait, e.g.) -- object-contain shows the
- // whole image letterboxed against the card's own bg-black instead.
- // Scoped to this hero card only; FeaturedTile's 3/4 grid tiles
- // below are unaffected and stay object-cover.
  className="object-contain transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
  priority
  />
