@@ -554,6 +554,35 @@ const cleanedEnv: Record<string, string | undefined> = Object.fromEntries(
   Object.entries(process.env).map(([key, value]) => [key, value === '' ? undefined : value]),
 );
 
+// WWW-CANONICAL-FIX: the production domain redirects the bare apex
+// (vantrix.ink) to www (www.vantrix.ink) at the DNS/hosting level, but
+// NEXT_PUBLIC_APP_URL — the single source every public URL in the app is
+// built from (absoluteUrl() in lib/utils.ts, used by sitemap.ts, robots.ts,
+// and every page's own canonical tag via generateSEOMeta) — had nothing
+// enforcing which form it was actually set to in Vercel. A real crawl found
+// every sitemap <loc> pointing at the bare apex (which then 301s to www)
+// while every page's own canonical tag correctly resolved to www — both
+// read this exact same env var, so that split could only mean the sitemap
+// (statically generated, no dynamic/revalidate export — see its own fix
+// comment) was serving a cached build from before this var was last
+// corrected. Normalizing here, once, at the source of truth, means this
+// can't recur even if the Vercel dashboard value is ever reset to the bare
+// apex by mistake — every consumer downstream automatically gets the
+// correct www form regardless.
+if (cleanedEnv.NEXT_PUBLIC_APP_URL) {
+  try {
+    const u = new URL(cleanedEnv.NEXT_PUBLIC_APP_URL);
+    if (u.hostname === 'vantrix.ink') {
+      u.hostname = 'www.vantrix.ink';
+      cleanedEnv.NEXT_PUBLIC_APP_URL = u.toString().replace(/\/$/, '');
+    }
+  } catch {
+    // Malformed URL — leave as-is; the schema's `.url()` check below will
+    // reject it with a normal validation error rather than this silently
+    // swallowing a real misconfiguration.
+  }
+}
+
 // VERCEL-BRAIN: when BRAIN_SERVICE_URL isn't explicitly set and this is
 // running on Vercel — VERCEL_URL is a Vercel-provided system env var
 // (present at build and runtime on every deployment, no config needed) —
