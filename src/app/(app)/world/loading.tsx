@@ -6,7 +6,11 @@ export default function WorldLoading() {
     <div className="mx-auto max-w-7xl px-4 md:px-8 py-6">
       <div className="flex items-center gap-2 mb-4">
         <Globe2 className="h-5 w-5 text-gold-500" strokeWidth={1.75} />
-        <h1 className="font-display text-2xl text-text-primary">World</h1>
+        {/* DUPLICATE-H1-FIX: see premium/loading.tsx's own comment -- a
+            Suspense fallback's markup gets streamed into the real SSR
+            response alongside the page it's replaced by, so a heading tag
+            here duplicates the page's real <h1> for any plain-fetch crawler. */}
+        <div className="font-display text-2xl text-text-primary" aria-hidden="true">World</div>
       </div>
 
       <Skeleton className="h-[52px] w-full rounded-md" />

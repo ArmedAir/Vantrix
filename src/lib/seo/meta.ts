@@ -29,7 +29,22 @@ export function generateSEOMeta({
   const ogImage = absoluteUrl(image);
 
   return {
-    title,
+    // DOUBLE-BRANDING-FIX: every caller of generateSEOMeta() already passes
+    // a complete, final title (e.g. blog/[slug]'s `${post.title} | Vantrix`,
+    // tag pages' `${label} AI Companions — Chat Free | Vantrix`) — none of
+    // them are written expecting more to be appended. But a plain string
+    // title is still subject to the root layout's title template
+    // (`"%s — Vantrix AI Companions"`, added there specifically so a child
+    // route that sets NO title of its own still gets a properly-branded
+    // one) — so every page using this helper was getting that same
+    // 24-character suffix appended on top of its own already-complete
+    // title. A real crawl caught the result directly: titles like
+    // "...| Vantrix — Vantrix AI Companions" (redundant brand, doubled) and
+    // roughly 60 pages pushed past Google's ~60-char truncation point by
+    // that unwanted suffix alone. `{ absolute: title }` is Next's supported
+    // way for a child page to opt out of an inherited template — the
+    // layout's `default` (for routes that truly set no title) is untouched.
+    title: { absolute: title },
     description,
     keywords: [
       "AI companion",

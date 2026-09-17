@@ -46,7 +46,19 @@ const LIMIT      = Number.parseInt(process.env.SEO_CRAWL_LIMIT ?? '', 10) || Inf
 const CONCURRENCY = 5;
 const DELAY_MS    = 150; // polite pacing per worker, not a hammering crawler
 const TIMEOUT_MS  = 15_000;
-const UA = 'VantrixSEOCrawler/1.0 (+https://vantrix.ink)';
+// CRAWLER-UA-FIX: this custom UA doesn't match middleware.ts's
+// KNOWN_CRAWLER_UA_PATTERN, which exists specifically so real search/social
+// crawlers bypass the signed-out "/" -> "/enter" first-visit redirect (see
+// that block's own comment — /enter is a deliberately chrome-free
+// onboarding flow, never meant to be what search results are built from).
+// Without a recognized UA, this script gets treated as an ordinary
+// first-time human visitor and redirected to /enter instead — which is
+// exactly why "/" was showing up here with the wrong title, no canonical,
+// no <h1>, and ~16 words: that's /enter's content, not the real homepage.
+// Masquerading as Googlebot (already in that pattern) makes this crawler
+// see precisely what Google actually sees, which is the entire point of
+// running it.
+const UA = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
 
 const TITLE_MIN = 15;
 const TITLE_MAX = 60;

@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Sparkles, Heart, Infinity as InfinityIcon, Check, type LucideIcon } from "lucide-react";
 import { getShellSession } from "@/lib/frontend/session";
 import { PublicHeader } from "@/components/public/public-header";
 import { RELATIONSHIP_TIER_ORDER, RELATIONSHIP_TIER_COPY, type RelationshipTier } from "@/lib/commerce/raas-constants";
+import { generateSEOMeta } from "@/lib/seo/meta";
 
 /**
  * RaaS surfacing (public half): the last of the three gaps found in this
@@ -14,11 +14,17 @@ import { RELATIONSHIP_TIER_ORDER, RELATIONSHIP_TIER_COPY, type RelationshipTier 
  * already established (see (app)/layout.tsx's PRICING-PUBLIC FIX): pure
  * marketing copy, no account data, safe to render with no session.
  */
-export const metadata: Metadata = {
+/**
+ * MISSING-CANONICAL-FIX: same issue and same fix as premium/page.tsx —
+ * this hand-rolled Metadata object had no canonical/OpenGraph tags.
+ * Switched to generateSEOMeta(), same title/description kept as-is.
+ */
+export const metadata = generateSEOMeta({
   title: "How Relationships Work — Vantrix",
   description:
     "Every Vantrix companion starts on Spark. Bond and Soulbound unlock full, permanent memory — and for some characters, a specialized personality pack found nowhere else.",
-};
+  path: "/relationships",
+});
 
 const TIER_ICONS: Record<RelationshipTier, LucideIcon> = {
   spark: Sparkles,
