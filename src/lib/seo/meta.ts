@@ -28,6 +28,27 @@ export function generateSEOMeta({
   const url = absoluteUrl(path);
   const ogImage = absoluteUrl(image);
 
+  // TITLE-LENGTH-FIX: after the double-branding fix above stopped the
+  // layout template from appending its own 24-char suffix, ~24 pages
+  // were still over Google's ~60-char truncation point purely from their
+  // own already-complete title -- every one of them ending in the same
+  // literal " | Vantrix" every caller appends by convention (see this
+  // file's DOUBLE-BRANDING-FIX comment for the exact call sites: blog
+  // posts, landing pages, location pages, tag pages). Dropping just that
+  // known suffix, and only when the title is already over the limit
+  // without it, recovers up to 10 characters on exactly the pages that
+  // need it and does nothing to the ~80 pages already under 60 -- a
+  // one-place fix instead of hand-editing every long post/page title
+  // individually. Scoped to the <title> tag/search snippet only: OG and
+  // Twitter cards keep the full title below, since they aren't truncated
+  // the same way and the brand suffix reads fine there.
+  const TITLE_MAX = 60;
+  const BRAND_SUFFIX = " | Vantrix";
+  const pageTitle =
+    title.length > TITLE_MAX && title.endsWith(BRAND_SUFFIX)
+      ? title.slice(0, -BRAND_SUFFIX.length)
+      : title;
+
   return {
     // DOUBLE-BRANDING-FIX: every caller of generateSEOMeta() already passes
     // a complete, final title (e.g. blog/[slug]'s `${post.title} | Vantrix`,
@@ -44,7 +65,7 @@ export function generateSEOMeta({
     // that unwanted suffix alone. `{ absolute: title }` is Next's supported
     // way for a child page to opt out of an inherited template — the
     // layout's `default` (for routes that truly set no title) is untouched.
-    title: { absolute: title },
+    title: { absolute: pageTitle },
     description,
     keywords: [
       "AI companion",

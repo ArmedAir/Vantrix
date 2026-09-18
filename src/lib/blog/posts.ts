@@ -25,7 +25,7 @@ export interface BlogPost {
 export const BLOG_POSTS: BlogPost[] = [
   {
     slug: "why-most-ai-companions-forget-you",
-    title: "Why Most AI Companions Forget You (And What We Do Differently)",
+    title: "Why Most AI Companions Forget You (And What We Fixed)",
     description:
       "Most AI chatbots reset every session. Here's why that happens under the hood, and how Vantrix keeps real cross-session memory instead of faking it.",
     datePublished: "2026-09-05",
@@ -176,7 +176,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "signs-youre-talking-to-a-stateless-chatbot",
-    title: "5 Signs You're Talking to a Stateless Chatbot (Not a Real Memory System)",
+    title: "5 Signs You're Talking to a Stateless Chatbot",
     description:
       "Quick, practical ways to tell if an AI companion actually has persistent memory or is just faking continuity with clever summaries.",
     datePublished: "2026-09-05",
@@ -322,7 +322,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "browse-companions-by-personality-tag",
-    title: "You Can Now Browse Vantrix Companions by Personality, Not Just Gender",
+    title: "Browse Vantrix Companions by Personality, Not Gender",
     description:
       "Vantrix's discover page now lets you browse companions by personality tag — tsundere, slow burn, royalty, and more — each with its own dedicated page.",
     datePublished: "2026-09-10",
@@ -423,7 +423,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different",
-    title: "AI Girlfriend vs. AI Boyfriend Apps: How They're Actually Different",
+    title: "AI Girlfriend vs. AI Boyfriend Apps: What's Different",
     description:
       "The marketing between AI girlfriend and AI boyfriend apps looks different. Under the hood, the engineering question is usually the same one.",
     datePublished: "2026-09-16",
@@ -456,7 +456,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "how-ai-personality-engines-actually-work-ocean-model",
-    title: "How AI Personality Engines Actually Work (The OCEAN Model, Explained)",
+    title: "How AI Personality Engines Work (The OCEAN Model)",
     description:
       "\"This AI has a real personality\" is a common claim. Here's the actual psychological framework behind making it true instead of just asserted.",
     datePublished: "2026-09-16",
@@ -561,7 +561,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "can-you-create-your-own-ai-character-a-guide-to-creator-tools",
-    title: "Can You Create Your Own AI Character? A Guide to Creator Tools",
+    title: "Create Your Own AI Character: A Creator Tools Guide",
     description:
       "Some AI companion platforms let you build and publish your own character. Here's what that actually involves and what to look for.",
     datePublished: "2026-09-16",
@@ -600,7 +600,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "ai-companion-safety-what-good-moderation-actually-looks-like",
-    title: "AI Companion Safety: What Good Moderation Actually Looks Like",
+    title: "AI Companion Safety: What Good Moderation Looks Like",
     description:
       "Safety in an AI companion app isn't one feature — it's a set of separate systems working together. Here's what to actually check for.",
     datePublished: "2026-09-16",

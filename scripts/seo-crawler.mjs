@@ -192,11 +192,22 @@ const CHECKS = {
   },
 
   images(html) {
+    // ALT-CHECK-FIX: this used to flag alt="" as equivalent to a missing
+    // alt attribute. It isn't -- an empty alt is the correct, deliberate
+    // WCAG way to mark an image as decorative/redundant (a background
+    // blur, a per-message avatar already named right next to it), and
+    // *removing* it would make things worse for a screen reader, not
+    // better. A live crawl caught this producing false positives on
+    // exactly that pattern (login page's decorative backdrop/portrait
+    // grid, the per-message chat-avatar bubble on every
+    // /companions/[id] page) -- neither was a real bug, both were this
+    // check being wrong. Now only a genuinely absent alt attribute (no
+    // alt="..." at all) counts as a finding.
     const imgs = html.match(/<img\b[^>]*>/gi) ?? [];
-    const missingAlt = imgs.filter((tag) => !/\balt=["'][^"']*["']/i.test(tag) || /\balt=["']["']/i.test(tag));
+    const missingAlt = imgs.filter((tag) => !/\balt=["'][^"']*["']/i.test(tag));
     const findings = [];
     if (imgs.length > 0 && missingAlt.length > 0) {
-      findings.push({ severity: SEVERITY.WARN, message: `${missingAlt.length}/${imgs.length} <img> tags missing (or empty) alt text` });
+      findings.push({ severity: SEVERITY.WARN, message: `${missingAlt.length}/${imgs.length} <img> tags have no alt attribute at all (alt="" on a decorative image is fine and not counted here)` });
     }
     return findings;
   },

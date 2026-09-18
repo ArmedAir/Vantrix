@@ -23,7 +23,7 @@ import { env } from "@/env";
 // world keeps going." Title/description below are the copy search
 // engines and AI answer engines pull first, so they carry the
 // persistence differentiator rather than generic "AI companion" copy.
-const SITE_TITLE = "Vantrix — A Living Universe of AI Companions Who Remember You, Always";
+const SITE_TITLE = "Vantrix — AI Companions Who Actually Remember You";
 const SITE_DESCRIPTION =
   "Vantrix is a living universe of AI companions who remember you, always. They change with you, and their world keeps going — persistent memory and evolving personalities, not a chatbot that resets every session.";
 
