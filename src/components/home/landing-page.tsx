@@ -101,12 +101,35 @@ function CharacterPortrait({ character, className = "" }: { character: DiscoverC
  imageSrc={resolveImageSrc(character.image_url)}
  alt={character.name}
  sizes="(max-width: 768px) 80vw, 42vw"
- appearance={{
- hair_color: character.hair_color,
- eye_color: character.eye_color,
- skin_tone: character.skin_tone,
- body_type: character.body_type,
- }}
+ // LCP-FIX: a real Lighthouse run measured LCP = 4.2s on this page
+ // (mobile, "poor" — Google's "good" threshold is under 2.5s), the
+ // dominant reason Performance sat at 70-84. Two compounding causes,
+ // both fixed here:
+ //
+ // 1. `priority` was never passed through to this component's 2D
+ //    fallback tier (LivingPortrait -> SafeImage -> next/image), so
+ //    Next.js applied its default `loading="lazy"` to the single
+ //    most prominent above-the-fold element on the entire site —
+ //    the platform's one first-impression surface. `priority` here
+ //    tells Next to fetch it eagerly with high fetchpriority instead
+ //    of waiting on lazy-load's intersection-observer behavior.
+ //
+ // 2. `appearance` (below) opted this hero into
+ //    CharacterPortraitViewer's tier-2 procedural-3D-avatar path
+ //    (@react-three/fiber + @react-three/drei + three — "one of the
+ //    heaviest dependency trees in this app", per that component's
+ //    own comment) for virtually every character, since almost none
+ //    have a real `model_url` yet. That tier's own docstring already
+ //    concedes it's "an abstract form, not a likeness" — strictly
+ //    worse for a first impression than the real photo, while being
+ //    the likely dominant contributor to the 339 KiB of unused
+ //    JavaScript Lighthouse flagged on this page. Omitting
+ //    `appearance` here (character-detail's own CharacterHero is
+ //    untouched and keeps using it) makes this specific call site
+ //    render straight to the 2D photo tier every time — the better
+ //    first impression AND the lighter one, for the one hero on the
+ //    site where both actually matter together.
+ priority
  />
  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
  <div className="absolute inset-x-0 bottom-0 p-5">
