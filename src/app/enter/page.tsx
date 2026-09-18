@@ -8,12 +8,17 @@ import { Logo } from "@/components/shell/logo";
  * See docs/vantrix-onboarding-conversion-build.md for the full spec.
  *
  * Deliberately no PublicHeader/nav chrome on this route (per build doc
- * §1.1 — "no explanation of the platform, make the user curious"). A
- * returning visitor should not land here repeatedly — enforced upstream:
- * middleware.ts redirects every first-time, signed-out visit to "/" here
- * (root traffic decision, 2026-09-06), tracked via a `vx_seen` cookie so
- * it only ever fires once per browser. See that file's own doc comment
- * for the crawler exemption and deep-link handling.
+ * §1.1 — "no explanation of the platform, make the user curious").
+ *
+ * ROUTING CHANGE (2026-09-18): middleware.ts no longer auto-redirects
+ * first-time signed-out visitors here from "/" — that redirect (and the
+ * vx_seen cookie it depended on) was removed per explicit request, so
+ * "/" now shows the real marketing homepage to every anon visitor,
+ * first-time or returning, same as it already did for crawlers. This
+ * page itself is untouched and still fully reachable at /enter directly
+ * (e.g. for a future A/B test, an ad-specific landing link, or simply
+ * choosing to bring the redirect back later) — only the automatic
+ * routing into it was disabled.
  *
  * force-dynamic: nothing here is user-specific server-side (the flow
  * itself is entirely client-state), but the character pool it fetches
@@ -23,14 +28,9 @@ import { Logo } from "@/components/shell/logo";
 export const dynamic = "force-dynamic";
 
 // BRAND-DISAMBIGUATION FIX: this used to be a flat `title: "Vantrix"` —
-// bare "Vantrix" with no AI/companion context, on the one route every
-// signed-out crawler that isn't on the KNOWN_CRAWLER_UA_PATTERN allowlist
-// in middleware.ts (GPTBot, ClaudeBot, PerplexityBot, etc. — see that
-// file's own fix comment) actually gets redirected to. That combination
-// meant exactly the AI-answer-engine crawlers llms.txt is written for
-// were seeing the least disambiguated title on the whole site. The root
-// layout's title template (`%s — Vantrix AI Companions`) now appends the
-// disambiguator automatically, so this only needs the page-specific part.
+// bare "Vantrix" with no AI/companion context. The root layout's title
+// template (`%s — Vantrix AI Companions`) now appends the disambiguator
+// automatically, so this only needs the page-specific part.
 export const metadata: Metadata = {
   title: "Someone Has Been Trying to Figure You Out",
   description:
