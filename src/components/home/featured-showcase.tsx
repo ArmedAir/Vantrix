@@ -83,31 +83,21 @@ function FeaturedHero({ item }: { item: DiscoverFeaturedItem }) {
  href={`/characters/${item.characterId}`}
  className="group relative block w-full aspect-[16/11] sm:aspect-[16/8] rounded-lg overflow-hidden border border-border-hairline bg-black shadow-card transition-[border-color,box-shadow] duration-300 ease-premium hover:border-gold-500/40 hover:shadow-gold-glow"
  >
- {/* FEATURED-HERO-CROP-FIX v2: plain object-cover cropped the source
- portrait to fill the box (cut off the top of James Coleman's head).
- A first pass switched the foreground to object-contain, which fixed
- the crop but left flat black letterbox bars on any off-ratio image,
- which read as broken rather than fixed. This keeps that object-contain
- foreground (full photo, never cropped) and adds a blurred, scaled-up
- copy of the same image as a backdrop layer behind it: the backdrop
- fills every edge of the box (no black bars), the foreground shows the
- complete, uncropped photo centered on top of it. Scoped to this hero
- card only -- FeaturedTile's 3/4 grid tiles below stay plain
- object-cover, unchanged. */}
- <Image
- src={resolveImageSrc(item.image)}
- alt=""
- aria-hidden
- fill
- sizes="(min-width: 768px) 1152px, 100vw"
- className="object-cover scale-110 blur-2xl opacity-60"
- />
+ {/* FEATURED-HERO-CROP-FIX v3: v2's object-contain + blurred-backdrop
+ approach (full uncropped photo, blur filling the edges instead of
+ flat black bars) was reverted per explicit request -- a portrait
+ photo inside this wide 16:11/16:8 box still left visibly empty
+ letterboxed space on both sides even with the blur behind it, which
+ read as broken/unfinished rather than intentional. Back to a single
+ object-cover layer: the photo fills the entire card edge-to-edge,
+ cropped as needed -- matching FeaturedTile's grid tiles below, which
+ were always object-cover and never drew this complaint. */}
  <Image
  src={resolveImageSrc(item.image)}
  alt={item.title}
  fill
  sizes="(min-width: 768px) 1152px, 100vw"
- className="object-contain transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
+ className="object-cover transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
  priority
  />
  <div
