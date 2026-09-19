@@ -50,7 +50,10 @@ export function ContinueYourStories({ chats }: { chats: HomeContextChat[] }) {
  alt={name}
  fill
  sizes="(max-width: 768px) 50vw, 33vw"
- className="object-cover transition-transform duration-300 ease-premium group-hover:scale-[1.03]"
+ // OBJECT-POSITION-FIX: same bug and fix as character-feature-card.tsx --
+ // aspect-[4/3] center-cropping a portrait character photo cuts through
+ // the head. object-top keeps the head, crops from the bottom.
+ className="object-cover object-top transition-transform duration-300 ease-premium group-hover:scale-[1.03]"
  />
  <div
  className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent"

@@ -472,7 +472,11 @@ export function LandingPage({ characters, experiences, dailyWorldChoice }: { cha
  alt={intelligenceCharacter.name}
  fill
  sizes="(max-width: 1024px) 100vw, 48vw"
- className="object-cover"
+ // OBJECT-POSITION-FIX: same bug and fix as character-feature-card.tsx
+ // and tonight-match-card.tsx -- a portrait photo (Hailey Morgan) in
+ // this aspect-[4/3] box was center-cropped straight through the head.
+ // object-top keeps the head, crops from the bottom instead.
+ className="object-cover object-top"
  />
  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
  <div className="absolute inset-x-0 bottom-0 p-5">
@@ -663,7 +667,7 @@ export function LandingPage({ characters, experiences, dailyWorldChoice }: { cha
  <div className="mt-9 flex snap-x gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
  {experiences.slice(0, 6).map((experience) => (
  <Link key={experience.id} href={`/companions/${experience.characterId}`} className="group relative min-w-[270px] snap-start overflow-hidden rounded-md border border-border-hairline md:min-w-[320px]">
- <div className="relative aspect-[1.25]"><Image src={resolveImageSrc(experience.image)} alt={experience.title} fill sizes="320px" className="object-cover transition-transform ease-premium duration-500 group-hover:scale-[1.04]" /><div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" /></div>
+ <div className="relative aspect-[1.25]"><Image src={resolveImageSrc(experience.image)} alt={experience.title} fill sizes="320px" className="object-cover object-top transition-transform ease-premium duration-500 group-hover:scale-[1.04]" /><div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" /></div>
  <div className="absolute inset-x-0 bottom-0 p-5"><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-gold-400">{experience.category}</div><div className="mt-1 font-display text-xl text-white">{experience.title}</div><div className="mt-1 line-clamp-1 text-xs text-white/55">{experience.subtitle}</div></div>
  </Link>
  ))}

@@ -35,7 +35,12 @@ export function LockedTonightMatchCard({
  alt="Tonight's Match — locked until you upgrade"
  fill
  sizes="(max-width: 640px) 100vw, 800px"
- className="scale-110 object-cover blur-2xl"
+ // OBJECT-POSITION-FIX: same fix as tonight-match-card.tsx's own (real)
+ // version of this image -- object-top keeps the head in this 16:9/21:9
+ // box instead of center-cropping through it. Kept alongside the
+ // existing blur, which is for the locked/premium-teaser effect and is
+ // unrelated to this fix.
+ className="scale-110 object-cover object-top blur-2xl"
  />
  <div
  className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
