@@ -217,6 +217,32 @@ const nextConfig = {
       // mechanism is gone rather than re-fenced. Add TLS-stripping
       // protection at the edge/proxy (Vercel, Cloudflare) for the real
       // production domain instead, where it can't leak onto local testing.
+      //
+      // HSTS-RESTORED (allowlist, not denylist): the removal above was
+      // correct about the failure mode but left a real gap — nothing sent
+      // Strict-Transport-Security at all afterward, anywhere, so HTTPS was
+      // only ever a redirect (Vercel's automatic HTTP->HTTPS for the
+      // custom domain), never enforced against a stripped first request on
+      // a hostile network. The bug that caused the original removal was a
+      // *denylist* (exclude a few known-local hostnames, send the header
+      // to everything else, including any *.vercel.app preview host) —
+      // this uses the opposite shape: an explicit `has` match on exactly
+      // the two real production hostnames, nothing else. localhost,
+      // 127.0.0.1, every *.vercel.app preview/branch deployment, and any
+      // future dev/staging host are structurally unable to match an
+      // allowlist they aren't on, so the specific failure mode that caused
+      // the original incident (a broad match catching a local `next start`
+      // run) can't recur here regardless of what other hosts this app is
+      // ever reached on. `includeSubDomains` deliberately omitted — this
+      // covers the apex and www explicitly rather than opting every
+      // present-or-future subdomain in implicitly.
+      {
+        source: "/(.*)",
+        has: [{ type: "host", value: "(www\\.)?vantrix\\.ink" }],
+        headers: [
+          { key: "Strict-Transport-Security", value: "max-age=63072000" },
+        ],
+      },
       {
         // Generous cache on static assets
         source: "/_next/static/:path*",
