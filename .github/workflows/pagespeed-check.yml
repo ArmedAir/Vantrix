@@ -14,12 +14,19 @@
 # Commits the latest report to .seo-reports/pagespeed-latest.json on main
 # (mirrors seo-crawl.yml's own report-commit step and its reasoning --
 # Actions artifacts resolve through Azure Blob Storage, not reachable from
-# every environment that wants to read these results afterward).
+# every environment that wants to read these results afterward). The run's
+# full stdout/stderr is ALSO committed, to .seo-reports/pagespeed-run.log,
+# for the same reason -- a failed run with nothing to summarize would
+# otherwise be undiagnosable from anywhere that can't reach Actions' own
+# log storage either.
 #
 # Does NOT fail the job on a low performance score -- unlike
 # seo-crawler.mjs's CRITICAL findings (broken pages, missing titles),
 # there's no single "objectively broken" performance threshold to gate CI
-# on; this is for visibility/trend-tracking, not a pass/fail check.
+# on; this is for visibility/trend-tracking, not a pass/fail check. It DOES
+# still fail the job if the PSI call itself errors out (rate-limited,
+# network issue, etc.) -- that's a real problem worth the schedule's
+# failure notification, distinct from "the site is just slow".
 name: PageSpeed check
 on:
   workflow_dispatch: {}
@@ -36,29 +43,55 @@ jobs:
         with:
           node-version: '24'
       - name: Run PageSpeed Insights check
+        id: psi
         env:
           BASE_URL: ${{ secrets.VANTRIX_BASE_URL || 'https://vantrix.ink' }}
           PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
-        run: node scripts/pagespeed-check.mjs
-      - name: Upload report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pagespeed-report
-          path: pagespeed-report.json
-          retention-days: 90
-      - name: Commit report to repo
+        # continue-on-error + the explicit "Fail if PSI check failed" step
+        # below (rather than just letting this step fail the job directly)
+        # is what lets the log-capture/commit steps after this one still
+        # run on a failure -- `if: always()` on those wouldn't help if the
+        # job stopped right here.
+        run: |
+          set -o pipefail
+          node scripts/pagespeed-check.mjs 2>&1 | tee pagespeed-run.log
+        continue-on-error: true
+      - name: Commit report + log to repo
         if: always()
         run: |
-          if [ ! -f pagespeed-report.json ]; then exit 0; fi
           git config user.name "pagespeed-check-bot"
           git config user.email "pagespeed-check-bot@users.noreply.github.com"
           mkdir -p .seo-reports
-          cp pagespeed-report.json .seo-reports/pagespeed-latest.json
-          git add .seo-reports/pagespeed-latest.json
+          changed=0
+          if [ -f pagespeed-report.json ]; then
+            cp pagespeed-report.json .seo-reports/pagespeed-latest.json
+            git add .seo-reports/pagespeed-latest.json
+            changed=1
+          fi
+          if [ -f pagespeed-run.log ]; then
+            cp pagespeed-run.log .seo-reports/pagespeed-run.log
+            git add .seo-reports/pagespeed-run.log
+            changed=1
+          fi
+          if [ "$changed" -eq 0 ]; then exit 0; fi
           git diff --staged --quiet && exit 0
-          git commit -m "pagespeed-check: update latest report [skip ci]"
+          git commit -m "pagespeed-check: update latest report/log [skip ci]"
           # This repo sees frequent concurrent commits; rebase onto
           # whatever landed since checkout rather than racing a plain push.
           git pull --rebase origin main
           git push
+      - name: Upload report + log as artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagespeed-report
+          path: |
+            pagespeed-report.json
+            pagespeed-run.log
+          retention-days: 90
+          if-no-files-found: ignore
+      - name: Fail job if the PSI check itself failed
+        if: steps.psi.outcome == 'failure'
+        run: |
+          echo "PageSpeed Insights check failed -- see .seo-reports/pagespeed-run.log on main for the captured output." >&2
+          exit 1
