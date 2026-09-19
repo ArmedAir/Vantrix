@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
   "regions": [
-    "iad1"
+    "fra1"
   ],
   "crons": [
     {
