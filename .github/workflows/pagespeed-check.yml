@@ -1,0 +1,64 @@
+# Runs scripts/pagespeed-check.mjs against the live site on a schedule.
+# Same reasoning as seo-crawl.yml: this repo's own sandbox/CI environment
+# has no network path to the live site or to googleapis.com, but GitHub's
+# own runners do -- so the actual PageSpeed Insights call has to happen
+# here, not locally.
+#
+# Optional repo secrets:
+#   VANTRIX_BASE_URL   (defaults to https://vantrix.ink)
+#   PAGESPEED_API_KEY  (unlocks a much higher PSI API rate limit; the
+#                       public API works without one but allows only a
+#                       handful of calls/day before 429ing -- fine for
+#                       this weekly schedule, tighter if run more often)
+#
+# Commits the latest report to .seo-reports/pagespeed-latest.json on main
+# (mirrors seo-crawl.yml's own report-commit step and its reasoning --
+# Actions artifacts resolve through Azure Blob Storage, not reachable from
+# every environment that wants to read these results afterward).
+#
+# Does NOT fail the job on a low performance score -- unlike
+# seo-crawler.mjs's CRITICAL findings (broken pages, missing titles),
+# there's no single "objectively broken" performance threshold to gate CI
+# on; this is for visibility/trend-tracking, not a pass/fail check.
+name: PageSpeed check
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 10 * * 1' # Mondays, 10:00 UTC (an hour after the SEO crawl)
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run PageSpeed Insights check
+        env:
+          BASE_URL: ${{ secrets.VANTRIX_BASE_URL || 'https://vantrix.ink' }}
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+        run: node scripts/pagespeed-check.mjs
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagespeed-report
+          path: pagespeed-report.json
+          retention-days: 90
+      - name: Commit report to repo
+        if: always()
+        run: |
+          if [ ! -f pagespeed-report.json ]; then exit 0; fi
+          git config user.name "pagespeed-check-bot"
+          git config user.email "pagespeed-check-bot@users.noreply.github.com"
+          mkdir -p .seo-reports
+          cp pagespeed-report.json .seo-reports/pagespeed-latest.json
+          git add .seo-reports/pagespeed-latest.json
+          git diff --staged --quiet && exit 0
+          git commit -m "pagespeed-check: update latest report [skip ci]"
+          # This repo sees frequent concurrent commits; rebase onto
+          # whatever landed since checkout rather than racing a plain push.
+          git pull --rebase origin main
+          git push
