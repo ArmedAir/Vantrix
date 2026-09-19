@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { SafeImage as Image } from "@/components/ui/safe-image";
 import {
   Coins,
   Users,
@@ -186,7 +185,8 @@ function CharacterEarningsRow({ entry, rank }: { entry: CharacterFundDashboardEn
           <div className="flex items-center gap-3 min-w-0">
             <div className="relative shrink-0">
               {entry.imageUrl ? (
-                <Image src={entry.imageUrl} alt="" width={40} height={40} className="h-10 w-10 rounded-sm object-cover border border-border-hairline" />
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={entry.imageUrl} alt="" className="h-10 w-10 rounded-sm object-cover border border-border-hairline" />
               ) : (
                 <div className="h-10 w-10 rounded-sm bg-white/[0.04] border border-border-hairline" />
               )}

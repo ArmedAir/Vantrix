@@ -69,7 +69,11 @@ export function LandingCharacterGrid({ initial }: { initial: DiscoverCharacter[]
                   alt={character.name}
                   fill
                   sizes="(max-width: 768px) 50vw, 25vw"
-                  className="object-cover transition-transform duration-500 ease-premium group-hover:scale-[1.035]"
+                  // OBJECT-POSITION-FIX: same fix as character-feature-card.tsx,
+                  // hero-split.tsx, featured-showcase.tsx — tall aspect-[.78] tile,
+                  // default object-cover centers the crop and cuts through the
+                  // head on these portrait photos. object-top keeps the head.
+                  className="object-cover object-top transition-transform duration-500 ease-premium group-hover:scale-[1.035]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-4">

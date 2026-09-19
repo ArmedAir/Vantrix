@@ -97,7 +97,15 @@ function FeaturedHero({ item }: { item: DiscoverFeaturedItem }) {
  alt={item.title}
  fill
  sizes="(min-width: 768px) 1152px, 100vw"
- className="object-cover transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
+ // OBJECT-POSITION-FIX: matching character-feature-card.tsx and
+ // hero-split.tsx's identical fix — default object-cover centers the
+ // crop, but these are tall portrait photos with the face near the
+ // top, so centering on this wide 16:11/16:8 box was cropping
+ // through the head. object-top keeps the head, never cuts it. Not
+ // in tension with this file's own FEATURED-HERO-CROP-FIX comment
+ // above, which is about object-contain vs. object-cover (letterboxing),
+ // not vertical crop position — still full-bleed object-cover here.
+ className="object-cover object-top transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
  priority
  />
  <div
