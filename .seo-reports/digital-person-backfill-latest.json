@@ -1,3 +1,2 @@
-Redirecting...
-
-HTTP_STATUS:301
+{"error":"Unauthorized"}
+HTTP_STATUS:401
