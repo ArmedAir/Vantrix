@@ -10,7 +10,7 @@ import {
 } from '../lib/digital-twin/twin-signals';
 import { buildMirrorBlock, MAX_BLOCK_CHARS } from '../lib/digital-twin/mirror-block';
 import {
-  conceptsOf, twinAffinity, twinBlend, twinReason, TWIN_AFFINITY_WEIGHT,
+  conceptsOf, twinAffinity, twinBlend, twinConcepts, twinReason, TWIN_AFFINITY_WEIGHT,
 } from '../lib/recommendations/twin-affinity';
 
 const INTIMATE = {
@@ -135,8 +135,43 @@ describe('mirror-block', () => {
   });
 });
 
+describe('mirror-block — roleplay surface', () => {
+  const full: TwinMirrorSummary = {
+    tone: 'warm and teasing', humor: 'dry', formality: 'casual',
+    messageLength: 'short', emoji: 'frequent', punctuation: 'no capitals',
+    styleSummary: 'Short lowercase texts, quick back-and-forth',
+  };
+
+  it('offers only tone / humor / formality — never rhythm fields that would fight the format contract', () => {
+    const b = buildMirrorBlock(full, 'roleplay')!;
+    expect(b).toContain('tone: warm and teasing');
+    expect(b).toContain('humor: dry');
+    expect(b).toContain('formality: casual');
+    for (const leaked of ['message length', 'emoji', 'punctuation', 'texting style', 'lowercase']) {
+      expect(b).not.toContain(leaked);
+    }
+  });
+
+  it('says the Story Mode format contract and the character win', () => {
+    const b = buildMirrorBlock(full, 'roleplay')!;
+    expect(b).toContain('Story Mode format contract');
+    expect(b).toContain('never change a beat');
+    expect(b).toContain('LOWEST PRIORITY');
+    expect(b.length).toBeLessThanOrEqual(MAX_BLOCK_CHARS);
+  });
+
+  it('is null when only rhythm fields exist (nothing usable for a narrator)', () => {
+    expect(buildMirrorBlock({ ...EMPTY, messageLength: 'short', emoji: 'light', punctuation: 'x', styleSummary: 'y' }, 'roleplay')).toBeNull();
+  });
+
+  it('chat surface is unchanged by the roleplay variant', () => {
+    expect(buildMirrorBlock(full)).toContain('usual message length: short');
+    expect(buildMirrorBlock(full, 'chat')).toBe(buildMirrorBlock(full));
+  });
+});
+
 describe('twin-affinity', () => {
-  const twin = { humor: ['dry', 'sarcastic'], values: ['honesty'], tone: ['warm'] };
+  const twin = { humor: ['dry', 'sarcastic'], values: ['honesty'], tone: ['warm'], interests: [] as string[] };
 
   it('maps differently-worded vocabulary onto shared concepts', () => {
     expect(conceptsOf(['dry, sarcastic'])).toEqual(new Set(['witty']));
@@ -160,8 +195,49 @@ describe('twin-affinity', () => {
   it('scores humor + values + tone hits and reports the dominant dimension', () => {
     const full = twinAffinity(twin, { tags: ['witty', 'honest', 'caring'], archetype: null });
     expect(full).toEqual({ score: 100, dominant: 'humor' });
+    // values is 25 of the 75 weight this twin has evidence for → 33
     const valuesOnly = twinAffinity(twin, { tags: ['loyal'], archetype: null });
-    expect(valuesOnly).toEqual({ score: 35, dominant: 'values' });
+    expect(valuesOnly).toEqual({ score: 33, dominant: 'values' });
+  });
+
+  describe('standard-trained twins (no humorStyle / values)', () => {
+    // What buildStyleProfile('standard') actually produces: tone + topics, nothing deeper.
+    const standard = extractMatchSignals({
+      auto_traits: { tone: 'casual and playful, dry and sarcastic', formality: 'casual', topics: ['music', 'travel'] },
+    })!;
+
+    it('still yields signals, including interests from topics', () => {
+      expect(standard.humor).toEqual([]);
+      expect(standard.values).toEqual([]);
+      expect(standard.interests).toEqual(['music', 'travel']);
+    });
+
+    it('reads humor off the tone phrase and does not count it twice', () => {
+      const t = twinConcepts(standard);
+      expect(t.humor).toEqual(new Set(['playful', 'witty']));
+      expect(t.tone.size).toBe(0);                       // moved out of tone, not duplicated
+      expect(t.interests).toEqual(new Set(['creative', 'adventurous']));
+    });
+
+    it('can reach the full 0–100 range on the dimensions it has', () => {
+      expect(twinAffinity(standard, { tags: ['witty', 'creative'], archetype: null })).toEqual({ score: 100, dominant: 'humor' });
+      expect(twinAffinity(standard, { tags: ['dry-humor'], archetype: null }).score).toBe(58); // humor 35 of 60
+      expect(twinAffinity(standard, { tags: ['musical'], archetype: null })).toEqual({ score: 42, dominant: 'interests' });
+    });
+
+    it('a real twin-side hit on humor beats no hit', () => {
+      expect(twinAffinity(standard, { tags: ['gothic'], archetype: null }).score).toBe(0);
+    });
+
+    it('thin evidence is damped: one weak dimension cannot look like a perfect match', () => {
+      const thin = { humor: [], values: [], tone: ['warm'], interests: [] as string[] };
+      // available weight is only 15 of the 50 needed for full confidence → 100% * 0.3
+      expect(twinAffinity(thin, { tags: ['caring'], archetype: null }).score).toBe(30);
+    });
+
+    it('interests earn a user-facing reason', () => {
+      expect(twinReason({ score: 42, dominant: 'interests' })).toBe('Into the same things as you');
+    });
   });
 
   it('reads the archetype too', () => {
@@ -189,7 +265,7 @@ describe('twin-affinity', () => {
 
   it('only claims a reason for humor/values hits', () => {
     expect(twinReason({ score: 45, dominant: 'humor' })).toBe('Matches your sense of humor');
-    expect(twinReason({ score: 35, dominant: 'values' })).toBe('Shares what you value');
+    expect(twinReason({ score: 33, dominant: 'values' })).toBe('Shares what you value');
     expect(twinReason({ score: 20, dominant: 'tone' })).toBeNull();
     expect(twinReason(null)).toBeNull();
   });

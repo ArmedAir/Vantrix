@@ -104,7 +104,7 @@ export function CharacterMirrorToggle({ characterId }: { characterId: string }) 
   return (
     <ToggleRow
       title="Let this character get to know how you talk"
-      description="Shares only your tone, humor and formality with this character so it can match your pace. Never your beliefs or private patterns. It stays fully itself, and you can turn this off any time."
+      description="Shares only your tone, humor and formality (plus your texting rhythm in chat) with this character, in chats and stories, so it can meet you where you are. Never your beliefs or private patterns. It stays fully itself, and you can turn this off any time."
       switchProps={{ checked: state.enabled, busy, label: 'Let this character get to know how you talk', onChange: update }}
       error={error}
     />
@@ -149,7 +149,7 @@ export function TwinMatchingToggle() {
   return (
     <ToggleRow
       title="Use my twin to improve my matches"
-      description="Your twin's humor, values and tone gently influence who shows up in Discover and Dating. This is scored privately on our servers and is never sent to an AI model."
+      description="Your twin's humor, values, tone and interests gently influence who shows up in Discover and Dating. This is scored privately on our servers and is never sent to an AI model."
       switchProps={{ checked: state.useForMatching, busy, label: 'Use my twin to improve my matches', onChange: update }}
       error={error}
     />

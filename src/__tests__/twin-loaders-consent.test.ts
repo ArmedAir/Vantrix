@@ -72,6 +72,22 @@ describe('loadTwinMirrorBlock — per-character consent', () => {
     expect(block).not.toContain('honesty'); // values are for ranking only, never sent into chat
   });
 
+  it('roleplay surface reuses the same opt-in but offers narrator-safe fields only', async () => {
+    state.optin = { character_id: 'c1' };
+    state.twin = { ...TRAINED, auto_traits: { ...(TRAINED.auto_traits as object), avgMessageLength: 'short', emojiUsage: 'frequent' } };
+    const rp = await loadTwinMirrorBlock('u1', 'c1', 'roleplay');
+    expect(rp).toContain('tone: warm and teasing');
+    expect(rp).not.toContain('emoji');
+    expect(rp).not.toContain('message length');
+    const chat = await loadTwinMirrorBlock('u1', 'c1');
+    expect(chat).toContain('emoji use: frequent');
+  });
+
+  it('roleplay still requires the opt-in row', async () => {
+    state.twin = TRAINED;
+    expect(await loadTwinMirrorBlock('u1', 'c1', 'roleplay')).toBeNull();
+  });
+
   it('fails open (null) on any DB error', async () => {
     state.optinError = true;
     expect(await loadTwinMirrorBlock('u1', 'c1')).toBeNull();
@@ -92,6 +108,7 @@ describe('loadTwinMatchSignals — account-level consent', () => {
     const sig = await loadTwinMatchSignals('u1');
     expect(sig?.humor).toEqual(['dry']);
     expect(sig?.values).toEqual(['honesty']);
+    expect(sig?.interests).toEqual([]);
     expect(JSON.stringify(sig)).not.toContain('SECRET');
   });
 

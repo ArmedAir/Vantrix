@@ -21,8 +21,12 @@
  * is inert, never broken.
  *
  * Deliberately NOT allowlisted even though they are "style": commonPhrases and
- * vocabularyNotes (verbatim tics — echoing them back would read as parroting),
- * and topics (what they talk about, not how).
+ * vocabularyNotes (verbatim tics — echoing them back would read as parroting).
+ *
+ * topics are allowed for MATCHING ONLY (as `interests`): they exist at every
+ * training depth, so a standard-trained twin still has signal beyond tone. They
+ * are reduced to abstract concepts by the deterministic scorer and never shown,
+ * logged, or sent to any model; the chat/roleplay mirror summary never includes them.
  */
 
 export interface TwinProfileRow {
@@ -45,6 +49,8 @@ export interface TwinMatchSignals {
   humor: string[];
   values: string[];
   tone: string[];
+  /** TwinTraits.topics — present on EVERY training depth, so standard twins have something to match on. */
+  interests: string[];
 }
 
 const MAX_FIELD = 80;
@@ -126,6 +132,7 @@ export function extractMatchSignals(row: TwinProfileRow | null | undefined): Twi
     humor: asStringList(pick(traits, 'humorStyle', 'humor_style', 'humor')),
     values: asStringList(pick(traits, 'values', 'coreValues', 'core_values')),
     tone: asStringList(pick(traits, 'tone', 'communicationTone', 'communication_tone')),
+    interests: asStringList(pick(traits, 'topics', 'interests')),
   };
-  return signals.humor.length || signals.values.length || signals.tone.length ? signals : null;
+  return signals.humor.length || signals.values.length || signals.tone.length || signals.interests.length ? signals : null;
 }

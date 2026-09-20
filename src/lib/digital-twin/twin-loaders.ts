@@ -15,7 +15,7 @@
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
 import { extractMatchSignals, extractMirrorSummary, type TwinMatchSignals } from './twin-signals';
-import { buildMirrorBlock } from './mirror-block';
+import { buildMirrorBlock, type MirrorSurface } from './mirror-block';
 
 /** Signals for the recommendation scorer, or null unless the user opted in. */
 export async function loadTwinMatchSignals(userId: string): Promise<TwinMatchSignals | null> {
@@ -35,11 +35,17 @@ export async function loadTwinMatchSignals(userId: string): Promise<TwinMatchSig
 }
 
 /**
- * The system-prompt block for ONE character's chat, or null. Call once per
- * turn from each chat path; append the result as the LAST system block.
- * The common case (no opt-in row) costs a single primary-key lookup.
+ * The system-prompt block for ONE character, or null. Call once per turn from
+ * each chat path (stream route, queue worker, roleplay). `surface` picks the
+ * wording and which fields are offered — see MirrorSurface. The same per-character
+ * opt-in covers every surface. The common case (no opt-in row) costs a single
+ * primary-key lookup.
  */
-export async function loadTwinMirrorBlock(userId: string, characterId: string): Promise<string | null> {
+export async function loadTwinMirrorBlock(
+  userId: string,
+  characterId: string,
+  surface: MirrorSurface = 'chat',
+): Promise<string | null> {
   if (!userId || !characterId) return null;
   try {
     const { data: optin, error: optinErr } = await supabaseAdmin
@@ -57,7 +63,7 @@ export async function loadTwinMirrorBlock(userId: string, characterId: string): 
       .maybeSingle();
     if (twinErr || !twin || !twin.enabled) return null;
 
-    return buildMirrorBlock(extractMirrorSummary(twin));
+    return buildMirrorBlock(extractMirrorSummary(twin), surface);
   } catch (err) {
     logger.warn('[twin] mirror-block load failed — chatting without it', { userId, characterId, error: String(err) });
     return null;
