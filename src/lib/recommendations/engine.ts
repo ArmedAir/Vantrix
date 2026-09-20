@@ -22,6 +22,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin';
 import { logger }        from '@/lib/logger';
 import { redis, parseRedisJson } from '@/lib/redis';
 import { USER_MOODS, isUserMood, MOOD_TAGS, type UserMood } from './moods';
+import { curateForUser } from './ai-curator';
 
 export { USER_MOODS, isUserMood, type UserMood };
 
@@ -419,15 +420,53 @@ export async function getRecommendations(
       // pool instead of truncating to a fixed 30.
       ;
 
+    // GROQ CURATOR (dating "match" surface): re-rank the head of the scored
+    // list for diversity + a top-slot pick, and replace the rule-based
+    // `reason` with a human-readable one. Same guardrails as Discover — the
+    // curator can only permute IDs it was given, shares one Groq call per
+    // taste segment (not per user), and every failure returns the
+    // deterministic order untouched. Logged-out callers (userId === '')
+    // skip it. The curated order is what gets cached below, so the 10-minute
+    // RECO_TTL also bounds how often a user's deck can be re-curated.
+    let finalScored = scored;
+    if (userId) {
+      try {
+        const HEAD = 60;
+        const head = scored.slice(0, HEAD);
+        const curated = await curateForUser(
+          userId,
+          head.map(c => ({
+            id: c.id, name: c.name, archetype: c.archetype ?? null,
+            tags: c.tags ?? [], opening_line: c.opening_line ?? null,
+          })),
+          likedTags,
+          { surface: 'dating', mood },
+        );
+        if (curated.wasCurated) {
+          const byId = new Map(head.map(c => [c.id, c]));
+          const reordered = curated.orderedIds
+            .map(id => byId.get(id))
+            .filter((c): c is (typeof head)[number] => Boolean(c))
+            .map(c => {
+              const r = curated.reasons.get(c.id);
+              return r ? { ...c, reason: r } : c;
+            });
+          finalScored = [...reordered, ...scored.slice(HEAD)];
+        }
+      } catch (err) {
+        logger.warn('Recommendation curator failed, keeping deterministic order', { userId, error: String(err) });
+      }
+    }
+
     // Cache for 10 minutes
     try {
-      await redis.set(cacheKey, JSON.stringify(scored), { ex: RECO_TTL });
+      await redis.set(cacheKey, JSON.stringify(finalScored), { ex: RECO_TTL });
     } catch { /* non-critical */ }
 
     // `limit` is now just an upper cap (defaults far higher — see route),
     // not a curation cutoff: the ranking itself decides what's "most
     // relevant first", callers just bound how many they want returned.
-    return (scored as unknown as RecommendedCharacter[]).slice(0, limit);
+    return (finalScored as unknown as RecommendedCharacter[]).slice(0, limit);
 
   } catch (err) {
     logger.error('Recommendation engine error', { userId, error: String(err) });

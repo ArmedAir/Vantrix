@@ -114,6 +114,33 @@ const envSchema = z.object({
   // cron generation bounded even on Groq's free tier. Default: 400/day.
   CONTENT_ENGINE_DAILY_AI_CALLS: z.string().optional(),
   CURATOR_DAILY_AI_CALLS: z.string().optional(),
+  // ── Groq "brain" (free-tier decision-making LLM) ────────────────────────────
+  // Scoped, NOT a chat provider: provider-router.ts registers 'groq' but never
+  // adds it to any ROUTING_ORDER chain, so companion chat can never reach it.
+  // It is only reachable through lib/ai/groq-brain.ts (providerOverride='groq'),
+  // which is what the AI curator, homepage rotation, and automation tasks call.
+  // Unset GROQ_API_KEY (or GROQ_BRAIN_ENABLED='false') and every one of those
+  // features silently falls back to its deterministic path — nothing breaks.
+  GROQ_API_KEY:           z.string().optional(),
+  GROQ_BRAIN_ENABLED:     z.enum(['true', 'false']).default('true'),
+  // Groq deprecated llama-3.1-8b-instant and llama-3.3-70b-versatile for
+  // Free/Developer tiers on 2026-08-16 (replacements: gpt-oss-20b/120b).
+  // Model IDs churn — keep these overridable rather than hardcoded.
+  GROQ_BRAIN_MODEL_FAST:  z.string().default('openai/gpt-oss-20b'),
+  GROQ_BRAIN_MODEL_SMART: z.string().default('openai/gpt-oss-120b'),
+  // 'free' | 'developer' picks the default rate-limit envelope the governor
+  // enforces client-side (groq-brain.ts getBrainLimits). Override any single
+  // number below to match what console.groq.com/settings/limits shows for
+  // your org — limits are per-model and per-organization, not per API key.
+  GROQ_PLAN:              z.enum(['free', 'developer']).default('free'),
+  GROQ_RPM_LIMIT:         z.string().optional(),
+  GROQ_RPD_LIMIT:         z.string().optional(),
+  GROQ_TPM_LIMIT:         z.string().optional(),
+  // Homepage hero rotation (lib/curator/homepage-rotation.ts):
+  //   off    — cron is a no-op
+  //   shadow — decides + logs to ai_brain_decisions, changes NOTHING on the site (default)
+  //   live   — writes is_featured / featured_position for AI-managed slots
+  HOMEPAGE_ROTATION_MODE: z.enum(['off', 'shadow', 'live']).default('shadow'),
   // URL of the brain service (semantic memory reranking / embeddings).
   // Optional: semantic-memory.ts fails open (no reranking, same behavior
   // as today) if unset. Points at either the original Python sidecar

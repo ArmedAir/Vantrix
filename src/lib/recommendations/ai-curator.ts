@@ -1,168 +1,107 @@
 /**
- * AI Curator — LLM-driven final pass over the deterministic recommendation
- * shortlist.
+ * AI Curator — Groq-driven final pass over the deterministic recommendation
+ * shortlist. Serves both Discover ("For You" first page) and the dating deck.
  *
- * Why this sits on top of scoreCandidatesForDiscover() rather than
- * replacing it: the formula-based scorer (content/popularity/recency/
- * exploration) is cheap, deterministic, and already narrows a 150-character
- * pool down to a small, genuinely-relevant shortlist. An LLM call over the
- * full pool would be slow, expensive, and mostly spent re-discovering
- * relevance the formula already found for free. What the formula CAN'T do
- * is read the *shape* of the shortlist the way a person would — notice it's
- * accidentally five variations on the same archetype back to back, write a
- * one-line reason a human would actually find persuasive ("her stubborn
- * streak matches the characters you keep coming back to" vs. a bare
- * "Popular" badge), or nudge the top slot toward whichever candidate best
- * fits the user's evident taste *today*. That's the curator's whole job:
- * re-order a pre-vetted shortlist and caption it, never invent candidates.
+ * WHY IT SITS ON TOP OF THE SCORER (unchanged from v1): the formula-based
+ * scorer is cheap, deterministic, personal to each user, and already narrows
+ * ~150 characters to a relevant shortlist. What a formula can't do is read the
+ * SHAPE of that shortlist — spot five near-identical archetypes in a row, pick
+ * the best top slot for a taste profile, write a reason a human finds
+ * persuasive. That is the curator's whole job: re-order and caption a
+ * pre-vetted shortlist, never invent candidates.
  *
- * Guardrails, deliberately conservative (same posture as content-generator.ts):
- *   - Only ever reorders + annotates IDs it was given. The prompt asks for
- *     a permutation of the input ID list, and the response is validated as
- *     exactly that set before use — any hallucinated/missing/duplicate ID
- *     and the whole result is discarded in favor of the deterministic order.
- *   - Redis-cached per user (CURATOR_TTL) so this runs at most once per
- *     window per user, not on every page load.
- *   - Hard daily call budget shared across users, tracked in Redis — once
- *     exhausted, curate() returns the input order unchanged with no reasons
- *     rather than blocking or throwing.
- *   - Every failure mode (budget exhausted, provider error, malformed JSON,
- *     invalid permutation, timeout) degrades silently to the deterministic
- *     order that was already computed and already good. The AI layer can
- *     only improve the result, never break it.
+ * WHAT CHANGED IN v2 — built for scale on a free LLM tier:
+ *
+ *   1. Brain: calls lib/ai/groq-brain.ts (Groq gpt-oss, rate-limit governed)
+ *      instead of paid OpenRouter NANO. Groq's free tier is ~1k requests/day
+ *      per model; per-user calls would exhaust it in minutes at any real scale.
+ *
+ *   2. Taste SEGMENTS instead of per-user calls. The cache key is
+ *      (surface, mood, taste-signature, shortlist-hash). Users whose top taste
+ *      tags match AND who are shown the same shortlist share ONE Groq call for
+ *      CURATOR_TTL. The deterministic scorer still personalises per user, so
+ *      this loses little: a hit costs one Redis GET, and traffic growth makes
+ *      hit-rate go UP, not the Groq bill.
+ *
+ *   3. Stampede lock. When a segment's cache expires under load, exactly one
+ *      request calls Groq; the rest serve the deterministic order for that
+ *      instant instead of piling N identical calls onto a 30 RPM limit.
+ *
+ * Guardrails (all preserved from v1):
+ *   - Only reorders + annotates IDs it was given; the reply must be an exact
+ *     permutation of the shortlist (curator-logic.ts applyCuration) or the whole
+ *     result is discarded.
+ *   - Every failure mode (paused, no key, budget, 429, timeout, bad JSON, bad
+ *     permutation) degrades silently to the deterministic order. The AI layer
+ *     can only improve the result, never break it.
+ *
+ * Data sent to Groq: tag names, archetypes, character names, 80-char public
+ * openers, mood label. Never user ids, chat text or memories.
  */
 
-import { routeCompletion } from '@/lib/ai/provider-router';
-import { redis }           from '@/lib/redis';
-import { logger }          from '@/lib/logger';
-import { env }             from '@/env';
+import { z } from 'zod';
+import { redis, parseRedisJson } from '@/lib/redis';
+import { logger } from '@/lib/logger';
+import { env }    from '@/env';
+import { brainJSON } from '@/lib/ai/groq-brain';
+import {
+  applyCuration, fnv1a, hashIds, tasteSignature, topTasteTags,
+  type CuratedResult, type CuratorCandidate, type CuratorLLMResponse,
+} from './curator-logic';
 
-const DAILY_CALL_BUDGET = Number(env.CURATOR_DAILY_AI_CALLS ?? 600);
-const BUDGET_KEY_PREFIX  = 'ai-curator:budget';
-const CURATOR_TTL        = 60 * 60 * 6; // 6h — long enough to avoid re-curating every page load, short enough to react to new likes/chats same day
-const MAX_CANDIDATES     = 24;          // cap on how many shortlist items get sent to the LLM per call — keeps prompt small/cheap
-const MAX_TASTE_TAGS     = 8;
+export type { CuratedResult, CuratorCandidate } from './curator-logic';
 
-function todayKey(): string {
-  const d = new Date();
-  return `${BUDGET_KEY_PREFIX}:${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()}`;
+const CURATOR_TTL      = 60 * 60 * 3; // 3h — a segment's cache is shared, so it can afford to be fresh
+const LOCK_TTL         = 20;          // seconds; > Groq timeout (15s) so a live call always finishes inside its lock
+const MAX_CANDIDATES   = 24;          // shortlist items sent to the LLM — keeps prompt (and TPM use) small
+const MAX_TASTE_TAGS   = 8;
+const DAILY_TASK_CAP   = Number(env.CURATOR_DAILY_AI_CALLS ?? 600);
+
+export interface CuratorScope {
+  /** 'discover' (Home "For You") or 'dating' (swipe deck). Segments never mix surfaces. */
+  surface?: 'discover' | 'dating';
+  /** Dating mood picker value, if any — changes what "best top slot" means. */
+  mood?: string | null;
 }
 
-async function reserveBudget(): Promise<boolean> {
-  try {
-    const count = await redis.incr(todayKey());
-    if (count === 1) await redis.expire(todayKey(), 60 * 60 * 26);
-    return count <= DAILY_CALL_BUDGET;
-  } catch (err) {
-    logger.warn('[ai-curator] budget-check-failed, skipping curation', { error: String(err) });
-    return false;
-  }
+const responseSchema = z.object({
+  order: z.array(z.object({
+    id:     z.string(),
+    reason: z.string().optional(),
+  })),
+});
+
+function segmentKey(scope: CuratorScope, tagWeights: Map<string, number>, shortlistIds: string[]): string {
+  const surface = scope.surface ?? 'discover';
+  const mood    = scope.mood ?? '-';
+  const taste   = fnv1a(tasteSignature(tagWeights));
+  return `ai-curator:v2:${surface}:${mood}:${taste}:${hashIds(shortlistIds)}`;
 }
 
-export interface CuratorCandidate {
-  id:         string;
-  name:       string;
-  archetype:  string | null;
-  tags:       string[] | null;
-  opening_line: string | null;
-}
-
-export interface CuratedResult {
-  /** Same IDs as the input, reordered. */
-  orderedIds: string[];
-  /** id  short display reason ("matches your taste for witty banter"), best-effort — may be a partial map. */
-  reasons: Map<string, string>;
-  /** false when the deterministic order was returned unchanged (budget/cache-miss-with-failure/etc). */
-  wasCurated: boolean;
-}
-
-function cacheKey(userId: string, candidateIdsHash: string): string {
-  return `ai-curator:v1:${userId}:${candidateIdsHash}`;
-}
-
-// Cheap order-independent hash so the cache key changes when the shortlist
-// composition changes (new characters rotated in) but not when only the
-// order changes — order is exactly what we're asking the LLM to decide,
-// so it shouldn't invalidate its own cache entry.
-function hashIds(ids: string[]): string {
-  const sorted = [...ids].sort();
-  let h = 0;
-  for (const id of sorted.join('|')) h = (h * 31 + id.charCodeAt(0)) | 0;
-  return Math.abs(h).toString(36);
-}
-
-function topTasteTags(tagWeights: Map<string, number>, limit: number): string[] {
-  return [...tagWeights.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, limit)
-    .map(([tag]) => tag.replace(/^archetype:/, ''));
-}
-
-interface CuratorLLMResponse {
-  order: { id: string; reason?: string }[];
-}
-
-function parseCuratorResponse(raw: string): CuratorLLMResponse | null {
-  try {
-    // Models occasionally wrap JSON in a code fence despite instructions not
-    // to — strip it defensively rather than failing the whole curation pass.
-    const cleaned = raw.trim().replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
-    const parsed = JSON.parse(cleaned);
-    if (!parsed || !Array.isArray(parsed.order)) return null;
-    return parsed as CuratorLLMResponse;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Re-rank a pre-scored shortlist and attach short display reasons.
- *
- * `candidates` should already be in the deterministic scorer's order (best
- * first) — that order is both the fallback and the prior the LLM is nudging,
- * not a random pool.
- */
-export async function curateForUser(
-  userId: string,
-  candidates: CuratorCandidate[],
-  tagWeights: Map<string, number>,
-): Promise<CuratedResult> {
-  const deterministicOrder = candidates.map(c => c.id);
-  const fallback: CuratedResult = { orderedIds: deterministicOrder, reasons: new Map(), wasCurated: false };
-
-  if (candidates.length < 3) return fallback; // not enough to meaningfully reorder
-
-  const shortlist = candidates.slice(0, MAX_CANDIDATES);
-  const key = cacheKey(userId, hashIds(shortlist.map(c => c.id)));
-
-  try {
-    const cached = await redis.get<string>(key);
-    if (cached) {
-      const parsed = parseCuratorResponse(cached);
-      if (parsed) {
-        const result = applyCuration(shortlist, deterministicOrder, parsed);
-        if (result) return result;
-      }
-    }
-  } catch (err) {
-    logger.warn('[ai-curator] cache-read-failed', { userId, error: String(err) });
-  }
-
-  if (!(await reserveBudget())) return fallback;
-
+function buildPrompt(
+  shortlist: CuratorCandidate[], tagWeights: Map<string, number>, scope: CuratorScope,
+): { system: string; user: string } {
+  const surface = scope.surface ?? 'discover';
   const tasteTags = topTasteTags(tagWeights, MAX_TASTE_TAGS);
 
   const system = [
     'You are a companion-recommendation curator for an AI character chat app.',
-    'You will be given a shortlist of already-vetted, already-relevant characters (do not question whether they belong — they do) and a brief summary of what this user tends to enjoy.',
-    'Your only job: return the shortlist reordered so the character most likely to genuinely appeal to this user right now comes first, and write one short, natural, specific reason (under 8 words, no hashtags, no emojis, sentence case, no trailing period) for each of the top 6.',
+    'You will be given a shortlist of already-vetted, already-relevant characters (do not question whether they belong) and a summary of what a group of similar users enjoys.',
+    'Return the shortlist reordered so the character most likely to genuinely appeal comes first.',
+    'Rules for the order: (1) never place more than 2 characters of the same archetype back to back within the first 8; (2) make one of the first 6 a deliberate "something a little different" pick that sits just outside the taste summary; (3) otherwise respect the taste summary.',
+    surface === 'dating'
+      ? 'Reasons should read like why two people would click, e.g. "same dry sense of humor". '
+      : 'Reasons should read like a friendly nudge, e.g. "matches your love of slow-burn stories". ',
+    'Write one short, specific reason (under 8 words, no hashtags, no emojis, sentence case, no trailing period) for each of the first 6 only.',
     'Respond with ONLY minified JSON, no prose, no code fences, in exactly this shape:',
-    '{"order":[{"id":"<id>","reason":"<short reason, top 6 only>"},{"id":"<id>"}]}',
-    'The "order" array MUST contain every id from the input list exactly once, no more, no fewer, no invented ids.',
+    '{"order":[{"id":"<id>","reason":"<reason, first 6 only>"},{"id":"<id>"}]}',
+    'The "order" array MUST contain every id from the input exactly once — no more, no fewer, no invented ids.',
   ].join(' ');
 
-  const userPrompt = JSON.stringify({
-    userTaste: tasteTags.length ? tasteTags : 'no strong signal yet — use general appeal and variety',
+  const user = JSON.stringify({
+    surface,
+    ...(scope.mood ? { mood: scope.mood } : {}),
+    tasteSummary: tasteTags.length ? tasteTags : 'no strong signal yet — use broad appeal and variety',
     shortlist: shortlist.map(c => ({
       id: c.id,
       name: c.name,
@@ -172,74 +111,83 @@ export async function curateForUser(
     })),
   });
 
+  return { system, user };
+}
+
+/**
+ * Re-rank a pre-scored shortlist and attach short display reasons.
+ *
+ * `candidates` must already be in the deterministic scorer's order (best first)
+ * — that order is both the fallback and the prior the LLM is nudging.
+ *
+ * `userId` is used for logging only; the cache is per taste segment, never per
+ * user, and userId is never sent to Groq.
+ */
+export async function curateForUser(
+  userId: string,
+  candidates: CuratorCandidate[],
+  tagWeights: Map<string, number>,
+  scope: CuratorScope = {},
+): Promise<CuratedResult> {
+  const deterministicOrder = candidates.map(c => c.id);
+  const fallback: CuratedResult = { orderedIds: deterministicOrder, reasons: new Map(), wasCurated: false };
+
+  if (candidates.length < 3) return fallback;
+
+  const shortlist = candidates.slice(0, MAX_CANDIDATES);
+  const key = segmentKey(scope, tagWeights, shortlist.map(c => c.id));
+
+  // 1. Segment cache hit — the common path at scale: one Redis GET, zero Groq.
   try {
-    const result = await routeCompletion({
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: userPrompt },
-      ],
-      modelTier:   'NANO',
-      maxTokens:   500,
+    const parsed = parseRedisJson<CuratorLLMResponse>(await redis.get(key));
+    if (parsed && Array.isArray(parsed.order)) {
+      const hit = applyCuration(shortlist, deterministicOrder, parsed);
+      if (hit) return hit;
+    }
+  } catch (err) {
+    logger.warn('[ai-curator] cache-read-failed', { userId, error: String(err) });
+  }
+
+  // 2. Miss — only one request per segment may call Groq at a time.
+  let gotLock = false;
+  try {
+    gotLock = (await redis.set(`${key}:lock`, '1', { nx: true, ex: LOCK_TTL })) === 'OK';
+  } catch {
+    return fallback; // can't coordinate → don't risk a stampede
+  }
+  if (!gotLock) return fallback;
+
+  try {
+    const { system, user } = buildPrompt(shortlist, tagWeights, scope);
+    const out = await brainJSON({
+      task:      `curator.${scope.surface ?? 'discover'}`,
+      system, user,
+      schema:    responseSchema,
+      priority:  'interactive',
+      size:      'fast',
+      maxTokens: 1200,
       temperature: 0.4,
-      userId,
+      dailyCap:  DAILY_TASK_CAP,
     });
 
-    const parsed = parseCuratorResponse(result.reply);
-    if (!parsed) {
-      logger.warn('[ai-curator] malformed-response', { userId });
-      return fallback;
-    }
+    if (!out.ok) return fallback; // reason already counted in brain stats
 
-    const curated = applyCuration(shortlist, deterministicOrder, parsed);
+    const curated = applyCuration(shortlist, deterministicOrder, out.data);
     if (!curated) {
-      logger.warn('[ai-curator] invalid-permutation, using deterministic order', { userId });
+      logger.warn('[ai-curator] invalid-permutation, using deterministic order', { userId, model: out.model });
       return fallback;
     }
 
     try {
-      await redis.set(key, JSON.stringify(parsed), { ex: CURATOR_TTL });
+      await redis.set(key, JSON.stringify(out.data), { ex: CURATOR_TTL });
     } catch (err) {
       logger.warn('[ai-curator] cache-write-failed', { userId, error: String(err) });
     }
-
     return curated;
   } catch (err) {
-    logger.warn('[ai-curator] completion-failed', { userId, error: String(err) });
+    logger.warn('[ai-curator] unexpected failure', { userId, error: String(err) });
     return fallback;
+  } finally {
+    redis.del(`${key}:lock`).catch(() => {});
   }
-}
-
-/**
- * Validates the LLM's proposed order is a genuine permutation of the
- * shortlist's ids (same set, no additions/omissions/duplicates) before
- * trusting it. Characters beyond the shortlist (page 2+ of the original
- * candidates array, if any) are appended after in their original order —
- * the LLM never saw them and shouldn't be assumed to have opinions about
- * where they'd rank.
- */
-function applyCuration(
-  shortlist: CuratorCandidate[],
-  fullDeterministicOrder: string[],
-  parsed: CuratorLLMResponse,
-): CuratedResult | null {
-  const shortlistIds = new Set(shortlist.map(c => c.id));
-  const proposedIds = parsed.order.map(o => o.id);
-
-  const proposedSet = new Set(proposedIds);
-  const isValidPermutation =
-    proposedIds.length === shortlistIds.size &&
-    proposedSet.size === proposedIds.length &&
-    [...shortlistIds].every(id => proposedSet.has(id));
-
-  if (!isValidPermutation) return null;
-
-  const remainder = fullDeterministicOrder.filter(id => !shortlistIds.has(id));
-  const reasons = new Map<string, string>();
-  for (const entry of parsed.order) {
-    if (entry.reason && typeof entry.reason === 'string' && entry.reason.trim()) {
-      reasons.set(entry.id, entry.reason.trim().slice(0, 60));
-    }
-  }
-
-  return { orderedIds: [...proposedIds, ...remainder], reasons, wasCurated: true };
 }

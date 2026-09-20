@@ -122,6 +122,7 @@ export const CRON_JOBS = [
   { id: 'streak-risk',                path: '/api/cron/streak-risk',              schedule: '0 20 * * *',    maxDuration: 30, description: 'Daily streak win-back reminder, 20:00 UTC (fires once/day, native on Hobby)' },
   { id: 'character-initiatives',      path: '/api/cron/character-initiatives',    schedule: '0 */2 * * *',   maxDuration: 60, description: 'Characters take initiative in convos, every 2h' },
   { id: 'character-posts',            path: '/api/cron/character-posts',          schedule: '0 */3 * * *',   maxDuration: 60, description: 'Character social posts, every 3h' },
+  { id: 'homepage-rotation',           path: '/api/cron/homepage-rotation',        schedule: '0 */2 * * *',   maxDuration: 60, description: 'Groq-driven homepage hero rotation, every 2h (shadow-mode by default — see HOMEPAGE_ROTATION_MODE)' },
   { id: 'x-social-select',            path: '/api/cron/x-social-select',          schedule: '0 */2 * * *',   maxDuration: 60, description: 'X cross-post auto-select — queues cross-postable character_posts as social_posts' },
   { id: 'x-social-publish',           path: '/api/cron/x-social-publish',         schedule: '*/30 * * * *',  maxDuration: 60, description: 'X cross-post publisher — no-op unless x_auto_publish_enabled app_config toggle is on' },
   { id: 'character-social',           path: '/api/cron/character-social',         schedule: '20 */3 * * *',  maxDuration: 60, description: 'Character-to-character social interactions, every 3h' },

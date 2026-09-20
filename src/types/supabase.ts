@@ -2529,6 +2529,7 @@ export type Database = {
           fears: string[] | null
           featured_image_url: string | null
           featured_position: number | null
+          featured_source: string | null
           flaws: string[] | null
           follower_count: number
           friends_list: string[] | null
@@ -2663,6 +2664,7 @@ export type Database = {
           fears?: string[] | null
           featured_image_url?: string | null
           featured_position?: number | null
+          featured_source?: string | null
           flaws?: string[] | null
           follower_count?: number
           friends_list?: string[] | null
@@ -2797,6 +2799,7 @@ export type Database = {
           fears?: string[] | null
           featured_image_url?: string | null
           featured_position?: number | null
+          featured_source?: string | null
           flaws?: string[] | null
           follower_count?: number
           friends_list?: string[] | null
@@ -8528,6 +8531,45 @@ export type Database = {
           note?: string
           skill?: string
           source?: string
+        }
+        Relationships: []
+      }
+      ai_brain_decisions: {
+        Row: {
+          applied: boolean
+          created_at: string
+          id: string
+          input_summary: Json
+          latency_ms: number | null
+          mode: string
+          model: string | null
+          output: Json
+          task: string
+          used_brain: boolean
+        }
+        Insert: {
+          applied?: boolean
+          created_at?: string
+          id?: string
+          input_summary?: Json
+          latency_ms?: number | null
+          mode: string
+          model?: string | null
+          output?: Json
+          task: string
+          used_brain?: boolean
+        }
+        Update: {
+          applied?: boolean
+          created_at?: string
+          id?: string
+          input_summary?: Json
+          latency_ms?: number | null
+          mode?: string
+          model?: string | null
+          output?: Json
+          task?: string
+          used_brain?: boolean
         }
         Relationships: []
       }

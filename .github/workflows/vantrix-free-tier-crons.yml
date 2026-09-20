@@ -23,7 +23,7 @@ on:
     - cron: '*/5 * * * *' # queue-worker, billing-recovery, character-refund-recovery, memory-tier-consolidation, comment-moderation-sweep, message-recovery
     - cron: '0 * * * *' # training-data-export, economy-tick, registration-reminders, revocation-sweep
     - cron: '0 */6 * * *' # nudges, legacy-tick, paystack-renewal, animate-backfill
-    - cron: '0 */2 * * *' # character-initiatives, x-social-select, narrative-tick
+    - cron: '0 */2 * * *' # character-initiatives, homepage-rotation, x-social-select, narrative-tick
     - cron: '0 */3 * * *' # character-posts, civic-affairs-tick
     - cron: '*/30 * * * *' # x-social-publish
     - cron: '20 */3 * * *' # character-social
@@ -48,6 +48,7 @@ jobs:
             "0 */6 * * *::/api/cron/nudges"
             "0 */2 * * *::/api/cron/character-initiatives"
             "0 */3 * * *::/api/cron/character-posts"
+            "0 */2 * * *::/api/cron/homepage-rotation"
             "0 */2 * * *::/api/cron/x-social-select"
             "*/30 * * * *::/api/cron/x-social-publish"
             "20 */3 * * *::/api/cron/character-social"
