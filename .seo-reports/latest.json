@@ -1,19 +1,15 @@
 {
   "baseUrl": "https://vantrix.ink",
-  "crawledAt": "2026-09-17T14:10:50.728Z",
+  "crawledAt": "2026-09-20T00:47:48.456Z",
   "robotsFindings": [],
   "results": [
     {
       "url": "https://www.vantrix.ink/",
       "ok": true,
       "status": 200,
-      "ms": 3334,
-      "wordCount": 1404,
+      "ms": 2917,
+      "wordCount": 1387,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Vantrix — A Living Universe of AI Companions Who Remember You, Always\""
-        },
         {
           "severity": "warn",
           "message": "Meta description is 210 chars, over 160 - will be truncated in results"
@@ -24,7 +20,7 @@
       "url": "https://www.vantrix.ink/ai-girlfriend",
       "ok": true,
       "status": 200,
-      "ms": 4889,
+      "ms": 1964,
       "wordCount": 450,
       "findings": []
     },
@@ -32,7 +28,7 @@
       "url": "https://www.vantrix.ink/ai-boyfriend",
       "ok": true,
       "status": 200,
-      "ms": 4675,
+      "ms": 2688,
       "wordCount": 413,
       "findings": []
     },
@@ -40,7 +36,7 @@
       "url": "https://www.vantrix.ink/anime-ai-chat",
       "ok": true,
       "status": 200,
-      "ms": 5003,
+      "ms": 2061,
       "wordCount": 361,
       "findings": []
     },
@@ -48,7 +44,7 @@
       "url": "https://www.vantrix.ink/ai-dating-app-africa",
       "ok": true,
       "status": 200,
-      "ms": 5115,
+      "ms": 2854,
       "wordCount": 387,
       "findings": []
     },
@@ -56,7 +52,7 @@
       "url": "https://www.vantrix.ink/ai-friend",
       "ok": true,
       "status": 200,
-      "ms": 1147,
+      "ms": 562,
       "wordCount": 376,
       "findings": []
     },
@@ -64,7 +60,7 @@
       "url": "https://www.vantrix.ink/virtual-companion",
       "ok": true,
       "status": 200,
-      "ms": 1134,
+      "ms": 530,
       "wordCount": 364,
       "findings": []
     },
@@ -72,7 +68,7 @@
       "url": "https://www.vantrix.ink/web-login",
       "ok": true,
       "status": 200,
-      "ms": 1042,
+      "ms": 418,
       "wordCount": 454,
       "findings": []
     },
@@ -80,13 +76,9 @@
       "url": "https://www.vantrix.ink/character-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 861,
-      "wordCount": 474,
+      "ms": 393,
+      "wordCount": 472,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 64 chars, over 60 - Google will truncate it in results: \"Character.AI Alternative — AI Companions That Remember | Vantrix\""
-        },
         {
           "severity": "warn",
           "message": "Meta description is 161 chars, over 160 - will be truncated in results"
@@ -97,7 +89,7 @@
       "url": "https://www.vantrix.ink/candy-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 1063,
+      "ms": 424,
       "wordCount": 446,
       "findings": []
     },
@@ -105,29 +97,20 @@
       "url": "https://www.vantrix.ink/kindroid-alternative",
       "ok": true,
       "status": 200,
-      "ms": 738,
-      "wordCount": 443,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"Kindroid Alternative — AI Companions With Persistent Memory | Vantrix\""
-        }
-      ]
+      "ms": 419,
+      "wordCount": 441,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/login",
       "ok": true,
       "status": 200,
-      "ms": 633,
+      "ms": 267,
       "wordCount": 42,
       "findings": [
         {
           "severity": "warn",
           "message": "Meta description is 186 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "warn",
-          "message": "5/5 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
@@ -139,7 +122,7 @@
       "url": "https://www.vantrix.ink/premium",
       "ok": true,
       "status": 200,
-      "ms": 954,
+      "ms": 306,
       "wordCount": 104,
       "findings": [
         {
@@ -152,7 +135,7 @@
       "url": "https://www.vantrix.ink/relationships",
       "ok": true,
       "status": 200,
-      "ms": 386,
+      "ms": 276,
       "wordCount": 163,
       "findings": [
         {
@@ -169,7 +152,7 @@
       "url": "https://www.vantrix.ink/discover",
       "ok": true,
       "status": 200,
-      "ms": 854,
+      "ms": 344,
       "wordCount": 431,
       "findings": []
     },
@@ -177,7 +160,7 @@
       "url": "https://www.vantrix.ink/about",
       "ok": true,
       "status": 200,
-      "ms": 240,
+      "ms": 271,
       "wordCount": 169,
       "findings": [
         {
@@ -194,7 +177,7 @@
       "url": "https://www.vantrix.ink/careers",
       "ok": true,
       "status": 200,
-      "ms": 232,
+      "ms": 286,
       "wordCount": 52,
       "findings": [
         {
@@ -207,8 +190,8 @@
       "url": "https://www.vantrix.ink/blog",
       "ok": true,
       "status": 200,
-      "ms": 267,
-      "wordCount": 791,
+      "ms": 300,
+      "wordCount": 773,
       "findings": [
         {
           "severity": "warn",
@@ -220,39 +203,25 @@
       "url": "https://www.vantrix.ink/blog/why-most-ai-companions-forget-you",
       "ok": true,
       "status": 200,
-      "ms": 503,
-      "wordCount": 512,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Why Most AI Companions Forget You (And What We Do Differently) | Vantrix\""
-        }
-      ]
+      "ms": 370,
+      "wordCount": 508,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/ai-companion-with-memory-what-to-look-for",
       "ok": true,
       "status": 200,
-      "ms": 535,
-      "wordCount": 427,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 61 chars, over 60 - Google will truncate it in results: \"AI Companion With Memory: What to Actually Look For | Vantrix\""
-        }
-      ]
+      "ms": 246,
+      "wordCount": 425,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/the-case-for-ai-characters-that-have-a-life-of-their-own",
       "ok": true,
       "status": 200,
-      "ms": 505,
-      "wordCount": 460,
+      "ms": 230,
+      "wordCount": 458,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"The Case for AI Characters That Have a Life of Their Own | Vantrix\""
-        },
         {
           "severity": "warn",
           "message": "Meta description is 166 chars, over 160 - will be truncated in results"
@@ -263,13 +232,9 @@
       "url": "https://www.vantrix.ink/blog/how-ai-character-memory-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 597,
-      "wordCount": 422,
+      "ms": 307,
+      "wordCount": 420,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"How AI Character Memory Actually Works, Explained Simply | Vantrix\""
-        },
         {
           "severity": "warn",
           "message": "Meta description is 168 chars, over 160 - will be truncated in results"
@@ -280,33 +245,23 @@
       "url": "https://www.vantrix.ink/blog/signs-youre-talking-to-a-stateless-chatbot",
       "ok": true,
       "status": 200,
-      "ms": 472,
-      "wordCount": 379,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 87 chars, over 60 - Google will truncate it in results: \"5 Signs You&#x27;re Talking to a Stateless Chatbot (Not a Real Memory System) | Vantrix\""
-        }
-      ]
+      "ms": 211,
+      "wordCount": 369,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/why-persistent-memory-changes-how-you-write-characters",
       "ok": true,
       "status": 200,
-      "ms": 321,
-      "wordCount": 326,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"Why Persistent Memory Changes How You Write a Character | Vantrix\""
-        }
-      ]
+      "ms": 234,
+      "wordCount": 324,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/the-difference-between-a-chatbot-and-a-companion",
       "ok": true,
       "status": 200,
-      "ms": 535,
+      "ms": 244,
       "wordCount": 360,
       "findings": []
     },
@@ -314,39 +269,25 @@
       "url": "https://www.vantrix.ink/blog/what-a-living-universe-means-for-ai-characters",
       "ok": true,
       "status": 200,
-      "ms": 607,
-      "wordCount": 370,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"What \"Living Universe\" Actually Means for AI Characters | Vantrix\""
-        }
-      ]
+      "ms": 241,
+      "wordCount": 368,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/browse-companions-by-personality-tag",
       "ok": true,
       "status": 200,
-      "ms": 282,
-      "wordCount": 342,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 79 chars, over 60 - Google will truncate it in results: \"You Can Now Browse Vantrix Companions by Personality, Not Just Gender | Vantrix\""
-        }
-      ]
+      "ms": 226,
+      "wordCount": 332,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/how-vantrix-approaches-search-and-discoverability",
       "ok": true,
       "status": 200,
-      "ms": 282,
-      "wordCount": 318,
+      "ms": 310,
+      "wordCount": 316,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 69 chars, over 60 - Google will truncate it in results: \"How Vantrix Approaches Search Engine and AI Discoverability | Vantrix\""
-        },
         {
           "severity": "warn",
           "message": "Meta description is 164 chars, over 160 - will be truncated in results"
@@ -357,46 +298,31 @@
       "url": "https://www.vantrix.ink/blog/ai-companion-privacy-what-actually-happens-to-your-data",
       "ok": true,
       "status": 200,
-      "ms": 325,
-      "wordCount": 404,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 66 chars, over 60 - Google will truncate it in results: \"AI Companion Privacy: What Actually Happens to Your Data | Vantrix\""
-        }
-      ]
+      "ms": 301,
+      "wordCount": 402,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different",
       "ok": true,
       "status": 200,
-      "ms": 515,
-      "wordCount": 336,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 82 chars, over 60 - Google will truncate it in results: \"AI Girlfriend vs. AI Boyfriend Apps: How They&#x27;re Actually Different | Vantrix\""
-        }
-      ]
+      "ms": 278,
+      "wordCount": 330,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/how-ai-personality-engines-actually-work-ocean-model",
       "ok": true,
       "status": 200,
-      "ms": 515,
-      "wordCount": 409,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 79 chars, over 60 - Google will truncate it in results: \"How AI Personality Engines Actually Work (The OCEAN Model, Explained) | Vantrix\""
-        }
-      ]
+      "ms": 218,
+      "wordCount": 405,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/what-is-a-digital-twin-ai-companion-explained",
       "ok": true,
       "status": 200,
-      "ms": 263,
+      "ms": 206,
       "wordCount": 354,
       "findings": [
         {
@@ -409,59 +335,39 @@
       "url": "https://www.vantrix.ink/blog/ai-voice-companions-how-text-to-speech-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 392,
-      "wordCount": 339,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 68 chars, over 60 - Google will truncate it in results: \"AI Voice Companions: How the Text-to-Speech Actually Works | Vantrix\""
-        }
-      ]
+      "ms": 217,
+      "wordCount": 337,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/can-you-create-your-own-ai-character-a-guide-to-creator-tools",
       "ok": true,
       "status": 200,
-      "ms": 315,
-      "wordCount": 361,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 72 chars, over 60 - Google will truncate it in results: \"Can You Create Your Own AI Character? A Guide to Creator Tools | Vantrix\""
-        }
-      ]
+      "ms": 221,
+      "wordCount": 353,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/ai-companion-safety-what-good-moderation-actually-looks-like",
       "ok": true,
       "status": 200,
-      "ms": 330,
-      "wordCount": 372,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 71 chars, over 60 - Google will truncate it in results: \"AI Companion Safety: What Good Moderation Actually Looks Like | Vantrix\""
-        }
-      ]
+      "ms": 232,
+      "wordCount": 368,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/freemium-ai-companion-apps-how-the-pricing-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 329,
-      "wordCount": 398,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 68 chars, over 60 - Google will truncate it in results: \"Freemium AI Companion Apps: How the Pricing Actually Works | Vantrix\""
-        }
-      ]
+      "ms": 227,
+      "wordCount": 396,
+      "findings": []
     },
     {
       "url": "https://www.vantrix.ink/support",
       "ok": true,
       "status": 200,
-      "ms": 240,
+      "ms": 236,
       "wordCount": 210,
       "findings": [
         {
@@ -474,7 +380,7 @@
       "url": "https://www.vantrix.ink/press",
       "ok": true,
       "status": 200,
-      "ms": 178,
+      "ms": 900,
       "wordCount": 281,
       "findings": [
         {
@@ -491,7 +397,7 @@
       "url": "https://www.vantrix.ink/terms",
       "ok": true,
       "status": 200,
-      "ms": 179,
+      "ms": 241,
       "wordCount": 611,
       "findings": [
         {
@@ -504,7 +410,7 @@
       "url": "https://www.vantrix.ink/privacy",
       "ok": true,
       "status": 200,
-      "ms": 317,
+      "ms": 303,
       "wordCount": 881,
       "findings": [
         {
@@ -517,13 +423,9 @@
       "url": "https://www.vantrix.ink/companions/3d48a930-8f40-483c-b68b-37f1900ec51c",
       "ok": true,
       "status": 200,
-      "ms": 463,
+      "ms": 327,
       "wordCount": 201,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~201 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -534,16 +436,12 @@
       "url": "https://www.vantrix.ink/companions/02378d6a-371c-426e-ae2f-b23e3d68e79e",
       "ok": true,
       "status": 200,
-      "ms": 513,
+      "ms": 359,
       "wordCount": 162,
       "findings": [
         {
           "severity": "warn",
           "message": "Meta description is 164 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
@@ -555,13 +453,9 @@
       "url": "https://www.vantrix.ink/companions/d4138c58-92b7-4328-b4a8-21fbcf92caaf",
       "ok": true,
       "status": 200,
-      "ms": 495,
+      "ms": 240,
       "wordCount": 186,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~186 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -572,13 +466,9 @@
       "url": "https://www.vantrix.ink/companions/b11fac85-2678-48d4-b2e9-694460ad00f8",
       "ok": true,
       "status": 200,
-      "ms": 619,
+      "ms": 394,
       "wordCount": 161,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~161 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -589,13 +479,9 @@
       "url": "https://www.vantrix.ink/companions/e6cec2c7-6ffa-486f-8b36-e0b2d69766a6",
       "ok": true,
       "status": 200,
-      "ms": 610,
+      "ms": 272,
       "wordCount": 162,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~162 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -606,13 +492,9 @@
       "url": "https://www.vantrix.ink/companions/2030d9d7-9e86-4c4b-938f-15f89bebf6b7",
       "ok": true,
       "status": 200,
-      "ms": 392,
+      "ms": 319,
       "wordCount": 244,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~244 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -623,13 +505,9 @@
       "url": "https://www.vantrix.ink/companions/e8413970-dbad-4dd7-88e4-3e0abb2ef675",
       "ok": true,
       "status": 200,
-      "ms": 679,
+      "ms": 334,
       "wordCount": 236,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~236 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -640,13 +518,9 @@
       "url": "https://www.vantrix.ink/companions/126dc769-d0b0-4fc8-9b80-03ee8c9c7970",
       "ok": true,
       "status": 200,
-      "ms": 433,
+      "ms": 237,
       "wordCount": 243,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~243 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -657,13 +531,9 @@
       "url": "https://www.vantrix.ink/companions/b1c77b1c-f923-46f8-8ab5-3d1da16ec73d",
       "ok": true,
       "status": 200,
-      "ms": 1417,
+      "ms": 228,
       "wordCount": 215,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~215 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -674,13 +544,9 @@
       "url": "https://www.vantrix.ink/companions/c9487a6b-9dda-4799-bb00-f6193ed22b4e",
       "ok": true,
       "status": 200,
-      "ms": 876,
+      "ms": 271,
       "wordCount": 203,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~203 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -691,13 +557,9 @@
       "url": "https://www.vantrix.ink/companions/552e7bbd-53f1-467b-b4eb-754127625181",
       "ok": true,
       "status": 200,
-      "ms": 769,
+      "ms": 250,
       "wordCount": 195,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~195 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -708,13 +570,9 @@
       "url": "https://www.vantrix.ink/companions/e35fcb8e-1b6d-43fb-9cb0-ee475357cbee",
       "ok": true,
       "status": 200,
-      "ms": 414,
+      "ms": 269,
       "wordCount": 214,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~214 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -725,13 +583,9 @@
       "url": "https://www.vantrix.ink/companions/b4ece831-aae2-4a72-af94-22d34f19521c",
       "ok": true,
       "status": 200,
-      "ms": 418,
+      "ms": 261,
       "wordCount": 183,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~183 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -742,13 +596,9 @@
       "url": "https://www.vantrix.ink/companions/6166db2c-99dc-4025-99a4-2da40dd0407e",
       "ok": true,
       "status": 200,
-      "ms": 845,
+      "ms": 346,
       "wordCount": 206,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~206 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -759,13 +609,9 @@
       "url": "https://www.vantrix.ink/companions/6b79f90e-3020-4bba-ae84-a53f8f15e91c",
       "ok": true,
       "status": 200,
-      "ms": 913,
+      "ms": 348,
       "wordCount": 188,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~188 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -776,13 +622,9 @@
       "url": "https://www.vantrix.ink/companions/790d69d7-cf49-4c34-8c63-b489ee06ec6e",
       "ok": true,
       "status": 200,
-      "ms": 390,
+      "ms": 235,
       "wordCount": 231,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~231 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -793,13 +635,9 @@
       "url": "https://www.vantrix.ink/companions/528d3015-50dd-441c-aed8-96e566e0fda2",
       "ok": true,
       "status": 200,
-      "ms": 455,
+      "ms": 341,
       "wordCount": 203,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~203 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -810,13 +648,9 @@
       "url": "https://www.vantrix.ink/companions/968b2b0f-0574-4968-8dd3-0bbe2d2bc4fc",
       "ok": true,
       "status": 200,
-      "ms": 381,
+      "ms": 240,
       "wordCount": 184,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~184 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -827,13 +661,9 @@
       "url": "https://www.vantrix.ink/companions/ea700c95-7a64-4ebc-b46b-3ab45d258117",
       "ok": true,
       "status": 200,
-      "ms": 433,
+      "ms": 346,
       "wordCount": 220,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~220 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -844,13 +674,9 @@
       "url": "https://www.vantrix.ink/companions/98bf6241-d4b7-4085-9e32-5b5e5faf16bb",
       "ok": true,
       "status": 200,
-      "ms": 375,
+      "ms": 354,
       "wordCount": 203,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~203 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -861,13 +687,9 @@
       "url": "https://www.vantrix.ink/companions/78839bcc-5af5-4c0b-add3-c756b1d57e8a",
       "ok": true,
       "status": 200,
-      "ms": 452,
+      "ms": 399,
       "wordCount": 211,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~211 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -878,13 +700,9 @@
       "url": "https://www.vantrix.ink/companions/d30833ef-ba8f-41ac-8e6d-da773e2909de",
       "ok": true,
       "status": 200,
-      "ms": 671,
+      "ms": 494,
       "wordCount": 200,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~200 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -895,13 +713,9 @@
       "url": "https://www.vantrix.ink/companions/bfd14dbc-1629-4293-91ef-aec42526a26c",
       "ok": true,
       "status": 200,
-      "ms": 626,
+      "ms": 246,
       "wordCount": 221,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~221 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -912,16 +726,12 @@
       "url": "https://www.vantrix.ink/companions/1b8d43d8-8c8a-438d-96bc-fde255b35fc6",
       "ok": true,
       "status": 200,
-      "ms": 390,
+      "ms": 249,
       "wordCount": 200,
       "findings": [
         {
           "severity": "warn",
           "message": "Meta description is 165 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
         },
         {
           "severity": "info",
@@ -933,13 +743,9 @@
       "url": "https://www.vantrix.ink/companions/b6de5ebc-b2ba-4a86-8536-ab780c9618b1",
       "ok": true,
       "status": 200,
-      "ms": 471,
+      "ms": 329,
       "wordCount": 219,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~219 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -950,13 +756,9 @@
       "url": "https://www.vantrix.ink/companions/47b4a177-d469-4004-aa69-606892bf88ab",
       "ok": true,
       "status": 200,
-      "ms": 679,
+      "ms": 236,
       "wordCount": 217,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~217 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -967,13 +769,9 @@
       "url": "https://www.vantrix.ink/companions/db0cf362-4e37-4463-83ad-f73b17245ba7",
       "ok": true,
       "status": 200,
-      "ms": 837,
+      "ms": 239,
       "wordCount": 232,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~232 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -984,13 +782,9 @@
       "url": "https://www.vantrix.ink/companions/394d47a1-c6f8-46f9-aeb5-422b5975a8e3",
       "ok": true,
       "status": 200,
-      "ms": 824,
+      "ms": 259,
       "wordCount": 182,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~182 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -1001,13 +795,9 @@
       "url": "https://www.vantrix.ink/companions/3d273314-8a27-4d9f-9293-2b2e4d95797f",
       "ok": true,
       "status": 200,
-      "ms": 473,
+      "ms": 352,
       "wordCount": 208,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~208 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -1018,13 +808,9 @@
       "url": "https://www.vantrix.ink/companions/5ff3ab87-e70e-457b-9114-5fe8d7fbfe12",
       "ok": true,
       "status": 200,
-      "ms": 454,
+      "ms": 337,
       "wordCount": 196,
       "findings": [
-        {
-          "severity": "warn",
-          "message": "1/2 <img> tags missing (or empty) alt text"
-        },
         {
           "severity": "info",
           "message": "~196 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
@@ -1035,7 +821,7 @@
       "url": "https://www.vantrix.ink/locations/the-capital",
       "ok": true,
       "status": 200,
-      "ms": 757,
+      "ms": 308,
       "wordCount": 116,
       "findings": [
         {
@@ -1048,7 +834,7 @@
       "url": "https://www.vantrix.ink/locations/iron-reach",
       "ok": true,
       "status": 200,
-      "ms": 842,
+      "ms": 273,
       "wordCount": 133,
       "findings": [
         {
@@ -1061,7 +847,7 @@
       "url": "https://www.vantrix.ink/locations/the-undercroft",
       "ok": true,
       "status": 200,
-      "ms": 1013,
+      "ms": 263,
       "wordCount": 116,
       "findings": [
         {
@@ -1074,7 +860,7 @@
       "url": "https://www.vantrix.ink/locations/cloudspire",
       "ok": true,
       "status": 200,
-      "ms": 538,
+      "ms": 261,
       "wordCount": 105,
       "findings": [
         {
@@ -1087,7 +873,7 @@
       "url": "https://www.vantrix.ink/locations/the-archive",
       "ok": true,
       "status": 200,
-      "ms": 989,
+      "ms": 401,
       "wordCount": 103,
       "findings": [
         {
@@ -1100,7 +886,7 @@
       "url": "https://www.vantrix.ink/locations/obsidian-tower",
       "ok": true,
       "status": 200,
-      "ms": 780,
+      "ms": 382,
       "wordCount": 113,
       "findings": [
         {
@@ -1113,7 +899,7 @@
       "url": "https://www.vantrix.ink/locations/the-ruins",
       "ok": true,
       "status": 200,
-      "ms": 543,
+      "ms": 322,
       "wordCount": 104,
       "findings": [
         {
@@ -1126,7 +912,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-root",
       "ok": true,
       "status": 200,
-      "ms": 509,
+      "ms": 271,
       "wordCount": 143,
       "findings": [
         {
@@ -1143,7 +929,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-drowned-court",
       "ok": true,
       "status": 200,
-      "ms": 517,
+      "ms": 275,
       "wordCount": 134,
       "findings": [
         {
@@ -1160,7 +946,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-ash-camps",
       "ok": true,
       "status": 200,
-      "ms": 583,
+      "ms": 272,
       "wordCount": 129,
       "findings": [
         {
@@ -1173,7 +959,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-long-sky",
       "ok": true,
       "status": 200,
-      "ms": 717,
+      "ms": 276,
       "wordCount": 133,
       "findings": [
         {
@@ -1186,7 +972,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-fallen-stair",
       "ok": true,
       "status": 200,
-      "ms": 544,
+      "ms": 331,
       "wordCount": 143,
       "findings": [
         {
@@ -1203,7 +989,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-crack",
       "ok": true,
       "status": 200,
-      "ms": 489,
+      "ms": 278,
       "wordCount": 145,
       "findings": [
         {
@@ -1220,7 +1006,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-crossroads",
       "ok": true,
       "status": 200,
-      "ms": 552,
+      "ms": 318,
       "wordCount": 143,
       "findings": [
         {
@@ -1233,7 +1019,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-between-light",
       "ok": true,
       "status": 200,
-      "ms": 534,
+      "ms": 363,
       "wordCount": 130,
       "findings": [
         {
@@ -1246,7 +1032,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-storm-wall",
       "ok": true,
       "status": 200,
-      "ms": 500,
+      "ms": 347,
       "wordCount": 140,
       "findings": [
         {
@@ -1259,7 +1045,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-long-market",
       "ok": true,
       "status": 200,
-      "ms": 657,
+      "ms": 267,
       "wordCount": 138,
       "findings": [
         {
@@ -1276,7 +1062,7 @@
       "url": "https://www.vantrix.ink/locations/the-ashen-cloister",
       "ok": true,
       "status": 200,
-      "ms": 516,
+      "ms": 355,
       "wordCount": 130,
       "findings": [
         {
@@ -1289,7 +1075,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-hidden-names",
       "ok": true,
       "status": 200,
-      "ms": 523,
+      "ms": 267,
       "wordCount": 127,
       "findings": [
         {
@@ -1302,7 +1088,7 @@
       "url": "https://www.vantrix.ink/locations/the-fourth-wall-wing",
       "ok": true,
       "status": 200,
-      "ms": 539,
+      "ms": 259,
       "wordCount": 134,
       "findings": [
         {
@@ -1315,7 +1101,7 @@
       "url": "https://www.vantrix.ink/locations/the-research-wing",
       "ok": true,
       "status": 200,
-      "ms": 544,
+      "ms": 336,
       "wordCount": 132,
       "findings": [
         {
@@ -1328,7 +1114,7 @@
       "url": "https://www.vantrix.ink/tags/legendary",
       "ok": true,
       "status": 200,
-      "ms": 1130,
+      "ms": 409,
       "wordCount": 299,
       "findings": [
         {
@@ -1341,7 +1127,7 @@
       "url": "https://www.vantrix.ink/tags/slow-burn",
       "ok": true,
       "status": 200,
-      "ms": 869,
+      "ms": 428,
       "wordCount": 264,
       "findings": [
         {
@@ -1354,7 +1140,7 @@
       "url": "https://www.vantrix.ink/tags/intellectual",
       "ok": true,
       "status": 200,
-      "ms": 896,
+      "ms": 353,
       "wordCount": 167,
       "findings": [
         {
@@ -1367,7 +1153,7 @@
       "url": "https://www.vantrix.ink/tags/profound",
       "ok": true,
       "status": 200,
-      "ms": 859,
+      "ms": 365,
       "wordCount": 159,
       "findings": [
         {
@@ -1380,7 +1166,7 @@
       "url": "https://www.vantrix.ink/tags/warm",
       "ok": true,
       "status": 200,
-      "ms": 815,
+      "ms": 254,
       "wordCount": 156,
       "findings": [
         {
@@ -1393,7 +1179,7 @@
       "url": "https://www.vantrix.ink/tags/mysterious",
       "ok": true,
       "status": 200,
-      "ms": 1224,
+      "ms": 250,
       "wordCount": 141,
       "findings": [
         {
@@ -1406,7 +1192,7 @@
       "url": "https://www.vantrix.ink/tags/precise",
       "ok": true,
       "status": 200,
-      "ms": 1270,
+      "ms": 237,
       "wordCount": 151,
       "findings": [
         {
@@ -1419,7 +1205,7 @@
       "url": "https://www.vantrix.ink/tags/anime",
       "ok": true,
       "status": 200,
-      "ms": 866,
+      "ms": 342,
       "wordCount": 136,
       "findings": [
         {
@@ -1432,7 +1218,7 @@
       "url": "https://www.vantrix.ink/tags/architect",
       "ok": true,
       "status": 200,
-      "ms": 908,
+      "ms": 366,
       "wordCount": 141,
       "findings": [
         {
@@ -1445,7 +1231,7 @@
       "url": "https://www.vantrix.ink/tags/direct",
       "ok": true,
       "status": 200,
-      "ms": 900,
+      "ms": 374,
       "wordCount": 137,
       "findings": [
         {
@@ -1458,7 +1244,7 @@
       "url": "https://www.vantrix.ink/tags/grief",
       "ok": true,
       "status": 200,
-      "ms": 715,
+      "ms": 266,
       "wordCount": 136,
       "findings": [
         {
@@ -1471,7 +1257,7 @@
       "url": "https://www.vantrix.ink/tags/wry",
       "ok": true,
       "status": 200,
-      "ms": 874,
+      "ms": 423,
       "wordCount": 142,
       "findings": [
         {
@@ -1483,7 +1269,7 @@
   ],
   "counts": {
     "critical": 0,
-    "warn": 68,
+    "warn": 18,
     "info": 72
   }
 }
