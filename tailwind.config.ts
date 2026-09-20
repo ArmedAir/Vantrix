@@ -141,6 +141,21 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        // PERF FIX (avoid non-composited animations): `shimmer` above
+        // animates background-position, which forces a repaint every
+        // frame — Lighthouse's "avoid non-composited animations" audit
+        // flags exactly this. It's kept as-is because logo.tsx's
+        // shimmering wordmark uses it on a bg-clip-text gradient, where
+        // only background-position actually moves the visible gradient
+        // within the clipped text shape; a transform on that element
+        // would just move the whole word instead. skeleton.tsx's use case
+        // has no such constraint — it's a plain gradient box, so it can
+        // use a transform-based slide instead (translateX runs entirely
+        // on the compositor thread, no repaint per frame).
+        "shimmer-slide": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
         // IMMERSIVE-UI-PHASE-1: continuous idle "aliveness" loop for
         // singular character hero portraits (spec §13 "Character
         // Reactions" — a living-companion cue, not a one-time entrance).
@@ -170,6 +185,7 @@ const config: Config = {
         "slide-in-left": "slide-in-left 200ms cubic-bezier(0.16, 1, 0.3, 1)",
         "slide-in-top": "slide-in-top 260ms cubic-bezier(0.16, 1, 0.3, 1)",
         shimmer: "shimmer 2.4s linear infinite",
+        "shimmer-slide": "shimmer-slide 2.4s linear infinite",
         breathe: "breathe 7s ease-in-out infinite",
         "glow-pulse": "glow-pulse 2.8s ease-in-out infinite",
       },
