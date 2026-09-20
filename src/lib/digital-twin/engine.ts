@@ -622,15 +622,26 @@ export async function clearTwinHistory(userId: string): Promise<void> {
 // still returns cleanly rather than throwing.
 
 export async function deleteTwinData(userId: string): Promise<void> {
-  const [profileResult, messagesResult] = await Promise.all([
+  const [profileResult, messagesResult, optinsResult] = await Promise.all([
     supabaseAdmin.from('digital_twin_profiles').delete().eq('user_id', userId),
     supabaseAdmin.from('digital_twin_messages').delete().eq('user_id', userId),
+    // Per-character "get to know how I talk" consents belong to the twin: a
+    // wipe must not leave opt-ins that would silently re-activate on the next
+    // retrain. (use_for_matching lives on the profile row deleted above.)
+    supabaseAdmin.from('character_twin_optins').delete().eq('user_id', userId),
   ]);
   if (profileResult.error) {
     throw new Error(`Failed to delete digital twin profile: ${profileResult.error.message}`);
   }
   if (messagesResult.error) {
     throw new Error(`Failed to delete digital twin history: ${messagesResult.error.message}`);
+  }
+  // Best-effort by design: with the profile row gone every opt-in is already
+  // inert (loaders require an enabled, trained twin), so this only prevents a
+  // later retrain from resurrecting old consents. It must never make the
+  // user's own twin deletion fail — e.g. before the opt-ins migration is applied.
+  if (optinsResult.error) {
+    logger.warn('Failed to clear twin character opt-ins during twin wipe', { userId, error: optinsResult.error.message });
   }
 }
 

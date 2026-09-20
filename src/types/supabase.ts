@@ -2372,6 +2372,39 @@ export type Database = {
           },
         ]
       }
+      character_twin_optins: {
+        Row: {
+          character_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_twin_optins_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_twin_optins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       character_value_scores: {
         Row: {
           active_users: number
@@ -4799,6 +4832,7 @@ export type Database = {
           source_breakdown: Json | null
           source_message_count: number
           updated_at: string
+          use_for_matching: boolean
           user_id: string
         }
         Insert: {
@@ -4813,6 +4847,7 @@ export type Database = {
           source_breakdown?: Json | null
           source_message_count?: number
           updated_at?: string
+          use_for_matching?: boolean
           user_id: string
         }
         Update: {
@@ -4827,6 +4862,7 @@ export type Database = {
           source_breakdown?: Json | null
           source_message_count?: number
           updated_at?: string
+          use_for_matching?: boolean
           user_id?: string
         }
         Relationships: [

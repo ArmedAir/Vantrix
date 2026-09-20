@@ -10,6 +10,7 @@ import { StartChatButton } from "@/components/characters/start-chat-button";
 import { StartRoleplayButton } from "@/components/roleplay/start-roleplay-button";
 import { CharacterEngagement } from "@/components/characters/character-engagement";
 import { CharacterNicknameEditor } from "@/components/characters/character-nickname-editor";
+import { CharacterMirrorToggle } from "@/components/twin/twin-personalization";
 import { CharacterWorldProfileSection } from "@/components/characters/character-world-profile";
 import { CharacterStorySection } from "@/components/characters/character-story";
 import { CharacterGallery } from "@/components/characters/character-gallery";
@@ -215,6 +216,15 @@ export default async function CharacterDetailPage({
           </div>
         )}
         <CharacterNicknameEditor characterId={character.id} />
+        {/* TWIN-MIRROR: opt-in "let this character get to know how you talk".
+            Renders nothing unless the viewer is on the Digital Twin plan with
+            an enabled, trained twin, so it costs everyone else one cheap
+            GET. Signed-out visitors skip even that. */}
+        {user && (
+          <div className="w-full max-w-xl">
+            <CharacterMirrorToggle characterId={character.id} />
+          </div>
+        )}
       </div>
 
       <div className="mt-10">

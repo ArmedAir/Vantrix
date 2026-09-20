@@ -136,6 +136,8 @@ import { extractAndStoreFacts,
 import { scheduleMemoryTest, MIN_EXCHANGES_BEFORE_TEST } from '@/lib/ai/memory-test-engine';
 import { enqueueBillingRetry }        from '@/lib/ai/billing-dlq';
 import { formatMindForPrompt }        from '@/lib/mind/unified-mind';
+import { loadTwinMirrorBlock }         from '@/lib/digital-twin/twin-loaders';
+import { canUseDigitalTwin }           from '@/lib/tiers/config';
 import { checkStreak, progressQuest,
          awardXp }                    from '@/lib/growth/streak-rewards-engine';
 // ENGINE-PARITY FIX (see file-header note below): these five all come from
@@ -609,6 +611,16 @@ async function executeJob(job: ChatJob): Promise<{ reply: string; tokensUsed: nu
     traceId,
   });
   systemPrompt = systemPrompt + formatPlanForPrompt(plan);
+
+  // TWIN-MIRROR (parity with the live SSE path in api/chat/stream/route.ts):
+  // opt-in, per-character, Digital-Twin-plan only. Resolves null — never
+  // throws — unless the user has an enabled trained twin AND opted in for
+  // THIS character. Last block on purpose: it is lowest-priority by its own
+  // wording, and the character's voice/identity layers above stay in charge.
+  if (canUseDigitalTwin(tier)) {
+    const twinBlock = await loadTwinMirrorBlock(userId, characterId);
+    if (twinBlock) systemPrompt = systemPrompt + '\n\n' + twinBlock;
+  }
 
   const messagesPayload = [
     { role: 'system'    as const, content: systemPrompt },

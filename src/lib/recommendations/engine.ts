@@ -13,6 +13,13 @@
  *      the selected mood to the tags/archetypes that fit it and boosts
  *      characters carrying them.
  *
+ *   7. Twin affinity            (8%, only for users who opted in) — overlap
+ *      between the user's Digital Twin humor/values/tone and a character's
+ *      tags/archetype (see ./twin-affinity). Taken out of the flat 20% floor;
+ *      users without an opted-in twin are scored exactly as before. Runs
+ *      wholly in this deterministic scorer — twin data is never passed to the
+ *      Groq curator or any other LLM.
+ *
  * Scores are normalised to [0, 100] and returned ranked. Characters the user
  * has already swiped on are excluded. Premium characters are excluded for
  * free-tier users.
@@ -23,6 +30,9 @@ import { logger }        from '@/lib/logger';
 import { redis, parseRedisJson } from '@/lib/redis';
 import { USER_MOODS, isUserMood, MOOD_TAGS, type UserMood } from './moods';
 import { curateForUser } from './ai-curator';
+import { twinAffinity, twinBlend, twinReason, type TwinAffinity } from './twin-affinity';
+import { loadTwinMatchSignals } from '@/lib/digital-twin/twin-loaders';
+import { canUseDigitalTwin } from '@/lib/tiers/config';
 
 export { USER_MOODS, isUserMood, type UserMood };
 
@@ -283,8 +293,11 @@ function buildReason(
   cs: number, ps: number, rs: number, isNew: boolean,
   likedTags: Map<string, number>, _char: CharCandidate,
   ms: number, mood: UserMood | null,
+  twin: TwinAffinity | null = null,
 ): string {
   if (ms > 0 && mood) return `Fits your ${mood} mood right now`;
+  const twinWhy = twinReason(twin);
+  if (twinWhy) return twinWhy;
   if (isNew && rs > 75) return "New character — be one of the first to meet her";
   if (cs > 60) {
     const topTag = [...likedTags.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
@@ -330,10 +343,13 @@ export async function getRecommendations(
   } catch { /* cache miss */ }
 
   try {
-    const [likedTags, swipedIds, matchIds] = await Promise.all([
+    const [likedTags, swipedIds, matchIds, twinSignals] = await Promise.all([
       getCombinedTagWeights(userId),
       getSwipedIds(userId),
       getDatingMatchIds(userId),
+      // null unless the user is on the Digital Twin plan, has an enabled twin,
+      // AND opted in to matching (a lapsed plan silently stops personalization).
+      canUseDigitalTwin(tier) ? loadTwinMatchSignals(userId) : Promise.resolve(null),
     ]);
 
     // Load candidate pool — exclude swiped chars
@@ -376,6 +392,7 @@ export async function getRecommendations(
         const rs  = recencyScore(c.created_at);
         const bs  = matchIds.includes(c.id) ? 80 : 0; // bond affinity for already-matched
         const ms  = moodScore(c, mood);
+        const tw  = twinSignals ? twinAffinity(twinSignals, c) : null;
 
         // Bond affinity: chars with same archetype as current matches
         let bondAffinity = 0;
@@ -391,7 +408,7 @@ export async function getRecommendations(
           bondAffinity   * 0.10 +
           bs             * 0.10 +
           ms             * 0.05 +
-          50             * 0.20  // base score — everyone gets a floor
+          twinBlend(tw)          // base-score floor (50 * 0.20) — 8% of it goes to twin affinity when opted in
         );
 
         return {
@@ -409,7 +426,7 @@ export async function getRecommendations(
           archetype:     c.archetype,
           opening_line:  c.opening_line,
           score:         Math.round(final),
-          reason:        buildReason(cs, ps, rs, c.is_new, likedTags, c, ms, mood),
+          reason:        buildReason(cs, ps, rs, c.is_new, likedTags, c, ms, mood, tw),
           patternScore:  Math.round(cs),
         };
       })
