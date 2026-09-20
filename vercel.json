@@ -32,6 +32,10 @@
       "schedule": "30 3 * * *"
     },
     {
+      "path": "/api/cron/digital-person-backfill",
+      "schedule": "45 3 * * *"
+    },
+    {
       "path": "/api/cron/message-archive",
       "schedule": "0 4 * * *"
     },
