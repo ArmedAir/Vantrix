@@ -167,6 +167,28 @@ const config: Config = {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.015)" },
         },
+        // LARGE-PORTRAIT ROTATION-MOTION PARITY: the two 3D hero tiers
+        // (character-3d.tsx / character-avatar-3d.tsx) already
+        // continuously auto-rotate (`rotation.y += delta * 0.35` every
+        // frame) — but LivingPortrait, the flat-image tier every
+        // character effectively falls back to today (per
+        // character-portrait-viewer.tsx's own doc: "no character has a
+        // real model_url yet"), had no rotation motion of its own,
+        // so most large hero portraits site-wide read as static while a
+        // rare few spun. A flat image can't do a literal 360° spin
+        // without looking broken face-down, so this is the honest 2D
+        // analog of the same motion: a slow, continuous side-to-side
+        // tilt around the vertical axis (perspective + rotateY), same
+        // spirit as the 3D orbit, sized small enough (±6deg) to read as
+        // "alive" rather than distracting. Runs unconditionally (unlike
+        // `breathe`, which is interaction-gated) because it's the
+        // rotation-parity baseline every large portrait should have, 3D
+        // or not — see living-portrait.tsx for where it's applied and to
+        // which instances.
+        sway: {
+          "0%, 100%": { transform: "perspective(800px) rotateY(-6deg) scale(1.04)" },
+          "50%":      { transform: "perspective(800px) rotateY(6deg) scale(1.04)" },
+        },
         // LOGO-ANIMATION FIX: idle glow halo behind the brand mark. Opacity-
         // only (no transform), layered separately from `breathe` above so
         // the mark itself stays visually still while the glow around it
@@ -187,6 +209,7 @@ const config: Config = {
         shimmer: "shimmer 2.4s linear infinite",
         "shimmer-slide": "shimmer-slide 2.4s linear infinite",
         breathe: "breathe 7s ease-in-out infinite",
+        sway: "sway 9s ease-in-out infinite",
         "glow-pulse": "glow-pulse 2.8s ease-in-out infinite",
       },
       transitionTimingFunction: {

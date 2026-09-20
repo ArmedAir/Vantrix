@@ -20,8 +20,18 @@ import { cn } from "@/lib/utils";
  * bounds instead of being clipped by the parent (see character-hero.tsx's
  * OVERFLOW-FIX note on this same container).
  *
+ * ROTATION-MOTION PARITY (see tailwind.config.ts's `sway` keyframe doc
+ * for the full reasoning): this is the flat-image fallback tier for the
+ * same two large hero instances (CharacterHero's detail-page portrait and
+ * the landing page's featured portrait — character-portrait-viewer.tsx's
+ * only two callers) whose 3D tiers already auto-rotate every frame.
+ * `animate-sway` runs unconditionally, independent of `awake` — it's the
+ * baseline "this large image has rotation motion" behavior, not an
+ * interaction reward like breathe is. `transform-gpu` keeps the
+ * continuous rotateY on the compositor rather than triggering layout.
+ *
  * Global prefers-reduced-motion kill switch in globals.css still wins
- * regardless of interaction state.
+ * regardless of interaction state, for both animations.
  */
 export function LivingPortrait({
   src,
@@ -59,7 +69,7 @@ export function LivingPortrait({
         }
       }}
       className={cn(
-        "object-cover cursor-pointer select-none",
+        "object-cover cursor-pointer select-none transform-gpu animate-sway",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold-400",
         "focus-visible:animate-breathe",
         awake && "animate-breathe",
