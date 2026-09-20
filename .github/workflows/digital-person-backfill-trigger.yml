@@ -26,7 +26,7 @@ jobs:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           set -o pipefail
-          curl -sS -w '\nHTTP_STATUS:%{http_code}\n' \
+          curl -sS -L -w '\nHTTP_STATUS:%{http_code}\n' \
             -H "x-cron-secret: $CRON_SECRET" \
             "$BASE_URL/api/cron/digital-person-backfill" \
             | tee digital-person-backfill-result.txt
