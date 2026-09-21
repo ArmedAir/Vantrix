@@ -1,4 +1,5 @@
 CRON_SECRET length (0 means the secret isn't reaching this job): 0
+VANTRIX_BASE_URL secret length (0 means unset -- BASE_URL below may just be this workflow's own fallback default): 0
 BASE_URL: https://vantrix.ink
 {"error":"Unauthorized"}
 HTTP_STATUS:401
