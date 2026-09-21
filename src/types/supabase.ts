@@ -2569,6 +2569,7 @@ export type Database = {
           gallery_image_urls: string[] | null
           gallery_video_urls: string[] | null
           gender: string
+          orientation: string | null
           generation_style: string | null
           goal_progress: number
           hair_color: string | null
@@ -2704,6 +2705,7 @@ export type Database = {
           gallery_image_urls?: string[] | null
           gallery_video_urls?: string[] | null
           gender: string
+          orientation?: string | null
           generation_style?: string | null
           goal_progress?: number
           hair_color?: string | null
@@ -2839,6 +2841,7 @@ export type Database = {
           gallery_image_urls?: string[] | null
           gallery_video_urls?: string[] | null
           gender?: string
+          orientation?: string | null
           generation_style?: string | null
           goal_progress?: number
           hair_color?: string | null

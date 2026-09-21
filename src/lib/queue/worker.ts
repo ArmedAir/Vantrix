@@ -252,7 +252,7 @@ async function executeJob(job: ChatJob): Promise<{ reply: string; tokensUsed: nu
     // Character
     supabaseAdmin
       .from('characters')
-      .select('name,description,personality,scenario,backstory,tags,age,gender,origin,occupation,values_list,fears,flaws,speech_style,current_goal,goal_progress,daily_routine,friends_list,secrets,char_openness,char_warmth,char_adventure,char_depth,is_premium,min_tier,is_nsfw,creator_id')
+      .select('name,description,personality,scenario,backstory,tags,age,gender,orientation,origin,occupation,values_list,fears,flaws,speech_style,current_goal,goal_progress,daily_routine,friends_list,secrets,char_openness,char_warmth,char_adventure,char_depth,is_premium,min_tier,is_nsfw,creator_id')
       .eq('id', characterId)
       .single(),
 

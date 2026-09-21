@@ -13,6 +13,7 @@ const TABS: FilterPillOption[] = [
   { value: "female", label: "Girls" },
   { value: "male", label: "Guys" },
   { value: "anime", label: "Anime" },
+  { value: "lgbtq", label: "LGBTQ+" },
 ];
 
 /**

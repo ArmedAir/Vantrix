@@ -8,7 +8,7 @@ import { useCharacterSearch, type GenderFilter } from "@/hooks/use-character-sea
 import { useTrendingCharacters } from "@/hooks/use-trending-characters";
 import type { DiscoverCharacter } from "@/lib/frontend/discover";
 
-type Tab = "for-you" | "trending" | "new" | "female" | "male" | "anime";
+type Tab = "for-you" | "trending" | "new" | "female" | "male" | "anime" | "lgbtq";
 
 const TABS: FilterPillOption[] = [
   { value: "trending", label: "Trending" },
@@ -17,9 +17,10 @@ const TABS: FilterPillOption[] = [
   { value: "female", label: "Female" },
   { value: "male", label: "Male" },
   { value: "anime", label: "Anime" },
+  { value: "lgbtq", label: "LGBTQ+" },
 ];
 
-const GENDER_TABS = new Set<Tab>(["female", "male", "anime"]);
+const GENDER_TABS = new Set<Tab>(["female", "male", "anime", "lgbtq"]);
 const PAGE_SIZE = 12;
 
 const TAB_SUBHEADS: Record<Tab, string> = {
@@ -29,6 +30,7 @@ const TAB_SUBHEADS: Record<Tab, string> = {
   female: "Female companions",
   male: "Male companions",
   anime: "Anime-style companions",
+  lgbtq: "LGBTQ+ companions",
 };
 
 /**

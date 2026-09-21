@@ -18,6 +18,7 @@ import { supabaseAdmin }   from '@/lib/supabase/admin';
 import { requirePlan }     from '@/lib/auth/plan';
 import { checkActionLimit } from '@/lib/rate-limit';
 import { sanitizeField, sanitizeArray } from '@/lib/sanitize';
+import { resolveOrientationFilter } from '@/lib/characters/orientation-filter';
 import { toErrorBody, errorLogFields }     from '@/lib/errors';
 import { logger }          from '@/lib/logger';
 import { moderateCharacter } from '@/lib/moderation';
@@ -72,6 +73,10 @@ const characterCreateSchema = z.object({
   name:        z.string().min(1).max(80),
   age:         z.number().int().min(18).max(100),
   gender:      z.enum(['female', 'male', 'anime', 'other']),
+  // Content classification only — see migration 20270128_character_orientation.sql
+  // for why this is intentionally separate from gender/category and never
+  // a user-level field anywhere.
+  orientation: z.enum(['straight', 'gay', 'lesbian', 'bi']).optional(),
   category:    z.string().min(1).max(50),
   description: z.string().min(10).max(1000),
   personality: z.string().max(500).optional(),
@@ -151,10 +156,23 @@ export async function GET(req: NextRequest) {
     // posture as archetypesParam just above (untrusted input reaching a
     // DB query).
     const tagsParam       = searchParams.get('tags');
+    // ORIENTATION-FILTER: backs the Discover LGBTQ+ tab. Deliberately a
+    // separate param from `category` (which filters `gender` — see below)
+    // rather than overloading either it or `gender` itself, since both
+    // already mean something else and 'gay'/'lesbian'/'bi' would silently
+    // collide with one of them. Composed with whatever other filters are
+    // active (e.g. category=male&orientation=gay), not a replacement for
+    // gender. 'lgbtq' is a meta-value (not a real column value) meaning
+    // "any of gay/lesbian/bi" — that's what the single combined Discover
+    // tab sends; the three specific values stay available too, for a
+    // future split into separate tabs without an API change. See
+    // migration 20270128_character_orientation.sql for why this is a
+    // character-content property only, never a user-level one.
+    const orientationParam = searchParams.get('orientation');
 
     let query = supabase
       .from('characters')
-      .select('id,name,age,gender,category,description,image_url,tags,is_premium,min_tier,is_new,is_live,is_nsfw,tokens_cost,created_at,archetype,opening_line,love_language,dating_enabled,char_openness,char_warmth,char_adventure,char_depth,like_count,follower_count')
+      .select('id,name,age,gender,category,orientation,description,image_url,tags,is_premium,min_tier,is_new,is_live,is_nsfw,tokens_cost,created_at,archetype,opening_line,love_language,dating_enabled,char_openness,char_warmth,char_adventure,char_depth,like_count,follower_count')
       .eq('active', true)
       // ACTIVATION-FIX: `active` alone used to be the only gate here, and it
       // was also the *only* place `active` was checked anywhere in the app —
@@ -201,6 +219,8 @@ export async function GET(req: NextRequest) {
     // for that param.
     if (premium) query = query.eq('is_premium', true);
     if (category && category !== 'all') query = query.eq('gender', category);
+    const orientationFilter = resolveOrientationFilter(orientationParam);
+    if (orientationFilter) query = query.in('orientation', orientationFilter);
     if (search?.trim()) query = query.ilike('name', `%${search.trim().slice(0, 100)}%`);
 
     // FILTER-01: dating-discovery filter panel params. Validated defensively —
@@ -310,6 +330,7 @@ export async function POST(req: NextRequest) {
       name:        sanitizeField(d.name, 80),
       age:         d.age,
       gender:      d.gender,
+      orientation: d.orientation ?? null,
       category:    sanitizeField(d.category, 50),
       description: sanitizeField(d.description, 1000),
       personality: d.personality ? sanitizeField(d.personality, 500) : null,

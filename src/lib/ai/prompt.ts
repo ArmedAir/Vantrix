@@ -103,6 +103,14 @@ export interface CharacterData {
   origin?:       string | null;
   occupation?:   string | null;
   gender?:       string | null;   // 'male' | 'female' | other — drives pronoun selection
+  // Content-classification only (see migration 20270128_character_orientation.sql)
+  // — a property of this character, never inferred about or applied to the
+  // user. Surfaced as a plain Core Identity line below, same treatment as
+  // Occupation/Background. There is deliberately no user-side counterpart
+  // (no describeUserOrientation()) — the model is never given anything to
+  // assume the user's orientation *from*, which is a stronger guarantee
+  // than an instruction telling it not to guess.
+  orientation?:  string | null;
   age?:          number | null;
   values_list?:  string[] | null;
   fears?:        string[] | null;
@@ -328,6 +336,7 @@ export function assembleFullPrompt(opts: AssembleOptions): string {
     character.occupation ? `Occupation: ${sanitizeField(character.occupation, 80)}` : '',
     `Description: ${sanitizeField(character.description, 800)}`,
     character.personality ? `Personality: ${sanitizeField(character.personality, 400)}` : '',
+    character.orientation ? `Orientation: ${sanitizeField(character.orientation, 20)}` : '',
     character.backstory   ? `Background: ${sanitizeField(character.backstory, 600)}`   : '',
     Array.isArray(character.tags) && (character.tags as string[]).length
       ? `Traits: ${sanitizeArray(character.tags as string[], 10, 60).join(', ')}` : '',

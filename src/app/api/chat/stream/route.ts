@@ -283,7 +283,7 @@ const MAX_BODY_BYTES = 8 * 1024;
 // assembly. Column list unchanged from the original generation-context
 // query — just fetched once instead of twice.
 const CHARACTER_ROW_SELECT =
-  'id,name,description,personality,scenario,backstory,tags,age,gender,origin,occupation,values_list,fears,flaws,speech_style,current_goal,goal_progress,daily_routine,friends_list,secrets,char_openness,char_warmth,char_adventure,char_depth,is_premium,min_tier,is_nsfw,active,creator_id,brain_initialized,category,archetype,writing_style,voice_profile';
+  'id,name,description,personality,scenario,backstory,tags,age,gender,orientation,origin,occupation,values_list,fears,flaws,speech_style,current_goal,goal_progress,daily_routine,friends_list,secrets,char_openness,char_warmth,char_adventure,char_depth,is_premium,min_tier,is_nsfw,active,creator_id,brain_initialized,category,archetype,writing_style,voice_profile';
 
 interface CharacterRow {
   id: string;
@@ -295,6 +295,7 @@ interface CharacterRow {
   tags: string[] | null;
   age: number | null;
   gender: string | null;
+  orientation: string | null;
   origin: string | null;
   occupation: string | null;
   values_list: string[] | null;
