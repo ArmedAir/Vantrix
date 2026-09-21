@@ -24,10 +24,12 @@ jobs:
         env:
           BASE_URL: ${{ secrets.VANTRIX_BASE_URL || 'https://vantrix.ink' }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          RAW_BASE_URL_SECRET: ${{ secrets.VANTRIX_BASE_URL }}
         run: |
           set -o pipefail
           {
             echo "CRON_SECRET length (0 means the secret isn't reaching this job): ${#CRON_SECRET}"
+            echo "VANTRIX_BASE_URL secret length (0 means unset -- BASE_URL below may just be this workflow's own fallback default): ${#RAW_BASE_URL_SECRET}"
             echo "BASE_URL: $BASE_URL"
             curl -sS -L -w '\nHTTP_STATUS:%{http_code}\n' \
               -H "Authorization: Bearer $CRON_SECRET" \
