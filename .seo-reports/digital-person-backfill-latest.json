@@ -1,2 +1,4 @@
+CRON_SECRET length (0 means the secret isn't reaching this job): 0
+BASE_URL: https://vantrix.ink
 {"error":"Unauthorized"}
 HTTP_STATUS:401
