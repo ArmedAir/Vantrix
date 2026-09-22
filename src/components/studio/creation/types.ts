@@ -26,6 +26,43 @@ export interface DraftMemory {
 }
 
 export type Gender = "female" | "male" | "anime" | "other";
+/**
+ * "" = unclassified (maps to characters.orientation NULL — see migration
+ * 20270128_character_orientation.sql). Content-classification only, powers
+ * the Discover LGBTQ+ tab; not paired with any assumption about how the
+ * character talks or behaves — see identity-stage.tsx's hint copy.
+ */
+export type Orientation = "" | "straight" | "gay" | "lesbian" | "bi";
+
+const ORIENTATION_LABELS: Record<Exclude<Orientation, "">, string> = {
+  straight: "Straight",
+  gay: "Gay",
+  lesbian: "Lesbian",
+  bi: "Bi",
+};
+
+/**
+ * Which orientation values read as coherent for a given gender — e.g. a
+ * character described as "lesbian" is conventionally a woman, so that
+ * option doesn't appear for gender="male". `anime`/`other` stay fully open
+ * since neither maps to a single real-world convention. This narrows the
+ * Identity stage's picker so a creator can't end up with a combination that
+ * reads as a mismatch on the finished card; it isn't a statement that any
+ * combination is invalid, and "bi"/"straight" are always available.
+ */
+export const ORIENTATIONS_FOR_GENDER: Record<Gender, Exclude<Orientation, "">[]> = {
+  female: ["straight", "lesbian", "bi"],
+  male: ["straight", "gay", "bi"],
+  anime: ["straight", "gay", "lesbian", "bi"],
+  other: ["straight", "gay", "lesbian", "bi"],
+};
+
+export function orientationOptions(gender: Gender): Array<{ value: Orientation; label: string }> {
+  return [
+    { value: "", label: "Not set" },
+    ...ORIENTATIONS_FOR_GENDER[gender].map((value) => ({ value, label: ORIENTATION_LABELS[value] })),
+  ];
+}
 export type ImageStyle = "realistic" | "anime" | "artistic";
 export type Visibility = "private" | "public";
 
@@ -34,6 +71,8 @@ export interface CharacterDraft {
   name: string;
   age: number;
   gender: Gender;
+  /** "" = not set. Which values make sense depends on `gender` — see identity-stage.tsx. */
+  orientation: Orientation;
   pronouns: string;
   occupation: string;
   origin: string;
@@ -105,6 +144,7 @@ export function emptyDraft(): CharacterDraft {
     name: "",
     age: 24,
     gender: "female",
+    orientation: "",
     pronouns: "",
     occupation: "",
     origin: "",

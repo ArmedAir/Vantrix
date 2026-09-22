@@ -21,7 +21,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 const REMIX_SELECT =
-  'id,name,creator_id,is_public,active,age,gender,pronouns,occupation,origin,category,description,' +
+  'id,name,creator_id,is_public,active,age,gender,orientation,pronouns,occupation,origin,category,description,' +
   'personality,archetype,attachment_style,love_language,char_openness,char_warmth,char_adventure,char_depth,' +
   'values_list,fears,flaws,dreams,current_goal,daily_routine,backstory,scenario,family_bg,childhood_bg,' +
   'friends_list,opening_line,speech_style,speech_uses,speech_avoids,hair_color,eye_color,body_type,skin_tone,' +
