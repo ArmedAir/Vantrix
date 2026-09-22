@@ -25,6 +25,39 @@ export interface CuratorLLMResponse {
   order: { id: string; reason?: string | undefined }[];
 }
 
+/**
+ * What the model actually returns: short numeric aliases (1..N, the item's
+ * position in the shortlist it was shown) instead of UUIDs. A UUID costs ~20
+ * tokens and had to be sent AND echoed back for every candidate; on Groq's free
+ * tier (200K tokens/day per model) that was most of the budget. Aliases are
+ * translated back to real ids by fromAliasResponse() before anything downstream
+ * (applyCuration, the cache) sees them, so those stay id-based and unchanged.
+ */
+export interface CuratorAliasResponse {
+  order: { n: number; reason?: string | undefined }[];
+}
+
+/**
+ * Translate an alias reply into the id-based shape applyCuration() expects.
+ * STRICT on purpose: any alias that isn't an integer inside 1..shortlist.length
+ * discards the whole reply (null → deterministic order). Duplicates and
+ * omissions are then caught by applyCuration's exact-permutation gate, so the
+ * "same set, no additions, omissions or duplicates" trust rule is unchanged.
+ */
+export function fromAliasResponse(
+  shortlist: CuratorCandidate[],
+  parsed: CuratorAliasResponse,
+): CuratorLLMResponse | null {
+  const order: CuratorLLMResponse['order'] = [];
+  for (const entry of parsed.order) {
+    if (!Number.isInteger(entry.n)) return null;
+    const candidate = shortlist[entry.n - 1];
+    if (!candidate) return null;
+    order.push({ id: candidate.id, reason: entry.reason });
+  }
+  return { order };
+}
+
 /** FNV-1a, 32-bit — stable, fast, no deps. Good enough for cache-key bucketing. */
 export function fnv1a(input: string): string {
   let h = 0x811c9dc5;

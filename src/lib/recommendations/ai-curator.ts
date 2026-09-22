@@ -45,7 +45,7 @@ import { logger } from '@/lib/logger';
 import { env }    from '@/env';
 import { brainJSON } from '@/lib/ai/groq-brain';
 import {
-  applyCuration, fnv1a, hashIds, tasteSignature, topTasteTags,
+  applyCuration, fnv1a, fromAliasResponse, hashIds, tasteSignature, topTasteTags,
   type CuratedResult, type CuratorCandidate, type CuratorLLMResponse,
 } from './curator-logic';
 
@@ -65,8 +65,10 @@ export interface CuratorScope {
 }
 
 const responseSchema = z.object({
+  // n = the item's position (1..N) in the shortlist shown to the model, NOT a
+  // database id — see CuratorAliasResponse in curator-logic.ts for why.
   order: z.array(z.object({
-    id:     z.string(),
+    n:      z.number().int(),
     reason: z.string().optional(),
   })),
 });
@@ -94,16 +96,16 @@ function buildPrompt(
       : 'Reasons should read like a friendly nudge, e.g. "matches your love of slow-burn stories". ',
     'Write one short, specific reason (under 8 words, no hashtags, no emojis, sentence case, no trailing period) for each of the first 6 only.',
     'Respond with ONLY minified JSON, no prose, no code fences, in exactly this shape:',
-    '{"order":[{"id":"<id>","reason":"<reason, first 6 only>"},{"id":"<id>"}]}',
-    'The "order" array MUST contain every id from the input exactly once — no more, no fewer, no invented ids.',
+    '{"order":[{"n":<n>,"reason":"<reason, first 6 only>"},{"n":<n>}]}',
+    'The "order" array MUST contain every n from the input exactly once — no more, no fewer, no invented ns.',
   ].join(' ');
 
   const user = JSON.stringify({
     surface,
     ...(scope.mood ? { mood: scope.mood } : {}),
     tasteSummary: tasteTags.length ? tasteTags : 'no strong signal yet — use broad appeal and variety',
-    shortlist: shortlist.map(c => ({
-      id: c.id,
+    shortlist: shortlist.map((c, i) => ({
+      n: i + 1,
       name: c.name,
       archetype: c.archetype,
       tags: (c.tags ?? []).slice(0, 5),
@@ -172,14 +174,22 @@ export async function curateForUser(
 
     if (!out.ok) return fallback; // reason already counted in brain stats
 
-    const curated = applyCuration(shortlist, deterministicOrder, out.data);
+    // The model answered in the short aliases it was shown; translate back to
+    // real ids. Everything downstream (applyCuration, the cache) stays id-based.
+    const byId = fromAliasResponse(shortlist, out.data);
+    if (!byId) {
+      logger.warn('[ai-curator] invalid-alias, using deterministic order', { userId, model: out.model });
+      return fallback;
+    }
+
+    const curated = applyCuration(shortlist, deterministicOrder, byId);
     if (!curated) {
       logger.warn('[ai-curator] invalid-permutation, using deterministic order', { userId, model: out.model });
       return fallback;
     }
 
     try {
-      await redis.set(key, JSON.stringify(out.data), { ex: CURATOR_TTL });
+      await redis.set(key, JSON.stringify(byId), { ex: CURATOR_TTL });
     } catch (err) {
       logger.warn('[ai-curator] cache-write-failed', { userId, error: String(err) });
     }

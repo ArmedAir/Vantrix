@@ -10,7 +10,8 @@
  *
  * WHY A GOVERNOR: Groq's free tier is limited per MODEL and per ORGANIZATION
  * (extra API keys don't add quota) — roughly 30 requests/min, ~1,000 requests/day
- * on the gpt-oss models, and a small tokens/min ceiling. A 429 costs a wasted
+ * on the gpt-oss models, a small tokens/min ceiling, and 200K tokens per DAY (the
+ * one that actually binds — see PLAN_DEFAULTS). A 429 costs a wasted
  * round trip and trips the shared circuit breaker, so this module counts usage
  * in Redis (shared across every serverless instance) and refuses to call BEFORE
  * the limit rather than after. Design consequences:
@@ -74,7 +75,11 @@ export interface BrainJSONOptions<T> {
   signal?:     AbortSignal;
 }
 
-export interface BrainLimits { rpm: number; rpd: number; tpm: number }
+export interface BrainLimits {
+  rpm: number; rpd: number; tpm: number;
+  /** Tokens per UTC day, per model. null = not enforced (paid plans, unless GROQ_TPD_LIMIT is set). */
+  tpd: number | null;
+}
 
 // ── Limits ────────────────────────────────────────────────────────────────────
 
@@ -88,9 +93,16 @@ export const BACKGROUND_SHARE = 0.6;
 // and clock skew between instances don't turn into real 429s. Override with
 // GROQ_RPM_LIMIT / GROQ_RPD_LIMIT / GROQ_TPM_LIMIT to match your org's
 // console.groq.com limits page (they vary by model and change over time).
+//
+// TOKENS PER DAY is the limit that actually binds on the free plan, not
+// requests per day: Groq's published free-plan caps for the gpt-oss models are
+// 1,000 requests/day but only 200,000 tokens/day per model. A curator call is
+// ~3K tokens, so 200K tokens is gone after ~65 calls — long before 900
+// requests. Without a tokens/day gate the governor keeps admitting calls that
+// Groq then rejects with a daily-limit 429 for the rest of the day.
 const PLAN_DEFAULTS: Record<'free' | 'developer', BrainLimits> = {
-  free:      { rpm: 25,  rpd: 900,    tpm: 7_000   },
-  developer: { rpm: 500, rpd: 50_000, tpm: 150_000 },
+  free:      { rpm: 25,  rpd: 900,    tpm: 7_000,   tpd: 170_000 }, // 85% of 200K
+  developer: { rpm: 500, rpd: 50_000, tpm: 150_000, tpd: null    },
 };
 
 function positiveInt(raw: string | undefined): number | null {
@@ -105,6 +117,7 @@ export function getBrainLimits(): BrainLimits {
     rpm: positiveInt(env.GROQ_RPM_LIMIT) ?? base.rpm,
     rpd: positiveInt(env.GROQ_RPD_LIMIT) ?? base.rpd,
     tpm: positiveInt(env.GROQ_TPM_LIMIT) ?? base.tpm,
+    tpd: positiveInt(env.GROQ_TPD_LIMIT) ?? base.tpd,
   };
 }
 
@@ -124,16 +137,17 @@ function utcDay(d = new Date()): string {
 }
 const minuteBucket = (): number => Math.floor(Date.now() / 60_000);
 
-const rpmKey      = (m: string) => `groq:rpm:${m}:${minuteBucket()}`;
-const tpmKey      = (m: string) => `groq:tpm:${m}:${minuteBucket()}`;
+const rpmKey      = (m: string, b = minuteBucket()) => `groq:rpm:${m}:${b}`;
+const tpmKey      = (m: string, b = minuteBucket()) => `groq:tpm:${m}:${b}`;
 const rpdKey      = (m: string) => `groq:rpd:${m}:${utcDay()}`;
+const tpdKey      = (m: string) => `groq:tpd:${m}:${utcDay()}`;
 const cooldownKey = (m: string) => `groq:cooldown:${m}`;
 const taskKey     = (t: string) => `groq:task:${t}:${utcDay()}`;
 const statKey     = () => `groq:stat:${utcDay()}`;
 
 // ── Governor ──────────────────────────────────────────────────────────────────
 
-type ReserveResult = 'ok' | 'rpm' | 'rpd' | 'tpm' | 'error';
+type ReserveResult = 'ok' | 'rpm' | 'rpd' | 'tpm' | 'tpd' | 'error';
 
 /**
  * INCR-then-check-then-refund. Atomic enough for a soft client-side limiter:
@@ -142,39 +156,68 @@ type ReserveResult = 'ok' | 'rpm' | 'rpd' | 'tpm' | 'error';
  * refused calls don't consume quota.
  */
 async function reserve(
-  model: string, priority: BrainPriority, estTokens: number,
+  model: string, priority: BrainPriority, estTokens: number, bucket: number,
 ): Promise<ReserveResult> {
   const limits = getBrainLimits();
   const share  = priority === 'background' ? BACKGROUND_SHARE : 1;
   const maxRpm = Math.max(1, Math.floor(limits.rpm * share));
   const maxRpd = Math.max(1, Math.floor(limits.rpd * share));
   const maxTpm = Math.max(1, Math.floor(limits.tpm * share));
+  const maxTpd = limits.tpd == null ? null : Math.max(1, Math.floor(limits.tpd * share));
 
-  const rk = rpmKey(model), dk = rpdKey(model), tk = tpmKey(model);
+  const rk = rpmKey(model, bucket), dk = rpdKey(model), tk = tpmKey(model, bucket), pk = tpdKey(model);
   try {
+    // tokens/day is always TRACKED (it feeds the admin status view); it is only
+    // ENFORCED when the plan has a daily token cap (maxTpd != null).
     const res = await redis.pipeline()
       .incr(rk).expire(rk, 90)
       .incr(dk).expire(dk, 60 * 60 * 26)
       .incrby(tk, estTokens).expire(tk, 90)
+      .incrby(pk, estTokens).expire(pk, 60 * 60 * 26)
       .exec();
 
     const rpm = Number(res[0]);
     const rpd = Number(res[2]);
     const tpm = Number(res[4]);
+    const tpd = Number(res[6]);
 
     let refused: ReserveResult = 'ok';
     if (rpm > maxRpm)      refused = 'rpm';
     else if (rpd > maxRpd) refused = 'rpd';
     else if (tpm > maxTpm) refused = 'tpm';
+    else if (maxTpd != null && tpd > maxTpd) refused = 'tpd';
 
-    if (refused !== 'ok') {
-      await redis.pipeline().decr(rk).decr(dk).decrby(tk, estTokens).exec().catch(() => {});
-    }
+    if (refused !== 'ok') await refundReservation(model, estTokens, bucket);
     return refused;
   } catch (err) {
     logger.warn('[groq-brain] governor unavailable — failing closed', { error: String(err) });
     return 'error';
   }
+}
+
+/** Give back everything reserve() took. Used on refusal and on calls Groq never processed. */
+async function refundReservation(model: string, estTokens: number, bucket: number): Promise<void> {
+  try {
+    await redis.pipeline()
+      .decr(rpmKey(model, bucket)).decr(rpdKey(model))
+      .decrby(tpmKey(model, bucket), estTokens).decrby(tpdKey(model), estTokens)
+      .exec();
+  } catch { /* best-effort: worst case we over-count and are conservative */ }
+}
+
+/**
+ * Replace the estimate with what Groq actually billed (either direction), so
+ * a chars/4 guess can't drift the daily token count. Best-effort: a failure
+ * here just leaves the conservative estimate in place.
+ */
+async function settleUsage(model: string, estTokens: number, actual: number, bucket: number): Promise<void> {
+  if (!Number.isFinite(actual) || actual <= 0 || actual === estTokens) return;
+  const delta = actual - estTokens;
+  try {
+    await redis.pipeline()
+      .incrby(tpmKey(model, bucket), delta).incrby(tpdKey(model), delta)
+      .exec();
+  } catch { /* best-effort */ }
 }
 
 async function reserveTask(task: string, cap: number): Promise<boolean> {
@@ -233,6 +276,12 @@ function is429(err: unknown): boolean {
   return /\b429\b|rate.?limit/i.test(String(err));
 }
 
+/** Groq names the window in its 429 body: "...on tokens per day (TPD)..." / "...requests per day (RPD)...". A daily limit won't clear in a minute, so cool down longer for those instead of re-probing every 60s all day. */
+const DAILY_COOLDOWN_S = 10 * 60;
+function isDailyLimit(err: unknown): boolean {
+  return /per day|\((?:TPD|RPD)\)/i.test(String(err));
+}
+
 export async function brainJSON<T>(opts: BrainJSONOptions<T>): Promise<BrainOutcome<T>> {
   const skip = async (reason: BrainSkipReason): Promise<BrainOutcome<T>> => {
     void bumpStat(opts.task, reason);
@@ -265,7 +314,8 @@ export async function brainJSON<T>(opts: BrainJSONOptions<T>): Promise<BrainOutc
       if (await redis.get(cooldownKey(model))) { sawCooldown = true; continue; }
     } catch { sawBudget = true; continue; }
 
-    const r = await reserve(model, opts.priority, est);
+    const bucket = minuteBucket(); // one bucket per attempt: reserve/settle/refund must hit the same key
+    const r = await reserve(model, opts.priority, est, bucket);
     if (r !== 'ok') { sawBudget = true; continue; }
 
     const started = Date.now();
@@ -283,6 +333,10 @@ export async function brainJSON<T>(opts: BrainJSONOptions<T>): Promise<BrainOutc
         jsonMode:         true,
         signal:           opts.signal,
       });
+
+      // Groq processed this request, so record what it REALLY cost (even if the
+      // reply turns out to be unparseable — those tokens are spent either way).
+      await settleUsage(model, est, res.totalTokens, bucket);
 
       let json: unknown;
       try { json = JSON.parse(stripFences(res.reply)); }
@@ -304,12 +358,19 @@ export async function brainJSON<T>(opts: BrainJSONOptions<T>): Promise<BrainOutc
     } catch (err) {
       if (is429(err)) {
         // Org-level limit hit despite the governor (another deployment sharing
-        // the key, or our estimate was low). Back off this model for a minute
-        // and try the other one.
-        await redis.set(cooldownKey(model), '1', { ex: 60 }).catch(() => {});
+        // the key, or our estimate was low). A rejected request consumed no
+        // quota, so give the reservation back — otherwise every 429 also
+        // inflates our own counters. A DAILY limit won't clear in a minute
+        // (probing every 60s just burns round trips all day), so back off
+        // longer for those; per-minute limits get the short cooldown.
+        await refundReservation(model, est, bucket);
+        await redis.set(cooldownKey(model), '1', { ex: isDailyLimit(err) ? DAILY_COOLDOWN_S : 60 }).catch(() => {});
         sawCooldown = true;
         continue;
       }
+      // Timeouts / 5xx never produced usable quota use; an EMPTY completion did
+      // (Groq generated and billed tokens that were then cut off or filtered).
+      if (!/empty completion/i.test(String(err))) await refundReservation(model, est, bucket);
       logger.warn('[groq-brain] call failed', { task: opts.task, model, error: String(err).slice(0, 200) });
       return skip('provider');
     }
@@ -330,7 +391,7 @@ export interface BrainStatus {
   plan:       string;
   limits:     BrainLimits;
   models:     { fast: string; smart: string };
-  usage:      Record<string, { rpmNow: number; rpdToday: number; tpmNow: number; cooldown: boolean }>;
+  usage:      Record<string, { rpmNow: number; rpdToday: number; tpmNow: number; tpdToday: number; cooldown: boolean }>;
   today:      Record<string, number>;
 }
 
@@ -339,13 +400,13 @@ export async function getBrainStatus(): Promise<BrainStatus> {
   const usage: BrainStatus['usage'] = {};
   for (const m of new Set([models.fast, models.smart])) {
     try {
-      const [rpm, rpd, tpm, cd] = await Promise.all([
+      const [rpm, rpd, tpm, tpd, cd] = await Promise.all([
         redis.get<number>(rpmKey(m)), redis.get<number>(rpdKey(m)),
-        redis.get<number>(tpmKey(m)), redis.get(cooldownKey(m)),
+        redis.get<number>(tpmKey(m)), redis.get<number>(tpdKey(m)), redis.get(cooldownKey(m)),
       ]);
-      usage[m] = { rpmNow: Number(rpm ?? 0), rpdToday: Number(rpd ?? 0), tpmNow: Number(tpm ?? 0), cooldown: Boolean(cd) };
+      usage[m] = { rpmNow: Number(rpm ?? 0), rpdToday: Number(rpd ?? 0), tpmNow: Number(tpm ?? 0), tpdToday: Number(tpd ?? 0), cooldown: Boolean(cd) };
     } catch {
-      usage[m] = { rpmNow: 0, rpdToday: 0, tpmNow: 0, cooldown: false };
+      usage[m] = { rpmNow: 0, rpdToday: 0, tpmNow: 0, tpdToday: 0, cooldown: false };
     }
   }
   let today: Record<string, number> = {};

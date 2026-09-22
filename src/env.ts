@@ -136,6 +136,8 @@ const envSchema = z.object({
   GROQ_RPM_LIMIT:         z.string().optional(),
   GROQ_RPD_LIMIT:         z.string().optional(),
   GROQ_TPM_LIMIT:         z.string().optional(),
+  // Tokens per UTC day, per model. Free plan default 170000 (85% of Groq's 200K cap); unset on paid plans unless you hit a real daily-token ceiling.
+  GROQ_TPD_LIMIT:         z.string().optional(),
   // Homepage hero rotation (lib/curator/homepage-rotation.ts):
   //   off    — cron is a no-op
   //   shadow — decides + logs to ai_brain_decisions, changes NOTHING on the site (default)
