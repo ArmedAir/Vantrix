@@ -97,7 +97,7 @@ function buildPrompt(
     'Write one short, specific reason (under 8 words, no hashtags, no emojis, sentence case, no trailing period) for each of the first 6 only.',
     'Respond with ONLY minified JSON, no prose, no code fences, in exactly this shape:',
     '{"order":[{"n":<n>,"reason":"<reason, first 6 only>"},{"n":<n>}]}',
-    'The "order" array MUST contain every n from the input exactly once — no more, no fewer, no invented ns.',
+    'The "order" array MUST contain every n from the input exactly once — no more, no fewer, no invented numbers.',
   ].join(' ');
 
   const user = JSON.stringify({
