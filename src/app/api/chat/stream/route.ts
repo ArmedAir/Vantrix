@@ -3009,7 +3009,7 @@ export async function POST(req: NextRequest) {
           logMemoryRecallAudit({
             userId, characterId, conversationId,
             shownMemories:     semanticMemoryGraph,
-            factConflictCount: companionContext.canonicalMemory.conflicts.length,
+            factConflictCount: canonicalMemory.conflicts.length,
             userMessage:       message,
             assistantReply:    fullReply,
           }).catch(bg('logMemoryRecallAudit'));
