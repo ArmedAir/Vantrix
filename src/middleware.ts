@@ -72,17 +72,6 @@ const ALLOWED_ORIGINS = [
 // substring allowlist rather than pulling in a UA-parsing dependency —
 // this only ever needs to answer "is this one of the handful of crawlers
 // that matter for SEO/link-previews," not fully classify every UA.
-//
-// AI-CRAWLER FIX: the original list only covered traditional search/social
-// bots. It was missing every crawler that actually reads llms.txt and
-// feeds AI answer engines (ChatGPT, Perplexity, Gemini, Claude) — GPTBot,
-// ClaudeBot, PerplexityBot, Google-Extended, CCBot, Bytespider, and Meta's
-// external agent. Those were falling through to the /enter redirect and
-// seeing the onboarding flow instead of the real homepage/llms.txt
-// positioning, which defeats the entire point of that file existing.
-const KNOWN_CRAWLER_UA_PATTERN =
-  /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|applebot|pinterestbot|discordbot|whatsapp|telegrambot|gptbot|claudebot|perplexitybot|google-extended|ccbot|bytespider|meta-externalagent/i;
-
 // ── Main middleware ───────────────────────────────────────────────────────────
 
 export async function middleware(request: NextRequest) {
@@ -277,46 +266,15 @@ export async function middleware(request: NextRequest) {
     user = sessionResult.user;
   }
 
-  // ── First-time-visitor routing to /enter ──────────────────────────────
-  // Root traffic decision (2026-09-06, confirmed): ALL first-time,
-  // signed-out visitors to "/" get sent to /enter (the "First Chapter"
-  // onboarding flow — src/app/enter/page.tsx) instead of the marketing
-  // LandingPage that route renders for a returning anon visitor (see
-  // (app)/page.tsx). "First-time" is tracked with a plain, readable
-  // `vx_seen` cookie (same non-sensitive, best-effort pattern as
-  // vx_country a bit further down) rather than session/auth state:
-  //   - A signed-in user is never redirected — gated on `user` being null.
-  //   - A deep link (shared character page, referral link, ad landing
-  //     page, etc.) sets vx_seen on THAT first request same as any other
-  //     page (see the fallback set alongside vx_country below), so a
-  //     later visit to "/" behaves normally — only someone whose actual
-  //     first touch is the bare root URL gets the onboarding flow.
-  //   - Known search/social crawlers are exempted (KNOWN_CRAWLER_UA_PATTERN
-  //     above) so root keeps getting indexed/previewed as the real landing
-  //     page, not the interactive onboarding flow — which build doc §1.1
-  //     deliberately keeps chrome- and explanation-free, exactly wrong for
-  //     a search snippet or link-preview source.
-  //   - Redirect, not rewrite: /enter is a real, bookmarkable/shareable
-  //     URL in its own right (see that page's own force-dynamic comment),
-  //     so the address bar should reflect it rather than silently serving
-  //     /enter's content at "/".
-  if (pathname === "/" && request.method === "GET" && !user) {
-    const alreadySeen = request.cookies.get("vx_seen")?.value === "1";
-    const isCrawler = KNOWN_CRAWLER_UA_PATTERN.test(request.headers.get("user-agent") ?? "");
-    if (!alreadySeen && !isCrawler) {
-      const redirectResponse = NextResponse.redirect(new URL("/enter", request.url));
-      for (const cookie of sessionResponse.cookies.getAll()) {
-        redirectResponse.cookies.set(cookie);
-      }
-      redirectResponse.cookies.set("vx_seen", "1", {
-        path: "/",
-        maxAge: 60 * 60 * 24 * 365,
-        sameSite: "lax",
-      });
-      applyHeaders(redirectResponse, requestId, nonce, csp, request);
-      return redirectResponse;
-    }
-  }
+  // ── First-time-visitor routing to /enter (DISABLED) ─────────────────
+  // Root traffic decision (2026-09-06) sent every first-time, signed-out
+  // visitor to /enter instead of the marketing LandingPage. Reverted per
+  // explicit request: first-time visitors now see the real homepage like
+  // any returning anon visitor already did. /enter itself is untouched
+  // and still reachable directly — this only removes the automatic
+  // redirect into it. The vx_seen cookie this block depended on (and its
+  // fallback set further below) is removed too, since nothing reads it
+  // anymore.
 
   const forwardedHeaders = new Headers(request.headers);
   // CSP-NONCE-FIX (2026-08-20): x-nonce and Content-Security-Policy were
@@ -386,18 +344,9 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  // Fallback set for the vx_seen cookie the /enter redirect above reads —
-  // covers every request that ISN'T the root-page redirect case (a deep
-  // link straight into some other page, or a signed-in user, or a root
-  // visit from a crawler): whoever hits any page without it yet is "seen"
-  // from here on, same non-sensitive best-effort pattern as vx_country.
-  if (!request.cookies.get("vx_seen")) {
-    response.cookies.set("vx_seen", "1", {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365,
-      sameSite: "lax",
-    });
-  }
+  // vx_seen fallback removed — see the disabled /enter redirect block
+  // above for why nothing reads this cookie anymore.
+
 
   applyHeaders(response, requestId, nonce, csp, request);
 

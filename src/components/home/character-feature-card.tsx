@@ -44,7 +44,14 @@ export function CharacterFeatureCard({
             alt={c.name}
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover"
+            // OBJECT-POSITION-FIX: default object-cover centers the crop,
+            // but these are tall portrait photos with the face near the
+            // top -- centering on a 4:3 box was cropping straight through
+            // the head (nose-down on one character, chin-down on another,
+            // per a real screenshot report). object-top anchors the crop
+            // to the top of the source image instead, so the head is
+            // always what's kept, never what's cut.
+            className="object-cover object-top"
           />
         ) : (
           <div className="h-full w-full bg-border-hairline" />

@@ -8,6 +8,7 @@ import { CharacterBuilderForm } from "@/components/studio/builder/character-buil
 import { MemoryBuilder } from "@/components/studio/builder/memory-builder";
 import { CharacterActions } from "@/components/studio/builder/character-actions";
 import { VisibilityToggle } from "@/components/studio/visibility-toggle";
+import { DatingToggle } from "@/components/studio/dating-toggle";
 import { MonetizeCharacterCard } from "@/components/studio/creator-dashboard/monetize-character-card";
 import { RaasPricingCard } from "@/components/studio/creator-dashboard/raas-pricing-card";
 import { PricingTabBadge } from "@/components/studio/creator-dashboard/pricing-tab-badge";
@@ -58,11 +59,18 @@ export default async function EditCharacterPage({
             <Eye className="h-3.5 w-3.5" /> View public page
           </Link>
         </div>
-        <VisibilityToggle
-          characterId={character.id}
-          isPublic={character.is_public}
-          canGoPublic={character.moderation_status === "approved"}
-        />
+        <div className="flex flex-col items-end gap-2">
+          <VisibilityToggle
+            characterId={character.id}
+            isPublic={character.is_public}
+            canGoPublic={character.moderation_status === "approved"}
+          />
+          <DatingToggle
+            characterId={character.id}
+            datingEnabled={character.dating_enabled}
+            canEnable={character.moderation_status === "approved"}
+          />
+        </div>
       </div>
 
       <div className="mb-6">

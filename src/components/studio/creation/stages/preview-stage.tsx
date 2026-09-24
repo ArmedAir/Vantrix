@@ -56,6 +56,7 @@ export function PreviewStage({
           name: draft.name.trim(),
           age: draft.age,
           gender: draft.gender,
+          orientation: draft.orientation || undefined,
           category: draft.category.trim() || "romance",
           description: draft.description.trim(),
           personality: cap(draft.personality, 500),

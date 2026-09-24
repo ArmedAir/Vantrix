@@ -38,6 +38,7 @@
  *   HEARTBEAT_EMBEDDING_BACKFILL=https://hc-ping.com/{uuid}
  *   HEARTBEAT_X_SOCIAL_SELECT=https://hc-ping.com/{uuid}
  *   HEARTBEAT_X_SOCIAL_PUBLISH=https://hc-ping.com/{uuid}
+ *   HEARTBEAT_HOMEPAGE_ROTATION=https://hc-ping.com/{uuid}
  *   HEARTBEAT_STREAK_RISK=https://hc-ping.com/{uuid}
  *   HEARTBEAT_UNIVERSE_IMAGES=https://hc-ping.com/{uuid}
  *   HEARTBEAT_COMMENT_MODERATION_SWEEP=https://hc-ping.com/{uuid}
@@ -94,7 +95,9 @@ export type HeartbeatName =
   | 'UNIVERSE_IMAGES'
   | 'CHARACTER_REFUND_RECOVERY'
   | 'MEMORY_TIER_CONSOLIDATION'
-  | 'COMMENT_MODERATION_SWEEP';
+  | 'COMMENT_MODERATION_SWEEP'
+  | 'HOMEPAGE_ROTATION'
+  | 'DIGITAL_PERSON_BACKFILL';
 
 function getUrl(name: HeartbeatName, suffix?: '/start' | '/fail'): string | null {
   const envKey = `HEARTBEAT_${name}`;

@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
   "regions": [
-    "iad1"
+    "fra1"
   ],
   "crons": [
     {
@@ -30,6 +30,10 @@
     {
       "path": "/api/cron/embedding-backfill",
       "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/cron/digital-person-backfill",
+      "schedule": "45 3 * * *"
     },
     {
       "path": "/api/cron/message-archive",

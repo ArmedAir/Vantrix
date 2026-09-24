@@ -15,6 +15,7 @@ import { checkCharacterAccessForGuest } from '@/lib/access/character-gate';
 import { detectCrisisSignal, logCrisisEvent } from '@/lib/safety/crisis-detection';
 import { buildCrisisReply }            from '@/lib/safety/crisis-response';
 import { stripLeakedMeta }             from '@/lib/moderation/reply-guard';
+import { stripDashPunctuation }        from '@/lib/ai/output-format-rules';
 import { watchKeywords }               from '@/lib/moderation/keyword-watch';
 import { shouldUseSecureCookies }      from '@/lib/http/secure-cookies';
 
@@ -264,7 +265,7 @@ export async function POST(request: NextRequest) {
       stream:      false,
     });
 
-    const reply = stripLeakedMeta(result.reply || "I'm here. Tell me more…");
+    const reply = stripDashPunctuation(stripLeakedMeta(result.reply || "I'm here. Tell me more…"));
 
     // Log-only, non-blocking — see keyword-watch.ts. Runs after
     // stripLeakedMeta so hits are checked against the final reply text.

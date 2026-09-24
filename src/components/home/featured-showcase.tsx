@@ -83,12 +83,29 @@ function FeaturedHero({ item }: { item: DiscoverFeaturedItem }) {
  href={`/characters/${item.characterId}`}
  className="group relative block w-full aspect-[16/11] sm:aspect-[16/8] rounded-lg overflow-hidden border border-border-hairline bg-black shadow-card transition-[border-color,box-shadow] duration-300 ease-premium hover:border-gold-500/40 hover:shadow-gold-glow"
  >
+ {/* FEATURED-HERO-CROP-FIX v3: v2's object-contain + blurred-backdrop
+ approach (full uncropped photo, blur filling the edges instead of
+ flat black bars) was reverted per explicit request -- a portrait
+ photo inside this wide 16:11/16:8 box still left visibly empty
+ letterboxed space on both sides even with the blur behind it, which
+ read as broken/unfinished rather than intentional. Back to a single
+ object-cover layer: the photo fills the entire card edge-to-edge,
+ cropped as needed -- matching FeaturedTile's grid tiles below, which
+ were always object-cover and never drew this complaint. */}
  <Image
  src={resolveImageSrc(item.image)}
  alt={item.title}
  fill
  sizes="(min-width: 768px) 1152px, 100vw"
- className="object-cover transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
+ // OBJECT-POSITION-FIX: matching character-feature-card.tsx and
+ // hero-split.tsx's identical fix — default object-cover centers the
+ // crop, but these are tall portrait photos with the face near the
+ // top, so centering on this wide 16:11/16:8 box was cropping
+ // through the head. object-top keeps the head, never cuts it. Not
+ // in tension with this file's own FEATURED-HERO-CROP-FIX comment
+ // above, which is about object-contain vs. object-cover (letterboxing),
+ // not vertical crop position — still full-bleed object-cover here.
+ className="object-cover object-top transition-transform duration-500 ease-premium group-hover:scale-[1.02]"
  priority
  />
  <div

@@ -26,6 +26,8 @@ import {
   formatUserAction,
 } from '@/lib/roleplay/prompt';
 import { parseRoleplayOutput, fallbackChapterChoices } from '@/lib/roleplay/choice-parser';
+import { loadTwinMirrorBlock } from '@/lib/digital-twin/twin-loaders';
+import { canUseDigitalTwin } from '@/lib/tiers/config';
 import type {
   RoleplayActionType,
   RoleplayScenario,
@@ -147,9 +149,15 @@ function buildSystemPrompt(
   status: RoleplaySessionStatus,
   isOpeningBeat: boolean,
   isFinalChapter: boolean,
+  // TWIN-MIRROR (opt-in, per character, roleplay wording — see
+  // digital-twin/mirror-block.ts). Sits between the character sheet and the
+  // scenario fragment ON PURPOSE: the Story Mode Format Contract is the last
+  // thing in buildRoleplaySystemFragment and must stay the final word on form.
+  twinBlock: string | null = null,
 ): string {
   let prompt = [
     assembleCharacterPrompt(character),
+    twinBlock,
     buildRoleplaySystemFragment({
       characterName: character.name,
       scenario,
@@ -158,7 +166,7 @@ function buildSystemPrompt(
       status,
       isOpeningBeat,
     }),
-  ].join('\n\n');
+  ].filter((part): part is string => Boolean(part)).join('\n\n');
 
   if (isFinalChapter) prompt += `\n\n${FINAL_CHAPTER_CLOSING_NOTE}`;
   return prompt;
@@ -264,7 +272,8 @@ export async function startSession(params: {
     .eq('id', conversationId);
 
   const isFinalChapter = scenario.chapter_count <= 1;
-  const systemPrompt = buildSystemPrompt(character, scenario, session.scene_state, 1, 'active', true, isFinalChapter);
+  const twinBlock = canUseDigitalTwin(tier) ? await loadTwinMirrorBlock(userId, characterId, 'roleplay') : null;
+  const systemPrompt = buildSystemPrompt(character, scenario, session.scene_state, 1, 'active', true, isFinalChapter, twinBlock);
 
   const traceId = randomUUID();
   let narrative: string;
@@ -402,8 +411,11 @@ export async function advanceTurn(params: {
     .map(m => ({ role: (m.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant', content: m.content }));
 
   const isFinalChapter = session.current_chapter >= scenario.chapter_count;
+  const twinBlock = canUseDigitalTwin(tier)
+    ? await loadTwinMirrorBlock(userId, session.character_id, 'roleplay')
+    : null;
   const systemPrompt = buildSystemPrompt(
-    character, scenario, session.scene_state, session.current_chapter, session.status, false, isFinalChapter,
+    character, scenario, session.scene_state, session.current_chapter, session.status, false, isFinalChapter, twinBlock,
   );
 
   const formattedAction = formatUserAction(actionType, safeText);

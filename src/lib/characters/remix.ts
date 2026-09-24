@@ -26,6 +26,8 @@ export interface RemixSourceCharacter {
   active: boolean;
   age: number | null;
   gender: string | null;
+  /** characters.orientation — content classification, see migration 20270128_character_orientation.sql. */
+  orientation: string | null;
   pronouns: string | null;
   occupation: string | null;
   origin: string | null;
@@ -78,7 +80,10 @@ export function canRemix(character: Pick<RemixSourceCharacter, 'is_public' | 'ac
  * Deliberately partial in what it carries over:
  *
  *   - Carries: identity/personality/psychology/voice text fields — the
- *     writing is the part worth building on.
+ *     writing is the part worth building on. `orientation` carries over
+ *     the same way `gender` does (a fact about who this character is,
+ *     not a per-remix choice) — the new creator can still change it in
+ *     the Identity stage same as anything else.
  *   - Drops: image_url, face_prompt, generation_style,
  *     identity_locked — every remix starts with NO locked visual
  *     identity, so the new creator generates their own appearance in the
@@ -104,6 +109,7 @@ export function buildRemixSeed(source: RemixSourceCharacter): CharacterDraft {
     name: source.name ? `${source.name} (Remix)` : base.name,
     age: source.age ?? base.age,
     gender: (source.gender as CharacterDraft['gender']) ?? base.gender,
+    orientation: (source.orientation as CharacterDraft['orientation']) ?? base.orientation,
     pronouns: source.pronouns ?? base.pronouns,
     occupation: source.occupation ?? base.occupation,
     origin: source.origin ?? base.origin,

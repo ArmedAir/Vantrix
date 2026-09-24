@@ -9,10 +9,17 @@
  *
  * Query params:
  *   position — "hero" | "sidebar" | "inline" (omit for all positions)
- *   audience — "female" | "male" | "anime" (omit for no audience filter —
- *              returns ads targeted at that audience plus any 'all' ad,
- *              so the three gender-locked Discover homepages each get
- *              their own distinct creative without losing shared/global ads)
+ *   audience — "female" | "male" | "anime" | "lgbtq" (omit for no audience
+ *              filter — returns ads targeted at that audience plus any
+ *              'all' ad, so each gender-locked Discover homepage gets its
+ *              own distinct creative without losing shared/global ads.
+ *              This is admin-curated ad-creative selection per homepage,
+ *              not user-level targeting — no visitor attribute is read or
+ *              stored here, so adding 'lgbtq' alongside the other three
+ *              doesn't touch the "no ad targeting off orientation" rule
+ *              in migration 20270128_character_orientation.sql; that rule
+ *              is about inferring/storing a *user's* orientation, which
+ *              this route has never done for any audience value.)
  *   limit    — max rows to return (default 10, max 20)
  */
 import { NextRequest, NextResponse } from 'next/server';
@@ -22,7 +29,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 const VALID_POSITIONS = new Set(['hero', 'sidebar', 'inline']);
-const VALID_AUDIENCES = new Set(['female', 'male', 'anime']);
+const VALID_AUDIENCES = new Set(['female', 'male', 'anime', 'lgbtq']);
 
 export async function GET(req: NextRequest) {
   try {

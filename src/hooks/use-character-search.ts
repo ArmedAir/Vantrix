@@ -26,7 +26,7 @@ import type { DiscoverCharacter } from "@/lib/frontend/discover";
  * is turned off since a companion grid doesn't need to refetch just
  * because the tab regained focus.
  */
-export type GenderFilter = "all" | "female" | "male" | "anime";
+export type GenderFilter = "all" | "female" | "male" | "anime" | "lgbtq";
 
 async function fetcher(url: string): Promise<DiscoverCharacter[]> {
   const res = await fetch(url);
@@ -62,7 +62,13 @@ export function useCharacterSearch(params: {
   const enabled = params.enabled ?? true;
   const sp = new URLSearchParams();
   if (params.q.trim()) sp.set("q", params.q.trim());
-  if (params.gender !== "all") sp.set("category", params.gender);
+  // "lgbtq" isn't a gender value — it maps to the separate `orientation`
+  // param instead (see /api/characters route comment), not `category`.
+  if (params.gender === "lgbtq") {
+    sp.set("orientation", "lgbtq");
+  } else if (params.gender !== "all") {
+    sp.set("category", params.gender);
+  }
   if (params.tags && params.tags.length > 0) sp.set("tags", params.tags.join(","));
   sp.set("limit", String(params.limit));
 

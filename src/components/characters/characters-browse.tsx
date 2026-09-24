@@ -30,6 +30,7 @@ const GENDER_OPTIONS: { value: GenderFilter; label: string }[] = [
   { value: "female", label: "Female" },
   { value: "male", label: "Male" },
   { value: "anime", label: "Anime" },
+  { value: "lgbtq", label: "LGBTQ+" },
 ];
 
 const MODE_OPTIONS: FilterPillOption[] = [
@@ -100,7 +101,7 @@ export function CharactersBrowse({
   // that pill pre-selected, not just on an unfiltered/default view.
   const genderParam = searchParams.get("gender");
   const initialGender: GenderFilter =
-    genderParam === "female" || genderParam === "male" || genderParam === "anime"
+    genderParam === "female" || genderParam === "male" || genderParam === "anime" || genderParam === "lgbtq"
       ? genderParam
       : "female";
 

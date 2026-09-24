@@ -11,7 +11,8 @@ import {
   generateBreadcrumbSchema,
   safeJsonLd,
 } from "@/lib/seo/structured";
-import { resolveImageSrc, absoluteUrl } from "@/lib/utils";
+import { resolveImageSrc } from "@/lib/utils";
+import { generateSEOMeta } from "@/lib/seo/meta";
 import { PublicHeader } from "@/components/public/public-header";
 import { Footer } from "@/components/home/footer";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,15 @@ export async function generateStaticParams() {
   return slugs.map((tag) => ({ tag }));
 }
 
+/**
+ * INCOMPLETE-OG-FIX + DOUBLE-BRANDING-FIX: same two issues and same fix as
+ * (seo)/[landing]/page.tsx's own generateMetadata — this hand-rolled object
+ * had no openGraph.images/twitter.images (flagged by a real crawl on every
+ * tag page), and its plain-string title was getting the root layout's title
+ * template appended on top of its own already-complete "...| Vantrix"
+ * ending, doubling the brand. Delegating to generateSEOMeta() fixes both at
+ * once, the same way the landing-page template now does.
+ */
 export async function generateMetadata({
   params,
 }: {
@@ -61,27 +71,14 @@ export async function generateMetadata({
   const result = await getCharactersByTag(tag);
   if (!result || result.characters.length === 0) return {};
 
-  const url = absoluteUrl(`/tags/${tag}`);
   const title = `${result.label} AI Companions — Chat Free | Vantrix`;
   const description = `Browse ${result.characters.length}+ ${result.label.toLowerCase()} AI companions on Vantrix. Persistent memory, evolving personalities, free to start chatting.`;
 
-  return {
+  return generateSEOMeta({
     title,
     description,
-    alternates: { canonical: url },
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: "Vantrix",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
-  };
+    path: `/tags/${tag}`,
+  });
 }
 
 export default async function TagPage({

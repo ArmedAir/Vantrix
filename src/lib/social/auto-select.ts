@@ -17,6 +17,7 @@ import {
   MIN_HOURS_BETWEEN_X_POSTS_PER_CHARACTER,
 } from './eligibility';
 import { countXPostsToday, getXDailyPostCap } from '@/lib/config/x-social';
+import { rankXCandidates } from '@/lib/ai/brain-x-social-rank';
 
 // Ceiling on how many NEW rows one sweep will insert — independent of the
 // daily post cap (which governs actual publishing). Keeps the review queue
@@ -31,10 +32,14 @@ export interface AutoSelectResult {
 }
 
 export async function runXAutoSelect(): Promise<AutoSelectResult> {
-  const candidates = await getEligiblePosts();
-  if (candidates.length === 0) {
+  const eligible = await getEligiblePosts();
+  if (eligible.length === 0) {
     return { queued: 0, skippedCandidates: 0, candidates: 0 };
   }
+  // Groq brain: reorder (never add/remove) so the day's limited slots go to
+  // the posts most likely to land with a cold audience. Falls back to the
+  // original newest-first order on any failure — see brain-x-social-rank.ts.
+  const candidates = await rankXCandidates(eligible);
 
   // Headroom check up front: no point queuing more than the day realistically
   // has room to publish. Not a hard gate (publisher.ts re-checks the cap at

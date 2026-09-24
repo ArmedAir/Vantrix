@@ -101,6 +101,15 @@ async function aiExtract(
 ): Promise<MemoryFact[]> {
   const now = Date.now();
 
+  // NEGATIVE-EXAMPLES FIX: this prompt previously only said what TO
+  // extract, with no guidance on what to skip. Compared against a peer
+  // project (NousResearch/hermes-agent)'s own memory-curation docs, which
+  // explicitly instruct their extractor to skip trivial/throwaway info and
+  // easily-rediscoverable facts -- verified this codebase's version had no
+  // equivalent before adding the two "Skip..." lines below. Cheap,
+  // low-risk signal-to-noise improvement: fewer one-off/redundant facts
+  // competing for the fixed slice(0, 8) and the fact store's top-20 budget
+  // (see priority-memory.ts) with facts that actually matter long-term.
   const parsed = await generateStructured<string[]>({
     caller: 'memory',
     maxTokens: 200,
@@ -109,6 +118,13 @@ async function aiExtract(
 Output ONLY a JSON array of short fact strings (max 8, each under 60 chars).
 Facts must be about the USER (not ${characterName}). Only include concrete, reusable facts.
 Example: ["User's name is Alex", "User likes hiking", "User works as a nurse", "User is from Tokyo"]
+Skip trivial or throwaway information — a mood or detail that's true for this one
+message and won't matter next conversation ("User is tired right now", "User just
+got home") is not memorable; only extract things that would still be true and
+worth recalling weeks from now.
+Skip anything easily re-derivable from context the character already has each
+turn — the character's own name, today's date, or facts already implied by the
+character's persona/system prompt are not new information about the user.
 If no notable facts, output an empty array: []`,
     // SEC FIX (Phase B audit, 2026-08-06): sanitize() strips
     // prompt-injection patterns before this reaches a second,

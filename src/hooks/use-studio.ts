@@ -26,6 +26,17 @@ export async function setCharacterVisibility(characterId: string, visibility: "p
   return body;
 }
 
+export async function setCharacterDatingEnabled(characterId: string, datingEnabled: boolean) {
+  const res = await fetch(`/api/characters/${characterId}/dating`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ dating_enabled: datingEnabled }),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.error ?? "Couldn't update dating setting.");
+  return body;
+}
+
 export async function saveCharacterFields(characterId: string, patch: Record<string, unknown>) {
   const res = await fetch(`/api/characters/${characterId}`, {
     method: "PATCH",

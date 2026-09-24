@@ -59,12 +59,27 @@ import { NextResponse } from "next/server";
  * standard already applied to age-gating elsewhere in the app, just
  * extended to the one surface written specifically to be read by
  * machines instead of people.
+ *
+ * LLMS-FULL FIX (2026-09-18): this file was the only machine-readable
+ * surface for AI answer engines, and stayed intentionally short (per the
+ * llms.txt convention) — meaning a chatbot answering a direct question
+ * ("is Vantrix free?", "what does Premium include?") had nothing
+ * authoritative to draw on beyond the category-level pitch above. Added
+ * src/app/llms-full.txt/route.ts as the full-detail companion (pricing
+ * sourced from tiers/config.ts + tiers/limits.ts, FAQ content matching
+ * landing-pages.ts's verified answers) and linked it from the top of
+ * this file, per the llmstxt.org llms.txt/llms-full.txt convention. Keep
+ * both in sync with the same three sources (positioning doc, tiers
+ * config, PLATFORM_FEATURES) referenced above.
  */
 export function GET() {
   const body = `# Vantrix
 
 > A living universe of AI companions who remember you, always. They
 > change with you. Their world keeps going.
+
+For a comprehensive version of this file — full pricing, safety
+practices, and an FAQ section — see /llms-full.txt.
 
 **Vantrix is an 18+ adult platform.** Companion conversations can include
 explicit sexual content alongside everyday conversation — it is not a

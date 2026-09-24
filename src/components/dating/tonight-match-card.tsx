@@ -26,7 +26,11 @@ export function TonightMatchCard({
  alt={candidate.name}
  fill
  sizes="(max-width: 640px) 100vw, 800px"
- className="object-cover"
+ // OBJECT-POSITION-FIX: same issue and fix as character-feature-card.tsx
+ // -- a portrait character photo inside this very wide 16:9/21:9 box
+ // needs a lot of vertical crop, and default center cropping was cutting
+ // through the head. object-top keeps the head, crops from the bottom.
+ className="object-cover object-top"
  />
  <div
  className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"

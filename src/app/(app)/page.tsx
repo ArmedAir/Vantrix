@@ -84,7 +84,7 @@ import { MotionWrapper } from "@/components/immersive/motion-wrapper";
  * `user`), then also runs concurrently with each other.
  */
 export const metadata = generateSEOMeta({
-  title: "Vantrix — A Living Universe of AI Companions Who Remember You, Always",
+  title: "Vantrix — AI Companions Who Actually Remember You",
   description:
     "Vantrix is a living universe of AI companions who remember you, always. They change with you, and their world keeps going — persistent memory and evolving personalities, not a chatbot that resets every session.",
   path: "/",

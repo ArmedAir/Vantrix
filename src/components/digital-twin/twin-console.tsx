@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ChatPanel } from "./chat-panel";
 import { TrainingPanel } from "./training-panel";
 import { HistoryPanel } from "./history-panel";
+import { TwinMatchingToggle } from "@/components/twin/twin-personalization";
 import type { DigitalTwinProfile, TrainingDepth } from "@/lib/digital-twin/engine";
 
 export function TwinConsole({
@@ -101,6 +102,15 @@ export function TwinConsole({
               Cancel
             </Button>
           </div>
+        </div>
+      )}
+
+      {/* TWIN-MATCHING: opt-in — lets the twin's humor/values/tone nudge
+          Discover + Dating ranking. Off by default; renders nothing until the
+          twin is enabled and trained. */}
+      {profile?.autoTraits && (
+        <div className="mb-5" key={`matching-${resetKey}`}>
+          <TwinMatchingToggle />
         </div>
       )}
 

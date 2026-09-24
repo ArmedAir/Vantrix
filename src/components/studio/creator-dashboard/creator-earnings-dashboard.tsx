@@ -17,7 +17,8 @@ import { Card } from "@/components/ui/card";
 import { KpiCard } from "@/components/admin/analytics/kpi-card";
 import { AnimatedCounter } from "@/components/admin/motion/animated-counter";
 import { RevealGroup, RevealItem } from "@/components/admin/motion/reveal";
-import { cn } from "@/lib/utils";
+import { SafeImage as Image } from "@/components/ui/safe-image";
+import { cn, resolveImageSrc } from "@/lib/utils";
 import {
   fetchCreatorDashboard,
   type CreatorDashboard,
@@ -185,8 +186,15 @@ function CharacterEarningsRow({ entry, rank }: { entry: CharacterFundDashboardEn
           <div className="flex items-center gap-3 min-w-0">
             <div className="relative shrink-0">
               {entry.imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={entry.imageUrl} alt="" className="h-10 w-10 rounded-sm object-cover border border-border-hairline" />
+                <div className="relative h-10 w-10 rounded-sm overflow-hidden border border-border-hairline">
+                  <Image
+                    src={resolveImageSrc(entry.imageUrl)}
+                    alt=""
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                  />
+                </div>
               ) : (
                 <div className="h-10 w-10 rounded-sm bg-white/[0.04] border border-border-hairline" />
               )}

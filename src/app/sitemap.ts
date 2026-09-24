@@ -38,6 +38,22 @@ import { getBlogSlugs } from "@/lib/blog/posts";
  * fetch is a real DB round-trip; Next's sitemap() export supports an
  * async function the same as any other route-metadata file.
  */
+// WWW-CANONICAL-STALENESS-FIX: sitemap.ts had no `dynamic`/`revalidate`
+// export, so Next.js statically generates it once at build time and Vercel
+// can reuse that cached output across later deployments whose other routes
+// changed but this one's tracked inputs didn't appear to. Every <loc> here
+// comes from absoluteUrl(), which reads NEXT_PUBLIC_APP_URL — the exact same
+// source every page's own <link rel="canonical"> tag uses (generateSEOMeta
+// in lib/seo/meta.ts). Since real crawls showed canonical tags correctly
+// resolving to https://www.vantrix.ink while the sitemap's own entries
+// still pointed at the non-www https://vantrix.ink (which then 301s to
+// www), the two could only have diverged by reading that inlined value from
+// two different builds — i.e. a stale cached sitemap output surviving past
+// the point NEXT_PUBLIC_APP_URL was corrected. Forcing this route dynamic
+// makes it evaluate fresh on every request, so it can never again lag
+// behind the live env value the way a statically-cached build artifact can.
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const [characterIds, locationSlugs, tagSlugs] = await Promise.all([

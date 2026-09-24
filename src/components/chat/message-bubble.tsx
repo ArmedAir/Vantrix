@@ -102,6 +102,7 @@ function MessageBubbleImpl({
   imageUrl,
   videoUrl,
   characterId,
+  avatarUrl,
   messageId,
   status,
   createdAt,
@@ -119,6 +120,12 @@ function MessageBubbleImpl({
   imageUrl?: string | null;
   videoUrl?: string | null;
   characterId?: string;
+  // AVATAR-EVERY-REPLY: the character's portrait, rendered beside every
+  // assistant bubble (see chat-window.tsx's characterAvatarUrl). Distinct
+  // from `imageUrl` above, which is per-message generated media (a photo
+  // she sent this turn) and only present on some messages — this is the
+  // character's own picture and, when supplied, shows up on all of them.
+  avatarUrl?: string | null;
   messageId?: string;
   status?: "sending" | "sent" | "failed";
   createdAt?: string;
@@ -251,6 +258,11 @@ function MessageBubbleImpl({
   // (image_url / video_url are two separate nullable columns, not a union).
   const hasMedia = Boolean(safeVideoUrl || safeImageUrl);
   const timeLabel = formatMessageTime(createdAt);
+  // AVATAR-EVERY-REPLY: small round portrait shown on every assistant
+  // bubble, not just ones carrying generated media (hasMedia above).
+  // Skipped entirely when no avatarUrl is supplied (older callers,
+  // characters with no portrait yet) rather than showing a placeholder.
+  const safeAvatarUrl = !isUser && avatarUrl ? resolveImageSrc(avatarUrl) : null;
 
   return (
     <motion.div
@@ -262,12 +274,17 @@ function MessageBubbleImpl({
     >
       <div
         className={cn(
-          "flex",
+          "flex items-end gap-2",
           isUser ? "justify-end" : "justify-start",
           isSending && "opacity-60 transition-opacity ease-premium",
           (isFailed || isDeleting) && "opacity-60"
         )}
       >
+        {safeAvatarUrl && (
+          <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full border border-border-hairline">
+            <Image src={safeAvatarUrl} alt="" fill sizes="28px" className="object-cover" />
+          </div>
+        )}
         <div
           className={cn(
             "max-w-[78%] rounded-lg border bg-base px-4 py-2.5 text-[15px] leading-relaxed shadow-card",
