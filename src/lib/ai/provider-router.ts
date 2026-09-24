@@ -48,7 +48,11 @@ import { env }                        from '@/env';
 // what was here before and why. OpenRouter is now the single unified LLM
 // gateway; Kaetah remains the terminal, currently-inert fallback until it has
 // a trained checkpoint (see ROUTING_ORDER below).
-export type ProviderName = 'openrouter' | 'kaetah' | 'openrouter-free';
+// 'groq' is the free-tier decision "brain" (curator / rotation / automation).
+// It is registered in PROVIDERS below but deliberately absent from every
+// ROUTING_ORDER chain — companion chat can never fail over onto it. It is only
+// reachable via providerOverride:'groq', which lib/ai/groq-brain.ts sets.
+export type ProviderName = 'openrouter' | 'kaetah' | 'openrouter-free' | 'groq';
 
 // True for any provider hitting OpenRouter's own API host — the primary
 // paid entry and the free-router fallback both need OpenRouter-specific
@@ -146,6 +150,28 @@ const PROVIDERS: Provider[] = [
     // smaller cap and a longer per-call timeout than the paid entry gives
     // this fair odds before the very last provider in the chain gives up.
     maxTokens: 4096, streaming: true, timeoutMs: 25_000,
+  },
+  {
+    // Free-tier decision brain — NOT in any ROUTING_ORDER chain (see the
+    // ProviderName note above). Models are env-driven because Groq churns its
+    // catalog (llama-3.1-8b-instant / llama-3.3-70b-versatile were deprecated
+    // for Free/Developer tiers on 2026-08-16). NANO/FAST map to the small
+    // model, everything else to the large one; groq-brain.ts overrides the
+    // model per call anyway (it load-balances across both to double its
+    // per-model free quota).
+    name:      'groq',
+    baseUrl:   'https://api.groq.com/openai/v1/chat/completions',
+    apiKeyEnv: 'GROQ_API_KEY',
+    models: {
+      NANO:  env.GROQ_BRAIN_MODEL_FAST  ?? 'openai/gpt-oss-20b',
+      FAST:  env.GROQ_BRAIN_MODEL_FAST  ?? 'openai/gpt-oss-20b',
+      SMART: env.GROQ_BRAIN_MODEL_SMART ?? 'openai/gpt-oss-120b',
+      POWER: env.GROQ_BRAIN_MODEL_SMART ?? 'openai/gpt-oss-120b',
+      PEAK:  env.GROQ_BRAIN_MODEL_SMART ?? 'openai/gpt-oss-120b',
+    },
+    // Reasoning models spend max_tokens on hidden reasoning before the answer,
+    // so the ceiling is generous; groq-brain.ts sets the real per-call value.
+    maxTokens: 4096, streaming: false, timeoutMs: 15_000,
   },
   {
     // Self-hosted Kaetah-2B (see /kaetah/inference/api_server.py). Scaffolding
@@ -288,6 +314,10 @@ export interface ProviderRequest {
   providerOverride?: ProviderName | undefined;
   frequencyPenalty?: number | undefined;
   presencePenalty?:  number | undefined;
+  // Ask the provider for a guaranteed-JSON-object reply (OpenAI-compat
+  // response_format). Only applied on the non-streaming path. Providers that
+  // require it (Groq) also need the literal word "JSON" somewhere in the prompt.
+  jsonMode?:     boolean | undefined;
   // DEAD-TIMEOUT-FIX: previously orchestrator.ts's infer() created an
   // AbortController + setTimeout intended to cap total inference time, but
   // ProviderRequest had no field to carry it and routeCompletion had no
@@ -478,6 +508,10 @@ async function callOpenAICompat(
   // request could silently retry onto a billed model with no error and no
   // signal to the operator that money got spent on the "free" path.
   if (provider.name === 'openrouter') body.models = buildOpenRouterFallbackChain(model);
+  if (req.jsonMode) body.response_format = { type: 'json_object' };
+  // gpt-oss on Groq is a reasoning model: 'low' keeps hidden reasoning from
+  // eating the token budget on what are short classification/ranking tasks.
+  if (provider.name === 'groq' && model.startsWith('openai/gpt-oss')) body.reasoning_effort = 'low';
 
   const controller = new AbortController();
   const timer      = setTimeout(() => controller.abort(), provider.timeoutMs);
@@ -608,6 +642,9 @@ function unconfiguredReason(providerName: ProviderName, provDef: Provider): stri
   }
   if (providerName === 'openrouter-free' && env.OPENROUTER_FREE_FALLBACK_ENABLED !== 'true') {
     return 'openrouter-free (OPENROUTER_FREE_FALLBACK_ENABLED not true)';
+  }
+  if (providerName === 'groq' && env.GROQ_BRAIN_ENABLED === 'false') {
+    return 'groq (GROQ_BRAIN_ENABLED is false)';
   }
   if (!process.env[provDef.apiKeyEnv]) {
     return `${providerName} (${provDef.apiKeyEnv} not set)`;

@@ -13,6 +13,13 @@
  *      the selected mood to the tags/archetypes that fit it and boosts
  *      characters carrying them.
  *
+ *   7. Twin affinity            (8%, only for users who opted in) — overlap
+ *      between the user's Digital Twin humor/values/tone and a character's
+ *      tags/archetype (see ./twin-affinity). Taken out of the flat 20% floor;
+ *      users without an opted-in twin are scored exactly as before. Runs
+ *      wholly in this deterministic scorer — twin data is never passed to the
+ *      Groq curator or any other LLM.
+ *
  * Scores are normalised to [0, 100] and returned ranked. Characters the user
  * has already swiped on are excluded. Premium characters are excluded for
  * free-tier users.
@@ -22,6 +29,10 @@ import { supabaseAdmin } from '@/lib/supabase/admin';
 import { logger }        from '@/lib/logger';
 import { redis, parseRedisJson } from '@/lib/redis';
 import { USER_MOODS, isUserMood, MOOD_TAGS, type UserMood } from './moods';
+import { curateForUser } from './ai-curator';
+import { twinAffinity, twinBlend, twinReason, type TwinAffinity } from './twin-affinity';
+import { loadTwinMatchSignals } from '@/lib/digital-twin/twin-loaders';
+import { canUseDigitalTwin } from '@/lib/tiers/config';
 
 export { USER_MOODS, isUserMood, type UserMood };
 
@@ -282,8 +293,11 @@ function buildReason(
   cs: number, ps: number, rs: number, isNew: boolean,
   likedTags: Map<string, number>, _char: CharCandidate,
   ms: number, mood: UserMood | null,
+  twin: TwinAffinity | null = null,
 ): string {
   if (ms > 0 && mood) return `Fits your ${mood} mood right now`;
+  const twinWhy = twinReason(twin);
+  if (twinWhy) return twinWhy;
   if (isNew && rs > 75) return "New character — be one of the first to meet her";
   if (cs > 60) {
     const topTag = [...likedTags.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
@@ -329,10 +343,13 @@ export async function getRecommendations(
   } catch { /* cache miss */ }
 
   try {
-    const [likedTags, swipedIds, matchIds] = await Promise.all([
+    const [likedTags, swipedIds, matchIds, twinSignals] = await Promise.all([
       getCombinedTagWeights(userId),
       getSwipedIds(userId),
       getDatingMatchIds(userId),
+      // null unless the user is on the Digital Twin plan, has an enabled twin,
+      // AND opted in to matching (a lapsed plan silently stops personalization).
+      canUseDigitalTwin(tier) ? loadTwinMatchSignals(userId) : Promise.resolve(null),
     ]);
 
     // Load candidate pool — exclude swiped chars
@@ -375,6 +392,7 @@ export async function getRecommendations(
         const rs  = recencyScore(c.created_at);
         const bs  = matchIds.includes(c.id) ? 80 : 0; // bond affinity for already-matched
         const ms  = moodScore(c, mood);
+        const tw  = twinSignals ? twinAffinity(twinSignals, c) : null;
 
         // Bond affinity: chars with same archetype as current matches
         let bondAffinity = 0;
@@ -390,7 +408,7 @@ export async function getRecommendations(
           bondAffinity   * 0.10 +
           bs             * 0.10 +
           ms             * 0.05 +
-          50             * 0.20  // base score — everyone gets a floor
+          twinBlend(tw)          // base-score floor (50 * 0.20) — 8% of it goes to twin affinity when opted in
         );
 
         return {
@@ -408,7 +426,7 @@ export async function getRecommendations(
           archetype:     c.archetype,
           opening_line:  c.opening_line,
           score:         Math.round(final),
-          reason:        buildReason(cs, ps, rs, c.is_new, likedTags, c, ms, mood),
+          reason:        buildReason(cs, ps, rs, c.is_new, likedTags, c, ms, mood, tw),
           patternScore:  Math.round(cs),
         };
       })
@@ -419,15 +437,53 @@ export async function getRecommendations(
       // pool instead of truncating to a fixed 30.
       ;
 
+    // GROQ CURATOR (dating "match" surface): re-rank the head of the scored
+    // list for diversity + a top-slot pick, and replace the rule-based
+    // `reason` with a human-readable one. Same guardrails as Discover — the
+    // curator can only permute IDs it was given, shares one Groq call per
+    // taste segment (not per user), and every failure returns the
+    // deterministic order untouched. Logged-out callers (userId === '')
+    // skip it. The curated order is what gets cached below, so the 10-minute
+    // RECO_TTL also bounds how often a user's deck can be re-curated.
+    let finalScored = scored;
+    if (userId) {
+      try {
+        const HEAD = 60;
+        const head = scored.slice(0, HEAD);
+        const curated = await curateForUser(
+          userId,
+          head.map(c => ({
+            id: c.id, name: c.name, archetype: c.archetype ?? null,
+            tags: c.tags ?? [], opening_line: c.opening_line ?? null,
+          })),
+          likedTags,
+          { surface: 'dating', mood },
+        );
+        if (curated.wasCurated) {
+          const byId = new Map(head.map(c => [c.id, c]));
+          const reordered = curated.orderedIds
+            .map(id => byId.get(id))
+            .filter((c): c is (typeof head)[number] => Boolean(c))
+            .map(c => {
+              const r = curated.reasons.get(c.id);
+              return r ? { ...c, reason: r } : c;
+            });
+          finalScored = [...reordered, ...scored.slice(HEAD)];
+        }
+      } catch (err) {
+        logger.warn('Recommendation curator failed, keeping deterministic order', { userId, error: String(err) });
+      }
+    }
+
     // Cache for 10 minutes
     try {
-      await redis.set(cacheKey, JSON.stringify(scored), { ex: RECO_TTL });
+      await redis.set(cacheKey, JSON.stringify(finalScored), { ex: RECO_TTL });
     } catch { /* non-critical */ }
 
     // `limit` is now just an upper cap (defaults far higher — see route),
     // not a curation cutoff: the ranking itself decides what's "most
     // relevant first", callers just bound how many they want returned.
-    return (scored as unknown as RecommendedCharacter[]).slice(0, limit);
+    return (finalScored as unknown as RecommendedCharacter[]).slice(0, limit);
 
   } catch (err) {
     logger.error('Recommendation engine error', { userId, error: String(err) });

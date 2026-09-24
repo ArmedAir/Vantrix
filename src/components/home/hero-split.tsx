@@ -202,7 +202,12 @@ export function HeroSplit({
  fill
  sizes="(min-width: 1024px) 60vw, 100vw"
  priority
- className="object-cover"
+ // OBJECT-POSITION-FIX: matching character-feature-card.tsx's own
+ // fix for the identical symptom — default object-cover centers the
+ // crop, but these are tall portrait photos with the face near the
+ // top, so centering on this card's wide box was cropping through
+ // the head. object-top keeps the head, never cuts it.
+ className="object-cover object-top"
  />
  <div
  className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"

@@ -2372,6 +2372,39 @@ export type Database = {
           },
         ]
       }
+      character_twin_optins: {
+        Row: {
+          character_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_twin_optins_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_twin_optins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       character_value_scores: {
         Row: {
           active_users: number
@@ -2529,12 +2562,14 @@ export type Database = {
           fears: string[] | null
           featured_image_url: string | null
           featured_position: number | null
+          featured_source: string | null
           flaws: string[] | null
           follower_count: number
           friends_list: string[] | null
           gallery_image_urls: string[] | null
           gallery_video_urls: string[] | null
           gender: string
+          orientation: string | null
           generation_style: string | null
           goal_progress: number
           hair_color: string | null
@@ -2663,12 +2698,14 @@ export type Database = {
           fears?: string[] | null
           featured_image_url?: string | null
           featured_position?: number | null
+          featured_source?: string | null
           flaws?: string[] | null
           follower_count?: number
           friends_list?: string[] | null
           gallery_image_urls?: string[] | null
           gallery_video_urls?: string[] | null
           gender: string
+          orientation?: string | null
           generation_style?: string | null
           goal_progress?: number
           hair_color?: string | null
@@ -2797,12 +2834,14 @@ export type Database = {
           fears?: string[] | null
           featured_image_url?: string | null
           featured_position?: number | null
+          featured_source?: string | null
           flaws?: string[] | null
           follower_count?: number
           friends_list?: string[] | null
           gallery_image_urls?: string[] | null
           gallery_video_urls?: string[] | null
           gender?: string
+          orientation?: string | null
           generation_style?: string | null
           goal_progress?: number
           hair_color?: string | null
@@ -4796,6 +4835,7 @@ export type Database = {
           source_breakdown: Json | null
           source_message_count: number
           updated_at: string
+          use_for_matching: boolean
           user_id: string
         }
         Insert: {
@@ -4810,6 +4850,7 @@ export type Database = {
           source_breakdown?: Json | null
           source_message_count?: number
           updated_at?: string
+          use_for_matching?: boolean
           user_id: string
         }
         Update: {
@@ -4824,6 +4865,7 @@ export type Database = {
           source_breakdown?: Json | null
           source_message_count?: number
           updated_at?: string
+          use_for_matching?: boolean
           user_id?: string
         }
         Relationships: [
@@ -8528,6 +8570,45 @@ export type Database = {
           note?: string
           skill?: string
           source?: string
+        }
+        Relationships: []
+      }
+      ai_brain_decisions: {
+        Row: {
+          applied: boolean
+          created_at: string
+          id: string
+          input_summary: Json
+          latency_ms: number | null
+          mode: string
+          model: string | null
+          output: Json
+          task: string
+          used_brain: boolean
+        }
+        Insert: {
+          applied?: boolean
+          created_at?: string
+          id?: string
+          input_summary?: Json
+          latency_ms?: number | null
+          mode: string
+          model?: string | null
+          output?: Json
+          task: string
+          used_brain?: boolean
+        }
+        Update: {
+          applied?: boolean
+          created_at?: string
+          id?: string
+          input_summary?: Json
+          latency_ms?: number | null
+          mode?: string
+          model?: string | null
+          output?: Json
+          task?: string
+          used_brain?: boolean
         }
         Relationships: []
       }

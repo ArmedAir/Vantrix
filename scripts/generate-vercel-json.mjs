@@ -133,7 +133,28 @@ const OTHER_FUNCTIONS = {
   'src/app/api/brain/rerank/route.ts': 30,
 };
 
-const ALL_REGIONS = ['iad1', 'sin1', 'fra1'];
+// REGION-DB-PROXIMITY FIX: this was ['iad1', 'sin1', 'fra1'] -- iad1 (US
+// East) first, which is what a Vercel project defaults to if you never
+// touch region selection, not a deliberate choice anywhere in this file's
+// history. The actual Supabase database lives in eu-central-1 (Frankfurt),
+// so every single query from compute in iad1 was paying a transatlantic
+// round trip on top of the query itself, on every SSR page load and every
+// API route -- and a data-heavy page easily makes several of those calls,
+// each one compounding the cost. fra1 is Vercel's region in the same
+// metro as Supabase's eu-central-1; moving it to ALL_REGIONS[0] means it's
+// what TIER === 'free' actually deploys with today (see `regions` below),
+// with iad1/sin1 still available as the other two entries for when the
+// team is on Pro and multi-region is possible. geo_discount_records and
+// fx_rate_cache existing in the schema, plus the DB's own region having
+// been chosen as eu-central-1 in the first place, point at this being an
+// EU-aware/global product rather than a US-only one -- and with the
+// database itself fixed in Frankfurt (moving that is a much bigger,
+// separate decision, not something to bundle into a region-order fix),
+// aligning compute to it is the one lever that helps every request
+// regardless of where in the world a given user actually is, since it's
+// the compute<->DB leg that was unconditionally slow before, not the
+// browser<->compute leg for any specific region.
+const ALL_REGIONS = ['fra1', 'iad1', 'sin1'];
 
 function capDuration(seconds) {
   return TIER === 'free' ? Math.min(seconds, FREE_MAX_DURATION) : seconds;

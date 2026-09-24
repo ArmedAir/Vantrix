@@ -1,0 +1,50 @@
+# Manually triggers /api/cron/digital-person-backfill and commits its JSON
+# response to .seo-reports/digital-person-backfill-latest.json -- same
+# reasoning as seo-crawl.yml/pagespeed-check.yml: this repo's sandbox/CI
+# can't reach the live site directly, but GitHub's runners (with the
+# CRON_SECRET this repo's other cron workflow already uses) can, and a
+# committed file is readable with a plain git pull afterward instead of
+# living only in Actions' own log storage.
+#
+# Not on a schedule -- this cron is already scheduled daily via
+# vercel.json (see config/cron-jobs.mjs's own entry). This workflow exists
+# purely so a one-off backfill run can be triggered and its result
+# actually observed, without waiting for the next 03:45 UTC tick.
+name: Digital person backfill (manual trigger)
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Call the backfill cron endpoint
+        env:
+          BASE_URL: ${{ secrets.VANTRIX_BASE_URL || 'https://vantrix.ink' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          RAW_BASE_URL_SECRET: ${{ secrets.VANTRIX_BASE_URL }}
+        run: |
+          set -o pipefail
+          {
+            echo "CRON_SECRET length (0 means the secret isn't reaching this job): ${#CRON_SECRET}"
+            echo "VANTRIX_BASE_URL secret length (0 means unset -- BASE_URL below may just be this workflow's own fallback default): ${#RAW_BASE_URL_SECRET}"
+            echo "BASE_URL: $BASE_URL"
+            curl -sS -L -w '\nHTTP_STATUS:%{http_code}\n' \
+              -H "Authorization: Bearer $CRON_SECRET" \
+              "$BASE_URL/api/cron/digital-person-backfill"
+          } | tee digital-person-backfill-result.txt
+      - name: Commit result to repo
+        if: always()
+        run: |
+          if [ ! -f digital-person-backfill-result.txt ]; then exit 0; fi
+          git config user.name "digital-person-backfill-trigger-bot"
+          git config user.email "digital-person-backfill-trigger-bot@users.noreply.github.com"
+          mkdir -p .seo-reports
+          cp digital-person-backfill-result.txt .seo-reports/digital-person-backfill-latest.json
+          git add .seo-reports/digital-person-backfill-latest.json
+          git diff --staged --quiet && exit 0
+          git commit -m "digital-person-backfill: manual trigger result [skip ci]"
+          git pull --rebase origin main
+          git push

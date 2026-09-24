@@ -114,6 +114,35 @@ const envSchema = z.object({
   // cron generation bounded even on Groq's free tier. Default: 400/day.
   CONTENT_ENGINE_DAILY_AI_CALLS: z.string().optional(),
   CURATOR_DAILY_AI_CALLS: z.string().optional(),
+  // ── Groq "brain" (free-tier decision-making LLM) ────────────────────────────
+  // Scoped, NOT a chat provider: provider-router.ts registers 'groq' but never
+  // adds it to any ROUTING_ORDER chain, so companion chat can never reach it.
+  // It is only reachable through lib/ai/groq-brain.ts (providerOverride='groq'),
+  // which is what the AI curator, homepage rotation, and automation tasks call.
+  // Unset GROQ_API_KEY (or GROQ_BRAIN_ENABLED='false') and every one of those
+  // features silently falls back to its deterministic path — nothing breaks.
+  GROQ_API_KEY:           z.string().optional(),
+  GROQ_BRAIN_ENABLED:     z.enum(['true', 'false']).default('true'),
+  // Groq deprecated llama-3.1-8b-instant and llama-3.3-70b-versatile for
+  // Free/Developer tiers on 2026-08-16 (replacements: gpt-oss-20b/120b).
+  // Model IDs churn — keep these overridable rather than hardcoded.
+  GROQ_BRAIN_MODEL_FAST:  z.string().default('openai/gpt-oss-20b'),
+  GROQ_BRAIN_MODEL_SMART: z.string().default('openai/gpt-oss-120b'),
+  // 'free' | 'developer' picks the default rate-limit envelope the governor
+  // enforces client-side (groq-brain.ts getBrainLimits). Override any single
+  // number below to match what console.groq.com/settings/limits shows for
+  // your org — limits are per-model and per-organization, not per API key.
+  GROQ_PLAN:              z.enum(['free', 'developer']).default('free'),
+  GROQ_RPM_LIMIT:         z.string().optional(),
+  GROQ_RPD_LIMIT:         z.string().optional(),
+  GROQ_TPM_LIMIT:         z.string().optional(),
+  // Tokens per UTC day, per model. Free plan default 170000 (85% of Groq's 200K cap); unset on paid plans unless you hit a real daily-token ceiling.
+  GROQ_TPD_LIMIT:         z.string().optional(),
+  // Homepage hero rotation (lib/curator/homepage-rotation.ts):
+  //   off    — cron is a no-op
+  //   shadow — decides + logs to ai_brain_decisions, changes NOTHING on the site (default)
+  //   live   — writes is_featured / featured_position for AI-managed slots
+  HOMEPAGE_ROTATION_MODE: z.enum(['off', 'shadow', 'live']).default('shadow'),
   // URL of the brain service (semantic memory reranking / embeddings).
   // Optional: semantic-memory.ts fails open (no reranking, same behavior
   // as today) if unset. Points at either the original Python sidecar
@@ -553,6 +582,35 @@ const envSchema = z.object({
 const cleanedEnv: Record<string, string | undefined> = Object.fromEntries(
   Object.entries(process.env).map(([key, value]) => [key, value === '' ? undefined : value]),
 );
+
+// WWW-CANONICAL-FIX: the production domain redirects the bare apex
+// (vantrix.ink) to www (www.vantrix.ink) at the DNS/hosting level, but
+// NEXT_PUBLIC_APP_URL — the single source every public URL in the app is
+// built from (absoluteUrl() in lib/utils.ts, used by sitemap.ts, robots.ts,
+// and every page's own canonical tag via generateSEOMeta) — had nothing
+// enforcing which form it was actually set to in Vercel. A real crawl found
+// every sitemap <loc> pointing at the bare apex (which then 301s to www)
+// while every page's own canonical tag correctly resolved to www — both
+// read this exact same env var, so that split could only mean the sitemap
+// (statically generated, no dynamic/revalidate export — see its own fix
+// comment) was serving a cached build from before this var was last
+// corrected. Normalizing here, once, at the source of truth, means this
+// can't recur even if the Vercel dashboard value is ever reset to the bare
+// apex by mistake — every consumer downstream automatically gets the
+// correct www form regardless.
+if (cleanedEnv.NEXT_PUBLIC_APP_URL) {
+  try {
+    const u = new URL(cleanedEnv.NEXT_PUBLIC_APP_URL);
+    if (u.hostname === 'vantrix.ink') {
+      u.hostname = 'www.vantrix.ink';
+      cleanedEnv.NEXT_PUBLIC_APP_URL = u.toString().replace(/\/$/, '');
+    }
+  } catch {
+    // Malformed URL — leave as-is; the schema's `.url()` check below will
+    // reject it with a normal validation error rather than this silently
+    // swallowing a real misconfiguration.
+  }
+}
 
 // VERCEL-BRAIN: when BRAIN_SERVICE_URL isn't explicitly set and this is
 // running on Vercel — VERCEL_URL is a Vercel-provided system env var

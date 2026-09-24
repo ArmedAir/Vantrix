@@ -30,7 +30,8 @@ export type AdminAuditAction =
   | "platform_settings.updated"
   | "moderation_hold.approved"
   | "moderation_hold.rejected"
-  | "moderation_queue.bulk_action";
+  | "moderation_queue.bulk_action"
+  | "brain.pause_toggled";
 
 export type AdminAuditTargetType =
   | "user"
@@ -42,7 +43,8 @@ export type AdminAuditTargetType =
   | "moderation_settings"
   | "moderation_hold"
   | "moderation_queue_bulk"
-  | "platform_settings";
+  | "platform_settings"
+  | "ai_brain";
 
 export interface RecordAdminActionInput {
   adminId: string;

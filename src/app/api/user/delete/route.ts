@@ -21,6 +21,17 @@
  * DB-purge completion status, but is surfaced in the response so callers
  * (and any compliance reporting) don't have to assume it's handled.
  *
+ * PENDING-CREATOR-BALANCE GATE (2027-01-18): raas_creator_earnings.creator_id
+ * used to be ON DELETE CASCADE (see 20270118_creator_deletion_preserve_earnings.sql
+ * for the full fix), so a creator with an unpaid payout_status='pending'
+ * balance would have that balance silently destroyed the moment they
+ * confirmed deletion — no warning, no remaining record. The FK no longer
+ * cascades, but that only stops the *data loss*; it doesn't stop someone
+ * from walking away from money they're owed without knowing it. So this
+ * route now checks for a pending balance first and blocks with 409 rather
+ * than proceeding — same posture as requiring confirmPhrase, just for a
+ * financial rather than an accidental-click risk.
+ *
  * Irreversible. Confirm with { confirmPhrase: "delete my account" }.
  */
 import { NextRequest, NextResponse } from 'next/server';
@@ -84,6 +95,33 @@ export async function DELETE(req: NextRequest) {
         error: 'Please confirm deletion by providing { "confirmPhrase": "delete my account" }',
         code:  'CONFIRMATION_REQUIRED',
       }, { status: 400 });
+    }
+
+    // Block deletion on an unpaid creator balance — see file header
+    // "PENDING-CREATOR-BALANCE GATE". Checked before any deletion_requests
+    // row is created so a blocked attempt leaves no partial state behind.
+    const { data: pendingEarnings, error: pendingErr } = await supabaseAdmin
+      .from('raas_creator_earnings')
+      .select('creator_earned_tokens')
+      .eq('creator_id', userId)
+      .eq('payout_status', 'pending');
+
+    if (pendingErr) {
+      logger.error('gdpr:pending-balance-check-failed', { userId, error: pendingErr.message });
+      return NextResponse.json(
+        { error: 'Could not verify your creator payout balance. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    const pendingTokens = (pendingEarnings ?? []).reduce((sum, r) => sum + r.creator_earned_tokens, 0);
+    if (pendingTokens > 0) {
+      return NextResponse.json({
+        error: `You have an unpaid creator balance of ${pendingTokens} tokens. ` +
+               'Please wait for your next payout to process, or contact support to settle it, before deleting your account.',
+        code: 'PENDING_CREATOR_BALANCE',
+        pendingTokens,
+      }, { status: 409 });
     }
 
     // If a prior attempt for this user already failed, resume that record

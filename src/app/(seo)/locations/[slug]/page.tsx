@@ -56,7 +56,10 @@ export async function generateMetadata({
   const image = resolveImageSrc(location.image_url, WORLD_IMAGE_FALLBACK);
 
   return {
-    title,
+    // DOUBLE-BRANDING-FIX: same root cause as companions/[id] and
+    // generateSEOMeta() — see either's comment. `absolute` opts this
+    // already-complete title out of the root layout's title template.
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {

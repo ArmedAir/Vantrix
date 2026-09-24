@@ -48,6 +48,7 @@ import { CONVERSATIONAL_TECHNIQUE_BLOCK } from '@/lib/ai/conversational-techniqu
 import { HUMAN_NATURE_FOUNDATION_BLOCK } from '@/lib/ai/human-nature-foundation';
 import { DEEP_LISTENING_BLOCK } from '@/lib/ai/deep-listening';
 import { UNFORGETTABLE_PRESENCE_BLOCK } from '@/lib/ai/unforgettable-presence';
+import { OUTPUT_FORMAT_RULES_BLOCK } from '@/lib/ai/output-format-rules';
 import type { PsychologyState }   from '@/lib/ai/attachment-engine';
 import type { RelationshipState } from '@/lib/ai/relationship-engine';
 import type { MemoryNode }        from '@/lib/ai/memory-graph';
@@ -102,6 +103,14 @@ export interface CharacterData {
   origin?:       string | null;
   occupation?:   string | null;
   gender?:       string | null;   // 'male' | 'female' | other — drives pronoun selection
+  // Content-classification only (see migration 20270128_character_orientation.sql)
+  // — a property of this character, never inferred about or applied to the
+  // user. Surfaced as a plain Core Identity line below, same treatment as
+  // Occupation/Background. There is deliberately no user-side counterpart
+  // (no describeUserOrientation()) — the model is never given anything to
+  // assume the user's orientation *from*, which is a stronger guarantee
+  // than an instruction telling it not to guess.
+  orientation?:  string | null;
   age?:          number | null;
   values_list?:  string[] | null;
   fears?:        string[] | null;
@@ -327,6 +336,7 @@ export function assembleFullPrompt(opts: AssembleOptions): string {
     character.occupation ? `Occupation: ${sanitizeField(character.occupation, 80)}` : '',
     `Description: ${sanitizeField(character.description, 800)}`,
     character.personality ? `Personality: ${sanitizeField(character.personality, 400)}` : '',
+    character.orientation ? `Orientation: ${sanitizeField(character.orientation, 20)}` : '',
     character.backstory   ? `Background: ${sanitizeField(character.backstory, 600)}`   : '',
     Array.isArray(character.tags) && (character.tags as string[]).length
       ? `Traits: ${sanitizeArray(character.tags as string[], 10, 60).join(', ')}` : '',
@@ -448,6 +458,12 @@ export function assembleFullPrompt(opts: AssembleOptions): string {
     name:         character.name,
   });
   if (voiceSection) sections.push(voiceSection);
+
+  // 3.5. Output format rules — always on, independent of speech_style:
+  // no dash-as-punctuation, and never repeat the exact phrasing already
+  // used earlier in this conversation when recalling/referencing it
+  // again. See output-format-rules.ts.
+  sections.push('\n' + OUTPUT_FORMAT_RULES_BLOCK);
 
   // ── Prompt-cache boundary ──────────────────────────────────────────────
   // Everything above this line is static per-character content (identity,

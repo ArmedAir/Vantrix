@@ -1,7 +1,8 @@
 "use client";
 
 import { TextField, TextAreaField, SelectField } from "@/components/studio/builder/field-helpers";
-import type { CharacterDraft, Gender } from "../types";
+import type { CharacterDraft, Gender, Orientation } from "../types";
+import { ORIENTATIONS_FOR_GENDER, orientationOptions } from "../types";
 
 const GENDER_OPTIONS = [
   { value: "female", label: "Female" },
@@ -39,10 +40,26 @@ export function IdentityStage({
         <SelectField
           label="Gender"
           value={draft.gender}
-          onChange={(v) => onChange({ gender: v as Gender })}
+          onChange={(v) => {
+            const gender = v as Gender;
+            // Changing gender can make the current orientation read as a
+            // mismatch (e.g. switching a "lesbian" character to male) —
+            // reset to "Not set" rather than silently carrying over a
+            // combination the picker itself no longer offers.
+            const orientationStillFits = draft.orientation === "" || ORIENTATIONS_FOR_GENDER[gender].includes(draft.orientation);
+            onChange({ gender, ...(orientationStillFits ? {} : { orientation: "" }) });
+          }}
           options={GENDER_OPTIONS}
         />
       </div>
+
+      <SelectField
+        label="Orientation"
+        value={draft.orientation}
+        onChange={(v) => onChange({ orientation: v as Orientation })}
+        options={orientationOptions(draft.gender)}
+        hint="Optional — powers the Discover LGBTQ+ tab. It's one fact about them, not a personality: build who they are the same way regardless of what you pick here."
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <TextField label="Pronouns" value={draft.pronouns} onChange={(v) => onChange({ pronouns: v })} maxLength={50} placeholder="she/her" />

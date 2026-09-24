@@ -8,7 +8,11 @@ export default function TokensLoading() {
         <div className="h-14 w-14 mx-auto rounded-full border border-gold-500/50 flex items-center justify-center">
           <Coins className="h-6 w-6 text-gold-500" strokeWidth={1.75} />
         </div>
-        <h1 className="font-display text-2xl text-text-primary mt-4">Vantrix Coin</h1>
+        {/* DUPLICATE-H1-FIX: see premium/loading.tsx's own comment -- a
+            Suspense fallback's markup gets streamed into the real SSR
+            response alongside the page it's replaced by, so a heading tag
+            here duplicates the page's real <h1> for any plain-fetch crawler. */}
+        <div className="font-display text-2xl text-text-primary mt-4" aria-hidden="true">Vantrix Coin</div>
         <Skeleton className="h-4 w-32 mx-auto mt-2" />
       </div>
 

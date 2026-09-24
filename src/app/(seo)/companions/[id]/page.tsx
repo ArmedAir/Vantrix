@@ -81,7 +81,15 @@ export async function generateMetadata({
   const image = resolveImageSrc(character.image_url);
 
   return {
-    title,
+    // DOUBLE-BRANDING-FIX: see lib/seo/meta.ts's generateSEOMeta() comment —
+    // same root cause. This title already ends in "| Vantrix"; without
+    // `absolute` the root layout's title template appends another
+    // "— Vantrix AI Companions" on top, producing the doubled brand a real
+    // crawl caught here. Kept as a hand-rolled object (not migrated to
+    // generateSEOMeta) specifically to keep this page's own per-character
+    // `image` in openGraph/twitter, which that helper's generic og-image
+    // default doesn't know how to do.
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {

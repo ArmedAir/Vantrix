@@ -105,6 +105,17 @@ export interface RateLimitResult {
  * source of truth — instead of the local CHAT_LIMITS constant.
  */
 export async function checkChatLimit(userId: string, tier: Tier = 'free'): Promise<RateLimitResult> {
+  // PREMIUM-UNINTERRUPTED: paying users should never see a mid-chat 429.
+  // Skip the Redis round-trip and the sliding-window check entirely for
+  // premium rather than just setting a high perMinuteBurst — a "high
+  // number" still has a ceiling a heavy premium user can hit during a
+  // long session, and every extra Redis call on the hot path is also
+  // extra latency/failure surface on the one tier that's actually paying.
+  // Free tier is unaffected; still limited exactly as before.
+  if (tier === 'premium') {
+    const max = getTierLimits(tier).perMinuteBurst;
+    return { allowed: true, remaining: max, reset: Date.now() + 60_000, limit: max };
+  }
   const max     = getTierLimits(tier).perMinuteBurst;
   const limiter = getLimiter(`chat:${tier}`, 60_000, max);
   try {
@@ -371,6 +382,12 @@ export async function checkDailyMessageCap(
   userId: string,
   tier: Tier,
 ): Promise<{ allowed: boolean; used: number; limit: number }> {
+  // PREMIUM-UNINTERRUPTED: same reasoning as checkChatLimit above — no
+  // daily wall for paying users, and skip the Redis round-trip entirely.
+  if (tier === 'premium') {
+    const limit = getTierLimits(tier).dailyMessages;
+    return { allowed: true, used: 0, limit };
+  }
   const limit = getTierLimits(tier).dailyMessages;
 
   const day      = new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
@@ -418,6 +435,13 @@ export async function checkPerCharacterMessageCap(
   characterId: string,
   tier: Tier,
 ): Promise<{ allowed: boolean; used: number; limit: number }> {
+  // PREMIUM-UNINTERRUPTED: no per-character wall for paying users either —
+  // a premium user shouldn't get cut off mid-conversation with a favorite
+  // character just because the daily total hasn't been reached yet.
+  if (tier === 'premium') {
+    const limit = getTierLimits(tier).perCharacterMessages;
+    return { allowed: true, used: 0, limit };
+  }
   const limit = getTierLimits(tier).perCharacterMessages;
 
   const day = new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC

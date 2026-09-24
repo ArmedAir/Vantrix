@@ -27,6 +27,7 @@ import { supabaseAdmin }           from '@/lib/supabase/admin';
 import { detectCrisisSignal, logCrisisEvent } from '@/lib/safety/crisis-detection';
 import { buildCrisisReply, buildCrisisReplyShort } from '@/lib/safety/crisis-response';
 import { guardReply, stripLeakedMeta, looksLikePotentialMetaLeakPrefix } from '@/lib/moderation/reply-guard';
+import { stripDashPunctuation } from '@/lib/ai/output-format-rules';
 import { watchKeywords } from '@/lib/moderation/keyword-watch';
 import { getRuptureState, evaluateRepair, markRuptureRaised } from '@/lib/ai/repair-engine';
 import { computeTrustState } from '@/lib/ai/trust-engine';
@@ -184,6 +185,8 @@ import {
   sanitizeProviderError,
 } from '@/lib/security';
 import { env }                          from '@/env';
+import { loadTwinMirrorBlock }          from '@/lib/digital-twin/twin-loaders';
+import { canUseDigitalTwin }            from '@/lib/tiers/config';
 import { queueForTraining }             from '@/lib/training/queue';
 import { getUnlockedTiers, computeAvailableTiers, unlockSecretTier, meetsCatastrophicStageFloor } from '@/lib/ai/secret-tier-engine';
 import { getDueMemoryTest, resolveMemoryTest, gradeRecall, scheduleMemoryTest, MIN_EXCHANGES_BEFORE_TEST } from '@/lib/ai/memory-test-engine';
@@ -281,7 +284,7 @@ const MAX_BODY_BYTES = 8 * 1024;
 // assembly. Column list unchanged from the original generation-context
 // query — just fetched once instead of twice.
 const CHARACTER_ROW_SELECT =
-  'id,name,description,personality,scenario,backstory,tags,age,gender,origin,occupation,values_list,fears,flaws,speech_style,current_goal,goal_progress,daily_routine,friends_list,secrets,char_openness,char_warmth,char_adventure,char_depth,is_premium,min_tier,is_nsfw,active,creator_id,brain_initialized,category,archetype,writing_style,voice_profile';
+  'id,name,description,personality,scenario,backstory,tags,age,gender,orientation,origin,occupation,values_list,fears,flaws,speech_style,current_goal,goal_progress,daily_routine,friends_list,secrets,char_openness,char_warmth,char_adventure,char_depth,is_premium,min_tier,is_nsfw,active,creator_id,brain_initialized,category,archetype,writing_style,voice_profile';
 
 interface CharacterRow {
   id: string;
@@ -293,6 +296,7 @@ interface CharacterRow {
   tags: string[] | null;
   age: number | null;
   gender: string | null;
+  orientation: string | null;
   origin: string | null;
   occupation: string | null;
   values_list: string[] | null;
@@ -1022,6 +1026,16 @@ export async function POST(req: NextRequest) {
       traceId,
     });
   });
+
+  // TWIN-MIRROR: opt-in, per-character "let this character get to know how you
+  // talk". Kicked off here so its (single primary-key) lookup overlaps the
+  // cognition cascade below, and awaited just before the Voice Discipline
+  // capstone. Resolves null — never throws — for anyone without the Digital
+  // Twin plan, an enabled trained twin, AND a character_twin_optins row for
+  // THIS character. See lib/digital-twin/twin-loaders.ts.
+  const twinBlockPromise: Promise<string | null> = canUseDigitalTwin(tier)
+    ? loadTwinMirrorBlock(userId, characterId)
+    : Promise.resolve(null);
 
   // LATENCY-FIX: these five were previously five separate sequential
   // `await`s — voiceFingerprint, selfModel, theoryOfMind, beliefPipeline,
@@ -2466,6 +2480,14 @@ export async function POST(req: NextRequest) {
   const plan = await planPromise;
   systemPrompt = systemPrompt + formatPlanForPrompt(plan);
 
+  // TWIN-MIRROR: placed BEFORE the Voice Discipline capstone on purpose — the
+  // capstone must stay the last thing the model reads so this character's own
+  // Writing Style keeps the final word. The block itself is small (<=900 chars),
+  // tells the model it is lowest priority, and carries only tone/humor/
+  // formality/texting-rhythm — never the twin's beliefs or emotional patterns.
+  const twinBlock = await twinBlockPromise;
+  if (twinBlock) systemPrompt = systemPrompt + '\n\n' + twinBlock;
+
   // VOICE-DISCIPLINE CAPSTONE: everything above stacks a lot of generic
   // rapport/curiosity/depth guidance (conversational-technique.ts,
   // deep-listening.ts, unforgettable-presence.ts, the Core Rules block in
@@ -2501,7 +2523,11 @@ export async function POST(req: NextRequest) {
     messages:       messagesPayload,
     datingMode,
     rawMemoryFacts: memoryFacts,
-    hasMemory:      memoryFacts.length > 0,
+    // A mirrored turn is personalized to this user's style, so it must neither
+    // be served from nor stored into the semantic reply cache (which treats any
+    // memory-bearing turn as uncacheable) — otherwise a pre-opt-in reply could
+    // be replayed after opt-in, or a mirrored one after opt-out.
+    hasMemory:      memoryFacts.length > 0 || Boolean(twinBlock),
   });
 
   if (guard.blocked) {
@@ -2729,7 +2755,7 @@ export async function POST(req: NextRequest) {
       // the live-stream cleaning still landed in chat history verbatim and
       // rendered as its own bubble on every reload. Clean fullReply once,
       // here, before anything downstream reads it.
-      fullReply = stripLeakedMeta(fullReply);
+      fullReply = stripDashPunctuation(stripLeakedMeta(fullReply));
 
       // ── Reply guard — defense-in-depth check on the completed reply ────
       // Runs here (after the loop, not per-chunk) because it needs the full

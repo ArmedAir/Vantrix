@@ -40,13 +40,26 @@ export async function getAllScarceAssets(): Promise<ScarceAsset[]> {
     .from('scarce_assets')
     .select(`
       *,
-      holder:characters( id, name, image_url ),
+      holder:characters( id, name, image_url, active, is_public, is_live ),
       location:world_locations( id, name, slug )
     `)
     .order('rarity', { ascending: false });
 
   if (error) return [];
-  const assets = (data ?? []) as ScarceAsset[];
+  // LIST-DETAIL-PARITY FIX: the Artifacts panel links asset.holder.id
+  // straight to /characters/[id], which requires active, is_public, AND
+  // is_live (getCharacterDetail) — same gap as the location-detail
+  // scarce_assets query and the World Profile's social links. Mask a
+  // non-qualifying holder rather than dropping the asset (unclaimed
+  // assets have no holder at all and still belong in this list). Done
+  // here, pre-cache, so a masked holder is what gets cached too.
+  const assets = ((data ?? []) as (ScarceAsset & { holder?: { id: string; name: string; image_url: string; active?: boolean | null; is_public?: boolean | null; is_live?: boolean | null } | null })[]).map((a) => {
+    const h = a.holder;
+    if (h && (h.active === false || h.is_public === false || h.is_live === false)) {
+      return { ...a, holder: undefined };
+    }
+    return a;
+  }) as ScarceAsset[];
   try { await redis.set(CACHE.all, assets, { ex: TTL.all }); } catch { /* ok */ }
   return assets;
 }

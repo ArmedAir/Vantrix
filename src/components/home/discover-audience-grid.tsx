@@ -13,6 +13,7 @@ const TABS: FilterPillOption[] = [
   { value: "female", label: "Girls" },
   { value: "male", label: "Guys" },
   { value: "anime", label: "Anime" },
+  { value: "lgbtq", label: "LGBTQ+" },
 ];
 
 /**
@@ -88,7 +89,10 @@ export function DiscoverAudienceGrid({
                   alt={c.name}
                   fill
                   sizes="(max-width: 640px) 50vw, 25vw"
-                  className="object-cover transition-transform ease-premium duration-200 group-hover:scale-[1.03]"
+                  // OBJECT-POSITION-FIX: same fix as character-feature-card.tsx
+                  // and sibling cards — tall aspect-[3/4] tile, default
+                  // object-cover centers the crop and cuts through the head.
+                  className="object-cover object-top transition-transform ease-premium duration-200 group-hover:scale-[1.03]"
                 />
               </div>
               <div className="p-2.5">
