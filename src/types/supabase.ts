@@ -6220,6 +6220,77 @@ export type Database = {
           },
         ]
       }
+      memory_recall_audit: {
+        Row: {
+          assistant_reply: string
+          character_id: string
+          conversation_id: string | null
+          created_at: string
+          fact_conflict_count: number
+          graded_at: string | null
+          grading_status: string
+          id: string
+          memory_ids: string[]
+          user_id: string
+          user_message: string
+          verdict: string | null
+          verdict_reasoning: string | null
+        }
+        Insert: {
+          assistant_reply: string
+          character_id: string
+          conversation_id?: string | null
+          created_at?: string
+          fact_conflict_count?: number
+          graded_at?: string | null
+          grading_status?: string
+          id?: string
+          memory_ids?: string[]
+          user_id: string
+          user_message: string
+          verdict?: string | null
+          verdict_reasoning?: string | null
+        }
+        Update: {
+          assistant_reply?: string
+          character_id?: string
+          conversation_id?: string | null
+          created_at?: string
+          fact_conflict_count?: number
+          graded_at?: string | null
+          grading_status?: string
+          id?: string
+          memory_ids?: string[]
+          user_id?: string
+          user_message?: string
+          verdict?: string | null
+          verdict_reasoning?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_recall_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memory_recall_audit_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memory_recall_audit_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+
       memory_tier_long_term: {
         Row: {
           character_id: string
