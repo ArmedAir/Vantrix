@@ -32,6 +32,8 @@ import { CharacterPortraitViewer } from "@/components/immersive/character-portra
 // already implemented correctly.
 import { MotionWrapper } from "@/components/immersive/motion-wrapper";
 import { Logo as BrandMark } from "@/components/shell/logo";
+import { generateFAQSchema, safeJsonLd } from "@/lib/seo/structured";
+import { LANDING_FAQS } from "@/lib/seo/landing-faqs";
 
 /**
  * LOGO FIX (marketing homepage): this page had its own local placeholder —
@@ -99,7 +101,13 @@ function CharacterPortrait({ character, className = "" }: { character: DiscoverC
  <CharacterPortraitViewer
  modelUrl={character.model_url}
  imageSrc={resolveImageSrc(character.image_url)}
- alt={character.name}
+ // ALT-TEXT-FIX: this is the single most prominent image on the site
+ // (LCP element, directly under the H1) — a bare first name ("David")
+ // told neither screen readers nor image search what it's an image
+ // of. `character.archetype`/`tags` are real, already-fetched fields
+ // (same ones the caption right below this image already shows), not
+ // new copy invented for the alt text.
+ alt={`${character.name}, an AI companion on Vantrix${character.archetype ? ` — ${character.archetype}` : ""}`}
  sizes="(max-width: 768px) 80vw, 42vw"
  // LCP-FIX: a real Lighthouse run measured LCP = 4.2s on this page
  // (mobile, "poor" — Google's "good" threshold is under 2.5s), the
@@ -283,7 +291,7 @@ const FALLBACK_HERO_CHARACTERS: DiscoverCharacter[] = [
  },
 ];
 
-export function LandingPage({ characters, experiences, dailyWorldChoice }: { characters: DiscoverCharacter[]; experiences: DiscoverExperience[]; dailyWorldChoice?: DailyWorldChoice | null }) {
+export function LandingPage({ characters, experiences, dailyWorldChoice, nonce }: { characters: DiscoverCharacter[]; experiences: DiscoverExperience[]; dailyWorldChoice?: DailyWorldChoice | null; nonce?: string | null }) {
  const characterPool = characters.length > 0 ? characters : FALLBACK_HERO_CHARACTERS;
  const featured = characterPool.slice(0, 7);
  const hero = featured[0];
@@ -304,6 +312,12 @@ export function LandingPage({ characters, experiences, dailyWorldChoice }: { cha
 
  return (
  <div className="min-h-screen overflow-hidden bg-base text-text-primary selection:bg-gold-500/25">
+ {/* eslint-disable-next-line @next/next/no-sync-scripts -- static JSON-LD, escaped via safeJsonLd */}
+ <script
+ type="application/ld+json"
+ nonce={nonce ?? undefined}
+ dangerouslySetInnerHTML={{ __html: safeJsonLd(generateFAQSchema(LANDING_FAQS)) }}
+ />
  <LandingHeader />
 
  <main>
@@ -343,6 +357,24 @@ export function LandingPage({ characters, experiences, dailyWorldChoice }: { cha
  </Link>
  </Button>
  </div>
+
+ {/* CONVERSION-TRUST-LINE: "free, no card" restates the same claim
+ already made in generateSoftwareApplicationSchema()'s `offers` and
+ discover/page.tsx's own FAQ — reducing signup friction right at the
+ CTA rather than only in a schema no visitor reads. The character
+ count uses the real `characters` prop this component was already
+ given (never `characterPool`, which can be the 4-item hard-coded
+ fallback — see STATIC-HERO-FALLBACK FIX above; showing "4+
+ companions" in that failure state would be an accurate-sounding but
+ misleading number). Phrased as a floor ("N+") rather than an exact
+ total since getDiscoverHome() can itself return a capped page of a
+ larger live catalog — see its own route's `limit` param — so this
+ is always a true lower bound, never an inflated one. */}
+ {characters.length > 0 && (
+ <p className="mt-4 text-xs text-text-tertiary">
+ Free to start, no card required · {characters.length}+ companions live now
+ </p>
+ )}
 
  <div className="mt-7 flex flex-wrap gap-2">
  <Pill>Persistent memory</Pill>
@@ -693,6 +725,55 @@ export function LandingPage({ characters, experiences, dailyWorldChoice }: { cha
  </section>
  </MotionWrapper>
  )}
+
+ {/* CONVERSION-SEO: visible FAQ — see lib/seo/landing-faqs.ts for why
+ every answer here restates a claim already made elsewhere rather than a
+ new one. Styled like every other section on this page (gold-500
+ eyebrow + font-display h2), not copied from (seo)/[landing]'s
+ simpler template, so it reads as part of this page rather than a
+ bolted-on block. */}
+ <MotionWrapper>
+ <section className="border-t border-border-hairline px-5 py-24 md:px-8 md:py-32">
+ <div className="mx-auto max-w-3xl">
+ <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500">Questions</p>
+ <h2 className="mt-4 font-display text-4xl leading-tight tracking-[-0.03em] md:text-5xl">Frequently asked questions.</h2>
+ <div className="mt-12 space-y-9">
+ {LANDING_FAQS.map((faq) => (
+ <div key={faq.question}>
+ <h3 className="font-display text-xl">{faq.question}</h3>
+ <p className="mt-2 text-sm leading-6 text-text-secondary">{faq.answer}</p>
+ </div>
+ ))}
+ </div>
+ </div>
+ </section>
+ </MotionWrapper>
+
+ {/* CONVERSION-CLOSING-CTA: a long-scroll landing page with only one
+ CTA moment (the hero) loses every visitor who reads through the
+ whole page without converting at the top — this repeats the exact
+ same primary action (not a new claim or a different offer) for
+ whoever scrolled this far without clicking it the first time. */}
+ <section className="border-t border-border-hairline px-5 py-20 text-center md:px-8 md:py-28">
+ <div className="mx-auto max-w-xl">
+ <h2 className="font-display text-4xl leading-tight tracking-[-0.03em] md:text-5xl">Ready to meet them?</h2>
+ <p className="mt-4 text-base leading-7 text-text-secondary">Free to start, no card required.</p>
+ <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+ <Button asChild size="lg">
+ <Link href="/login?mode=sign-up" className="gap-2">
+ Create your character
+ <ArrowRight className="h-4 w-4" />
+ </Link>
+ </Button>
+ <Button asChild variant="secondary" size="lg">
+ <Link href="/discover" className="gap-2">
+ <CirclePlay className="h-4 w-4" />
+ Meet the characters
+ </Link>
+ </Button>
+ </div>
+ </div>
+ </section>
 
  </main>
 

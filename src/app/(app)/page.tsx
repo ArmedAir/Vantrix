@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { generateSEOMeta } from "@/lib/seo/meta";
 import { getDiscoverHome } from "@/lib/frontend/discover";
 import { getHeroAds } from "@/lib/frontend/ads";
@@ -99,6 +100,7 @@ export default async function HomePage() {
     featuredScenes,
     popularScenarios,
     dailyWorldChoice,
+    nonce,
   ] = await Promise.all([
     getDiscoverHome(),
     getHeroAds(16),
@@ -106,6 +108,15 @@ export default async function HomePage() {
     getFeaturedScenes(10),
     listHomeScenarios(12),
     getActiveDailyChoice(),
+    // LANDING-FAQ-SCHEMA: LandingPage renders a JSON-LD FAQPage script tag
+    // (see its own comment) and — same as (seo)/[landing]/page.tsx, the
+    // established pattern for this — needs the real per-request CSP nonce
+    // for it to survive the browser's CSP check. This route has no
+    // revalidate/ISR (getAuthedUser() reading cookies already forces
+    // dynamic rendering), so a fresh nonce is safe to bake in on every
+    // request; see discover/page.tsx's own comment for the ISR case where
+    // that would NOT be safe.
+    (async () => (await headers()).get("x-nonce"))(),
   ]);
 
   const [feedEntries, homeContext, heroContext, creators] = user
@@ -122,7 +133,7 @@ export default async function HomePage() {
   const topInitiative = pendingInitiatives[0] ?? null;
 
   if (!user) {
-    return <LandingPage characters={allCharacters} experiences={experiences} dailyWorldChoice={dailyWorldChoice} />;
+    return <LandingPage characters={allCharacters} experiences={experiences} dailyWorldChoice={dailyWorldChoice} nonce={nonce} />;
   }
 
   // SIGNED-IN-AD-FIX (ad audit): getHeroAds() has no concept of viewer auth
