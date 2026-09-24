@@ -356,16 +356,18 @@ export function LandingPage({ characters, experiences, dailyWorldChoice }: { cha
  phone the grid stacks to a single column and everything
  from `sideOne`/`sideTwo` down to the two floating stat
  cards is `hidden ... md:block` — so a mobile visitor
- scrolling past the pills either hit nothing but the big
- portrait (small screens, no context around it) or, if
- `hero` ever came back empty for that request, a bare
- gray box with no imagery at all. This strip puts real
+ scrolling past the pills used to hit a solo portrait with
+ no side context (or, worse, whatever broke rendering of
+ that portrait in a given embed/viewport — a blank void
+ where the image should be). This strip puts real
  character faces directly under the CTAs — no scrolling,
- no dependency on the md: portrait rendering — so the
+ no dependency on the portrait rendering at all — so the
  hero always reads as "a universe of characters," not
- text-only, at any width. Hidden at lg: the full portrait
- composition already does this job better once there's
- room for it. */}
+ text-only, at any width. The full portrait composition
+ (below) is now desktop-only — see HERO-PORTRAIT-DESKTOP-
+ ONLY just below — so this strip is mobile's only hero
+ visual, not a supplement to one that may or may not
+ render there. */}
  {avatarRow.length > 0 && (
  <div className="mt-7 flex items-center gap-3 lg:hidden">
  <div className="flex -space-x-3">
@@ -392,7 +394,22 @@ export function LandingPage({ characters, experiences, dailyWorldChoice }: { cha
  )}
  </div>
 
- <div className="relative mx-auto w-full max-w-[600px] lg:mx-0">
+ {/* HERO-PORTRAIT-DESKTOP-ONLY: this column (the big character
+ portrait, its two rotated side polaroids, and the two floating
+ "Remembers the little things" / "Character intelligence" badges)
+ is real imagery that needs real width to read as intentional —
+ at `lg` it sits in its own grid column next to the copy. Below
+ `lg` the grid stacks to one column and this used to render
+ anyway, full-width, with no side cards (those are separately
+ `md:block`) — at best a solo portrait with no context, at worst
+ a blank gap wherever the image failed to render in a given
+ embed/viewport (e.g. a narrow link-preview iframe). The
+ MOBILE-HERO-IMAGE FIX strip above is mobile's real substitute —
+ built specifically to read as "a universe of characters" without
+ depending on this composition — so hiding this column below `lg`
+ removes a redundant (and occasionally broken-looking) element on
+ mobile without losing any content there. */}
+ <div className="relative mx-auto hidden w-full max-w-[600px] lg:block lg:mx-0">
  {hero ? (
  <div className="relative mx-auto aspect-[0.82] w-[72%] max-w-[410px]">
  <CharacterPortrait character={hero} className="absolute inset-0" />
