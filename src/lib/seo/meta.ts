@@ -2,6 +2,33 @@ import { Metadata } from "next";
 import { absoluteUrl } from "@/lib/utils";
 import { env } from "@/env";
 
+/**
+ * GOOGLE-VERIFICATION-CONSISTENCY FIX: this is the same real Search Console
+ * verification token layout.tsx hardcodes as its own fallback (not a
+ * secret -- Google's HTML-tag verification method embeds it in public page
+ * HTML on every verified site by design). Exported from here so BOTH
+ * layout.tsx's root metadata AND every page's generateSEOMeta() resolve to
+ * the identical value regardless of whether GOOGLE_SITE_VERIFICATION is
+ * set in the environment.
+ *
+ * Before this fix, generateSEOMeta() returned `verification: { google:
+ * env.GOOGLE_SITE_VERIFICATION }` with NO fallback -- so on every route
+ * with its own metadata export (i.e. every real page, including "/"
+ * itself via (app)/page.tsx), that object was `{ google: undefined }`
+ * whenever the env var was unset. Next.js's documented metadata-merge
+ * behavior REPLACES a parent segment's nested object fields (like
+ * `verification`) with the child's, rather than deep-merging them -- so
+ * that undefined `google` value didn't fall back to layout.tsx's good
+ * token, it silently overwrote it, and the rendered page had no
+ * verification meta tag at all. Since Search Console's HTML-tag
+ * verification check fetches exactly this root page, that could mean
+ * domain ownership verification never actually completed -- which would
+ * also mean no sitemap submission or "request indexing" through Search
+ * Console, independent of whether robots.txt/sitemap.ts are correct.
+ */
+export const GOOGLE_SITE_VERIFICATION =
+  env.GOOGLE_SITE_VERIFICATION ?? "dZC8yjP4DGNU1fjD589zwm_-jDQINFXfrZMrUyrbR9o";
+
 interface SEOMetaOptions {
   title: string;
   description: string;
@@ -125,7 +152,7 @@ export function generateSEOMeta({
       },
     },
     verification: {
-      google: env.GOOGLE_SITE_VERIFICATION,
+      google: GOOGLE_SITE_VERIFICATION,
     },
   };
 }
