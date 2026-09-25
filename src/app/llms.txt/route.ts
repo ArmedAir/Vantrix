@@ -28,6 +28,15 @@ import { NextResponse } from "next/server";
  * landing pages in lib/seo/landing-pages.ts); this file is kept in sync
  * with that list so nothing crawlable here is undocumented for agents.
  *
+ * AI-CHATBOT-ACCESS FIX: this file and /llms-full.txt are themselves now
+ * in robots.ts's explicit allow list (they weren't before), and
+ * robots.ts also grants the major AI-chatbot user agents by name in
+ * addition to "*" — see that file's own AI-CHATBOT-ACCESS FIX comment.
+ * A file written specifically for AI answer engines being only
+ * conditionally crawlable by them (dependent on a robots.txt tie-break
+ * every bot's parser may not implement the same way) defeated its own
+ * purpose.
+ *
  * ENTITY IDENTITY: founder (Covenant Alphonsus) and location (New York,
  * USA) are stated here and mirrored in generateOrganizationSchema() /
  * generateSoftwareApplicationSchema() (src/lib/seo/structured.ts) and

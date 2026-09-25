@@ -54,7 +54,73 @@ import { getLandingPageSlugs } from "@/lib/seo/landing-pages";
  *
  * RAAS-PUBLIC FIX: "/relationships" (the tier explainer page, see
  * (app)/relationships/page.tsx) is allowed the same way.
+ *
+ * AI-CHATBOT-ACCESS FIX: llms.txt/route.ts's own doc comment says this
+ * file "is kept in sync with that [robots.ts] list so nothing crawlable
+ * here is undocumented for agents" — but /llms.txt and /llms-full.txt
+ * themselves were never added to that list. The file written specifically
+ * for AI answer engines to read wasn't guaranteed-crawlable by all of
+ * them: under the wildcard "*" rule's own "/" vs "/" tie (see the
+ * ROUTING-FIX comment above), Google's specifically-documented
+ * least-restrictive-wins tie-break likely resolves this in favor of
+ * allow anyway — but that's a Google-specific algorithm, and there's no
+ * guarantee every AI crawler's robots.txt parser implements the same
+ * tie-break rather than just seeing an unopposed-looking "/" disallow.
+ * Same reasoning that already justifies explicitly listing "/discover",
+ * "/about", etc. instead of relying on the tie-break for those. Fixed by
+ * adding both paths to PUBLIC_ALLOW below.
+ *
+ * While in here: PUBLIC_ALLOW/PUBLIC_DISALLOW were pulled out so the same
+ * lists back explicit rules for the specific major AI-chatbot user
+ * agents (GPTBot/ChatGPT-User/OAI-SearchBot, ClaudeBot/Claude-User/
+ * Claude-SearchBot, PerplexityBot/Perplexity-User, Google-Extended,
+ * Applebot-Extended, Meta's meta-externalagent) in addition to the
+ * catch-all "*" rule. Each one is identical to the "*" rule; this is
+ * belt-and-suspenders for the same reason, not a behavior change from
+ * what "*" already grants every one of these bots today, and the "*"
+ * rule stays as the real fallback for any agent not named here.
  */
+const PUBLIC_ALLOW = [
+  "/",
+  "/login",
+  "/forgot-password",
+  "/reset-password",
+  "/discover",
+  "/about",
+  "/careers",
+  "/blog",
+  "/support",
+  "/press",
+  "/terms",
+  "/privacy",
+  "/premium",
+  "/relationships",
+  "/companions/",
+  "/locations/",
+  "/tags/",
+  "/llms.txt",
+  "/llms-full.txt",
+  ...getLandingPageSlugs().map((slug) => `/${slug}`),
+];
+const PUBLIC_DISALLOW = ["/", "/api/"];
+
+// Major AI-chatbot/answer-engine crawlers and live-fetch agents, current
+// as of this writing. Not exhaustive of every AI-related bot (e.g.
+// Bytespider, CCBot) — scoped to the mainstream chatbot products this
+// task is actually about.
+const AI_CHATBOT_USER_AGENTS = [
+  "GPTBot",          // OpenAI — training crawler
+  "ChatGPT-User",    // OpenAI — live fetch during a ChatGPT browsing session
+  "OAI-SearchBot",   // OpenAI — ChatGPT search indexing
+  "ClaudeBot",       // Anthropic — training/crawling
+  "Claude-User",     // Anthropic — live fetch during a Claude conversation
+  "Claude-SearchBot",// Anthropic — Claude web search indexing
+  "PerplexityBot",   // Perplexity — indexing crawler
+  "Perplexity-User", // Perplexity — live fetch on behalf of a user query
+  "Google-Extended", // Google — Gemini/AI Overviews training + grounding (separate from Googlebot itself, already unconditionally allowed)
+  "Applebot-Extended",// Apple — Apple Intelligence training use (separate from Applebot itself)
+  "meta-externalagent", // Meta — Meta AI training/crawling
+];
 // WWW-CANONICAL-STALENESS-FIX: same reasoning as sitemap.ts's own comment —
 // this route also builds every URL via absoluteUrl()/NEXT_PUBLIC_APP_URL
 // with no dynamic/revalidate export, so it's equally exposed to serving a
@@ -65,30 +131,18 @@ export const dynamic = 'force-dynamic';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: "*",
-      allow: [
-        "/",
-        "/login",
-        "/forgot-password",
-        "/reset-password",
-        "/discover",
-        "/about",
-        "/careers",
-        "/blog",
-        "/support",
-        "/press",
-        "/terms",
-        "/privacy",
-        "/premium",
-        "/relationships",
-        "/companions/",
-        "/locations/",
-        "/tags/",
-        ...getLandingPageSlugs().map((slug) => `/${slug}`),
-      ],
-      disallow: ["/", "/api/"],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: PUBLIC_ALLOW,
+        disallow: PUBLIC_DISALLOW,
+      },
+      ...AI_CHATBOT_USER_AGENTS.map((userAgent) => ({
+        userAgent,
+        allow: PUBLIC_ALLOW,
+        disallow: PUBLIC_DISALLOW,
+      })),
+    ],
     sitemap: absoluteUrl("/sitemap.xml"),
   };
 }
