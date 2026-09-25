@@ -7,6 +7,7 @@ import { InstallPrompt } from "@/components/shell/install-prompt";
 import { ViewportHeightSync } from "@/components/shell/viewport-height-sync";
 import { AnalyticsPageview } from "@/lib/analytics/client";
 import { ThemeHydration } from "@/components/theme/theme-hydration";
+import { AppSplashScreen } from "@/components/shell/app-splash-screen";
 import { CookieConsentBanner } from "@/components/consent/cookie-consent-banner";
 import {
   generateOrganizationSchema,
@@ -195,6 +196,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: safeJsonLd(generateWebSiteSchema()) }}
         />
         <ThemeHydration />
+        {/* PREMIUM-SPLASH: brand splash covering native->web handoff and
+            initial hydration -- see app-splash-screen.tsx for why it's a
+            timed hold-then-fade rather than a data-readiness gate. */}
+        <AppSplashScreen />
         <ServiceWorkerRegister />
         <ViewportHeightSync />
         <Suspense fallback={null}>
