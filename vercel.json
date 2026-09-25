@@ -36,6 +36,10 @@
       "schedule": "45 3 * * *"
     },
     {
+      "path": "/api/cron/recall-accuracy-audit",
+      "schedule": "0 4 * * *"
+    },
+    {
       "path": "/api/cron/message-archive",
       "schedule": "0 4 * * *"
     },

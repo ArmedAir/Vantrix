@@ -97,7 +97,8 @@ export type HeartbeatName =
   | 'MEMORY_TIER_CONSOLIDATION'
   | 'COMMENT_MODERATION_SWEEP'
   | 'HOMEPAGE_ROTATION'
-  | 'DIGITAL_PERSON_BACKFILL';
+  | 'DIGITAL_PERSON_BACKFILL'
+  | 'RECALL_ACCURACY_AUDIT';
 
 function getUrl(name: HeartbeatName, suffix?: '/start' | '/fail'): string | null {
   const envKey = `HEARTBEAT_${name}`;
