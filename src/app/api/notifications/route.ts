@@ -96,6 +96,19 @@ export async function GET(_req: NextRequest) {
 
         if (initiativesResult.status === 'fulfilled') {
           for (const initiative of initiativesResult.value) {
+            // CHAT-LINK-404-FIX (missed spot): the character_surprise branch
+            // below already resolves a real conversationId for its ctaUrl —
+            // this initiative branch was the one spot that got missed when
+            // that fix went in, still linking straight to characterId.
+            // Same lookup, same '/chats' fallback for consistency.
+            const { data: initiativeConversation } = await supabaseAdmin
+              .from('conversations')
+              .select('id')
+              .eq('user_id', userId)
+              .eq('character_id', initiative.characterId)
+              .maybeSingle();
+            const initiativeCtaUrl = initiativeConversation ? `/chat/${initiativeConversation.id}` : '/chats';
+
             enqueue!(sseEvent('initiative', {
               type:           'character_initiative',
               characterId:    initiative.characterId,
@@ -103,7 +116,7 @@ export async function GET(_req: NextRequest) {
               message:        initiative.message,
               urgency:        initiative.urgency,
               initiativeType: initiative.type,
-              ctaUrl:         `/chat/${initiative.characterId}`,
+              ctaUrl:         initiativeCtaUrl,
               imageUrl:       initiative.imageUrl,
             }));
             markInitiativeDelivered(userId, initiative.characterId, initiative.type).catch(bg('markInitiativeDelivered'));
@@ -114,7 +127,7 @@ export async function GET(_req: NextRequest) {
               type: 'character_initiative',
               title: initiative.characterName,
               body: initiative.message,
-              ctaUrl: `/chat/${initiative.characterId}`,
+              ctaUrl: initiativeCtaUrl,
               urgency: (initiative.urgency as 'low' | 'medium' | 'high') ?? 'low',
               // Thumbnail for the inbox row + push notification when this
               // initiative came with a spontaneous photo — icon is the

@@ -16,6 +16,7 @@ import {
   generateWebSiteSchema,
   safeJsonLd,
 } from "@/lib/seo/structured";
+import { GOOGLE_SITE_VERIFICATION } from "@/lib/seo/meta";
 import "./globals.css";
 import "./boot-splash.css";
 import { env } from "@/env";
@@ -92,15 +93,15 @@ export const metadata: Metadata = {
     icon: "/icons/icon-192.png",
     apple: "/icons/icon-192.png",
   },
-  // Prefer the GOOGLE_SITE_VERIFICATION env var if set (see env.ts), but
-  // fall back to the real Search Console verification token directly —
-  // this string isn't a secret (Google's own verification method embeds
-  // it in public page HTML on every verified site, so it's meant to be
-  // visible in view-source), and hardcoding the fallback means domain
-  // verification doesn't depend on a separate Vercel dashboard env-var
-  // step that has no tool access in this environment.
+  // GOOGLE-VERIFICATION-CONSISTENCY FIX: was a second hardcoded copy of
+  // this token living only here. Now sourced from lib/seo/meta.ts's
+  // single exported constant, which generateSEOMeta() also uses -- see
+  // that file's comment for why the two needed to match exactly (Next's
+  // metadata merge REPLACES this object per-route rather than deep-
+  // merging it, so a page-level `verification` with no fallback used to
+  // silently blank out this root value on every real page).
   verification: {
-    google: env.GOOGLE_SITE_VERIFICATION ?? "dZC8yjP4DGNU1fjD589zwm_-jDQINFXfrZMrUyrbR9o",
+    google: GOOGLE_SITE_VERIFICATION,
   },
 };
 
