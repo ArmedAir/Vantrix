@@ -8,6 +8,7 @@ import { ViewportHeightSync } from "@/components/shell/viewport-height-sync";
 import { BootSplash } from "@/components/shell/boot-splash";
 import { AnalyticsPageview } from "@/lib/analytics/client";
 import { ThemeHydration } from "@/components/theme/theme-hydration";
+import { THEME_INIT_SCRIPT } from "@/lib/theme/theme-init-script";
 import { CookieConsentBanner } from "@/components/consent/cookie-consent-banner";
 import {
   generateOrganizationSchema,
@@ -148,7 +149,20 @@ export default function RootLayout({
           parsed — before <body> is created at all, so there's no
           gold-styled element for the browser to paint yet. */}
       <head>
-        <Script src="/theme-init.js" strategy="beforeInteractive" />
+        {/* GOLD-FLASH-FIX (2026-09-25): was `<Script src="/theme-init.js"
+            strategy="beforeInteractive" />` — an external file, even
+            same-origin and beforeInteractive, still needs a network fetch
+            to complete before it can run, and the browser can (and, per a
+            real bug report, does) paint :root's default gold CSS variables
+            during that gap. Inlining the script's actual text removes the
+            fetch entirely — it runs the instant the parser reaches it, one
+            token into <head>, before there's anything after it to paint.
+            CSP allows this via a hash source (THEME_INIT_SCRIPT_CSP_HASH
+            in middleware.ts) instead of a nonce, since this content is
+            static and doesn't need a per-request value — see that
+            constant's own comment, and
+            src/lib/theme/theme-init-script.ts for the script itself. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         {/* SURFACE-COOKIE-FIX: writes the vantrix-surface cookie
             ("pwa" | "web") before hydration, so every server-side auth
             check on this and every later request already knows which

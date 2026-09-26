@@ -27,6 +27,7 @@ import {
 } from "@/lib/security-guards/bot-shield.edge";
 import { generateNonce } from "@/lib/security.edge";
 import { edgeEnv } from "@/env.edge";
+import { THEME_INIT_SCRIPT_CSP_HASH } from "@/lib/theme/theme-init-script";
 
 // ── Client IP resolution ────────────────────────────────────────────────────
 // BUG FIX (2026-08-08): both blanket rate limiters below used to fall back to
@@ -368,7 +369,7 @@ export async function middleware(request: NextRequest) {
 function buildCsp(nonce: string, isDev: boolean): string {
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://js.stripe.com https://api.paystack.co${isDev ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' 'nonce-${nonce}' '${THEME_INIT_SCRIPT_CSP_HASH}' https://js.stripe.com https://api.paystack.co${isDev ? " 'unsafe-eval'" : ""}`,
     // No nonce here — nonces only gate <style> elements per the CSP spec,
     // never inline style="" attributes (which is what Radix UI's portal
     // positioning and Framer Motion's transform/opacity animations both
