@@ -15,10 +15,14 @@
  * / Aurora re-tint the glow and type with zero extra code.
  *
  * TIMELINE (ms from first paint)
- *      0  heart + glow already visible, heart eases 0.92 → 1
+ *      0  heart + glow already visible, heart grows 0.52 → 1 (roughly
+ *         Android's own launch-icon scale, so the grow reads as a
+ *         continuation of the OS splash rather than a new screen replacing it)
+ *    180  glow fades in behind it (offset from 0 on purpose — see aura's
+ *         own comment in boot-splash.css)
  *    300  band of light crosses the heart (repeats every 3.4s while waiting)
  *    700  wordmark letters land, 85ms apart
- *    900  heartbeat starts (two soft beats, then rest, looping)
+ *   1080  heartbeat starts (two soft beats, then rest, looping)
  *   1600  tagline
  *   1750  hairline draws, then a glint travels along it while we wait
  *  ~2300  earliest dismissal (see MIN_MS in boot-splash.tsx)
@@ -99,9 +103,14 @@ html[data-boot="out"] .vx-boot__stage {
     rgb(var(--gold-500) / 0) 84%
   );
   opacity: 0;
+  /* HANDOFF-FIX: delayed 180ms behind vx-heart-in so the glow reads as
+     something the heart is doing (warming up as it settles into place)
+     rather than a second decoration appearing at the same instant as the
+     heart — which, combined at t=0, was part of what made the arrival feel
+     like a whole new screen instead of a continuation. */
   animation:
-    vx-aura-in 1400ms var(--vx-ease-out) both,
-    vx-aura-beat 1800ms ease-in-out 900ms infinite;
+    vx-aura-in 1400ms var(--vx-ease-out) 180ms both,
+    vx-aura-beat 1800ms ease-in-out 1080ms infinite;
   will-change: transform, opacity;
 }
 
@@ -113,7 +122,14 @@ html[data-boot="out"] .vx-boot__stage {
   width: var(--vx-heart);
   height: var(--vx-heart);
   margin: calc(var(--vx-heart) / -2) 0 0 calc(var(--vx-heart) / -2);
-  animation: vx-heart-in 1100ms var(--vx-ease-out) both;
+  /* HANDOFF-FIX: this used to start at scale(0.92) — visually indistinguishable
+     from its scale(1) resting size, so next to Android's own splash icon
+     (rendered much smaller, per that OS's fixed launch-icon sizing, which we
+     don't control) the heart still read as a hard cut to a bigger element,
+     not a continuation of it. Starting from roughly icon-scale and growing
+     into place is what actually sells "same heart, still animating" rather
+     than "OS splash ended, a new one began" — see vx-heart-in below. */
+  animation: vx-heart-in 1300ms var(--vx-ease-out) both;
   will-change: transform;
 }
 
@@ -121,7 +137,10 @@ html[data-boot="out"] .vx-boot__stage {
   position: absolute;
   inset: 0;
   background: url("/icons/splash-heart-v1.webp") center / contain no-repeat;
-  animation: vx-beat 1800ms ease-in-out 900ms infinite;
+  /* HANDOFF-FIX: delay shifted 900ms -> 1080ms to match vx-aura-beat's new
+     start below, so the heart and its glow still settle into their loop
+     together rather than the heart beginning to pulse before the aura does. */
+  animation: vx-beat 1800ms ease-in-out 1080ms infinite;
   will-change: transform;
 }
 
@@ -250,7 +269,7 @@ html[data-boot="out"] .vx-boot__stage {
 /* ── Keyframes ─────────────────────────────────────────────────────────── */
 @keyframes vx-heart-in {
   from {
-    transform: scale(0.92);
+    transform: scale(0.52);
   }
   to {
     transform: scale(1);
