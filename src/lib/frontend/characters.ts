@@ -54,6 +54,10 @@ export interface CharacterDetail {
   hair_color: string | null;
   eye_color: string | null;
   skin_tone: string | null;
+  // STUDIO-GROWTH-CREDIT (2026-09-14): surfaced so CreatorCredit can render
+  // a "Created by @handle" link on this page — see creator-credit.tsx and
+  // the matching field on PublicCharacter (lib/seo/public-character.ts).
+  is_user_created: boolean;
   /** The profile that created this character — used to gate owner-only
    *  actions like posting as the character (see /api/characters/:id/posts). */
   creator_id: string | null;
@@ -87,7 +91,7 @@ export interface CharacterDetail {
 // the whole profile down; (2) `error` is now checked and logged here so
 // any future failure of the *core* query is loud instead of silent.
 const CHAR_SELECT =
-  "id,name,age,gender,description,image_url,tags,is_premium,min_tier,is_new,is_live,is_nsfw,tokens_cost,archetype,opening_line,like_count,follower_count,intro_video_url,gallery_image_urls,gallery_video_urls,model_url,hair_color,eye_color,skin_tone,body_type,creator_id";
+  "id,name,age,gender,description,image_url,tags,is_premium,min_tier,is_new,is_live,is_nsfw,tokens_cost,archetype,opening_line,like_count,follower_count,intro_video_url,gallery_image_urls,gallery_video_urls,model_url,hair_color,eye_color,skin_tone,body_type,creator_id,is_user_created";
 
 export async function getCharacterDetail(
   id: string

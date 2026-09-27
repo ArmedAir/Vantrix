@@ -18,6 +18,7 @@ import { CharacterRelationshipProgress } from "@/components/characters/character
 import { CharacterRelationshipTier } from "@/components/characters/character-relationship-tier";
 import { ShareProfileButton } from "@/components/characters/share-profile-button";
 import { RemixButton } from "@/components/characters/remix-button";
+import { CreatorCredit } from "@/components/characters/creator-credit";
 import { Card } from "@/components/ui/card";
 import { CharacterPostsGrid } from "@/components/characters/character-posts-grid";
 import { MatureAccessGate } from "@/components/characters/mature-access-gate";
@@ -155,6 +156,9 @@ export default async function CharacterDetailPage({
             </span>
           )}
         </h1>
+        <div className="mt-2 flex justify-center">
+          <CreatorCredit isUserCreated={character.is_user_created} creatorId={character.creator_id} />
+        </div>
       </div>
 
       <div className="mt-6 border-y border-border-hairline">

@@ -48,10 +48,22 @@ export interface PublicCharacter {
   // character has an ongoing life, not just a static bio, before a
   // visitor even signs up. See ARCH-WORLD-PROOF in that component.
   current_goal: string | null;
+  // STUDIO-GROWTH-CREDIT (2026-09-14): a shared character link with no
+  // creator credit is a dead end for the growth flywheel Studio exists to
+  // create — a viral character drove traffic to that one character page
+  // and nowhere else. Selected here (public-safe: `creator_id` alone
+  // identifies nothing, and is_user_created already gates most UI that
+  // treats user-made vs. staff/canon characters differently elsewhere in
+  // this codebase) so CreatorCredit can turn every character page —
+  // including the public, unauthenticated /companions/[id] share target —
+  // into a link back to the creator's public profile, and from there to
+  // every other character they've made. See creator-credit.tsx.
+  is_user_created: boolean;
+  creator_id: string | null;
 }
 
 const PUBLIC_CHAR_SELECT =
-  "id,name,age,gender,description,image_url,tags,archetype,occupation,category,opening_line,like_count,follower_count,created_at,current_goal";
+  "id,name,age,gender,description,image_url,tags,archetype,occupation,category,opening_line,like_count,follower_count,created_at,current_goal,is_user_created,creator_id";
 
 const PUBLIC_FILTER_COLUMNS = "active,is_public,is_live,moderation_status,is_nsfw" as const;
 

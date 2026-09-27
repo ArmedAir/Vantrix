@@ -14,6 +14,7 @@ import { Footer } from "@/components/home/footer";
 import { GuestChatWidget } from "@/components/public/guest-chat-widget";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { CreatorCredit } from "@/components/characters/creator-credit";
 
 /**
  * §2.5 — public, crawlable character pages.
@@ -167,6 +168,9 @@ export default async function PublicCharacterPage({
                 </span>
               ) : null}
             </h1>
+            <div className="mt-2">
+              <CreatorCredit isUserCreated={character.is_user_created} creatorId={character.creator_id} />
+            </div>
             {(character.archetype || character.occupation) && (
               <p className="mt-1.5 text-gold-400 font-semibold">
                 {[character.archetype, character.occupation]
