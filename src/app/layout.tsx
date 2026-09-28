@@ -5,7 +5,6 @@ import { display, sans } from "@/lib/fonts";
 import { ServiceWorkerRegister } from "@/components/shell/sw-register";
 import { InstallPrompt } from "@/components/shell/install-prompt";
 import { ViewportHeightSync } from "@/components/shell/viewport-height-sync";
-import { BootSplash } from "@/components/shell/boot-splash";
 import { AnalyticsPageview } from "@/lib/analytics/client";
 import { ThemeHydration } from "@/components/theme/theme-hydration";
 import { THEME_INIT_SCRIPT } from "@/lib/theme/theme-init-script";
@@ -18,7 +17,6 @@ import {
 } from "@/lib/seo/structured";
 import { GOOGLE_SITE_VERIFICATION } from "@/lib/seo/meta";
 import "./globals.css";
-import "./boot-splash.css";
 import { env } from "@/env";
 
 // BRAND POSITIONING (keep in sync with src/app/llms.txt/route.ts and
@@ -181,15 +179,8 @@ export default function RootLayout({
             header comment, and surface-init.js's own header comment
             for the full explanation of this fix. */}
         <Script src="/surface-init.js" strategy="beforeInteractive" />
-        {/* LAUNCH-ANIMATION: decides, before first paint, whether this load
-            plays the branded launch splash (installed app / native shell
-            only — never a plain web visit). Same static-file + CSP
-            reasoning as the two scripts above; see boot-init.js's header
-            for the full rules and boot-splash.tsx for the markup. */}
-        <Script src="/boot-init.js" strategy="beforeInteractive" />
       </head>
       <body className="bg-base text-text-primary min-h-screen">
-        <BootSplash />
         {/* Site-wide Organization + SoftwareApplication JSON-LD. These were
             previously defined in lib/seo/structured.ts but never rendered
             anywhere — meaning search engines and LLM answer engines had no
