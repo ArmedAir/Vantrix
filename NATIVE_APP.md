@@ -172,3 +172,16 @@ This sandbox has no network access and no Android SDK/Xcode installed, so
 build systems can't run here. Everything above is the exact command
 sequence to run locally (or in CI) to go from this scaffolding to signed
 installers/APKs/IPAs.
+
+## Android app (Capacitor) — built and wired
+- Domain fixed: the shell loads **https://vantrix.ink** (it previously pointed at vantrix.app).
+- **One opening only:** the native layer shows nothing (solid `#0A0A0A`, transparent
+  Android 12+ icon, 0ms duration). The animated BootSplash in the web app is the only
+  launch animation; `boot-init.js` plays it automatically inside the shell (detects `window.Capacitor`).
+- Launcher icon = the real Vantrix heart (adaptive icon on `#0A0A0A`).
+- **Get the APK:** GitHub → Actions → "Build Android app (APK)" → Run workflow → download
+  the `vantrix-android-debug-apk` artifact and install it on the phone.
+- **Play Store:** needs a signed release build (.aab) and your own upload keystore
+  (`keytool -genkey ...`), stored as GitHub secrets. Note Google Play and the App Store
+  have strict rules for AI-companion / adult-oriented content; review them before submitting.
+- iOS needs a Mac + Apple Developer account (`npx cap add ios`).

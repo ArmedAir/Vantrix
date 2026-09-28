@@ -66,7 +66,7 @@ export async function initNativePush(): Promise<void> {
         platform: Capacitor.getPlatform(), // 'ios' | 'android'
       }),
       // credentials default to same-origin, which is what we want here —
-      // this fetch runs inside the webview pointed at vantrix.app, so the
+      // this fetch runs inside the webview pointed at vantrix.ink, so the
       // user's existing session cookie is sent automatically.
     }).catch((err) => {
       console.warn('push: register-device failed', err);
