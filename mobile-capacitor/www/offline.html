@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Vantrix — offline</title>
+<style>
+  html,body{margin:0;height:100%;background:#0A0A0A;color:#EDE9E0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px;text-align:center;box-sizing:border-box}
+  h1{margin:0;font-size:22px;font-weight:600;letter-spacing:.01em}
+  p{margin:0;max-width:30ch;line-height:1.5;color:#9A958A;font-size:15px}
+  button{margin-top:10px;padding:13px 28px;border:0;border-radius:999px;background:#C9A24B;color:#0A0A0A;font-size:16px;font-weight:600}
+  button:active{opacity:.85}
+</style>
+</head>
+<body>
+<main role="status">
+  <h1>You're offline</h1>
+  <p>Vantrix needs a connection to reach your companions. Check your network and try again.</p>
+  <button id="retry" type="button">Try again</button>
+</main>
+<script>
+  // This page is only shown when the remote app failed to load. Retry
+  // navigates back to it, and we retry automatically once the network returns.
+  var APP_URL = 'https://vantrix.ink/';
+  function go(){ window.location.replace(APP_URL); }
+  document.getElementById('retry').addEventListener('click', go);
+  window.addEventListener('online', go);
+</script>
+</body>
+</html>

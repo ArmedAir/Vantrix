@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- allowBackup=false: the WebView holds the Supabase session + local
+         storage. Restoring that onto another device via cloud backup would
+         silently sign the user in there (and can restore a stale/expired
+         session). Fresh sign-in on a new device is the safer default. -->
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:usesCleartextTraffic="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -10,7 +15,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
@@ -20,6 +25,51 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Verified Android App Links: https://vantrix.ink/<path> opens the
+                 app instead of the browser once /.well-known/assetlinks.json
+                 (served by src/app/.well-known/assetlinks.json/route.ts) lists
+                 this app's signing-cert SHA-256. The path list MUST stay in
+                 sync with src/lib/native/deep-link-paths.ts (and therefore the
+                 iOS AASA file) — src/__tests__/arch-native-deep-links.test.ts
+                 fails the build if they drift. Deliberately an allowlist, not
+                 a bare host match: auth, admin, API and marketing routes were
+                 never designed to be cold-opened inside the app. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="vantrix.ink" />
+                <data android:host="www.vantrix.ink" />
+                <data android:path="/chats" />
+                <data android:path="/dating" />
+                <data android:path="/feed" />
+                <data android:path="/notifications" />
+                <data android:path="/profile" />
+                <data android:path="/premium" />
+                <data android:path="/world" />
+                <data android:pathPrefix="/chat/" />
+                <data android:pathPrefix="/characters/" />
+                <data android:pathPrefix="/community/" />
+                <data android:pathPrefix="/dating/" />
+                <data android:pathPrefix="/notifications/" />
+                <data android:pathPrefix="/profile/" />
+                <data android:pathPrefix="/r/" />
+                <data android:pathPrefix="/roleplay/" />
+                <data android:pathPrefix="/share/" />
+                <data android:pathPrefix="/world/" />
+            </intent-filter>
+
+            <!-- Custom scheme: vantrix://chat/123 (e.g. from a push payload or
+                 another app). Path validation happens in the web app's
+                 resolveNativeTarget(), which applies the same allowlist. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="vantrix" />
             </intent-filter>
 
         </activity>
@@ -36,6 +86,8 @@
     </application>
 
     <!-- Permissions -->
-
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 13+ runtime permission required for any push notification to
+         be shown; without it FCM messages are delivered silently. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>

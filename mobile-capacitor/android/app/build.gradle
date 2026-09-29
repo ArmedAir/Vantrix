@@ -1,25 +1,50 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "app.vantrix.mobile"
-    compileSdk rootProject.ext.compileSdkVersion
+    namespace = "app.vantrix.mobile"
+    compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "app.vantrix.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // CI passes these so every store upload gets a strictly increasing
+        // versionCode (Play rejects duplicates); local builds default to 1.
+        versionCode (System.getenv("ANDROID_VERSION_CODE") ?: "1").toInteger()
+        versionName System.getenv("ANDROID_VERSION_NAME") ?: "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    // Release signing comes from the environment (GitHub Actions secrets) — no
+    // keystore or password is ever committed. If ANDROID_KEYSTORE_PATH is unset
+    // the release build is simply unsigned (fine for local/CI compile checks;
+    // Play will not accept it).
+    signingConfigs {
+        release {
+            def ks = System.getenv("ANDROID_KEYSTORE_PATH")
+            if (ks) {
+                storeFile file(ks)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            }
         }
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // R8 shrink + resource shrink: smaller download and faster cold
+            // start. Keep rules in proguard-rules.pro protect the Capacitor
+            // JS bridge (reflection). A release build MUST be smoke-tested on
+            // a device before store upload — see docs/native/NATIVE_REQUIREMENTS.md.
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (System.getenv("ANDROID_KEYSTORE_PATH")) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

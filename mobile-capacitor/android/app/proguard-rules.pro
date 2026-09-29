@@ -19,3 +19,18 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# ── Vantrix / Capacitor (release builds run R8) ─────────────────────────────
+# Capacitor discovers plugins and dispatches JS→native calls by reflection
+# (@CapacitorPlugin / @PluginMethod). Stripping or renaming these silently
+# breaks push, deep links and every other bridge call — but ONLY in release,
+# which is exactly the build nobody tests during development.
+-keep class com.getcapacitor.** { *; }
+-keep class app.vantrix.mobile.** { *; }
+-keepattributes *Annotation*, JavascriptInterface, Signature, InnerClasses, EnclosingMethod
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+    @com.getcapacitor.PluginMethod <methods>;
+    @com.getcapacitor.annotation.PermissionCallback <methods>;
+    @com.getcapacitor.annotation.ActivityCallback <methods>;
+}

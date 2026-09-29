@@ -5,6 +5,7 @@ import { display, sans } from "@/lib/fonts";
 import { ServiceWorkerRegister } from "@/components/shell/sw-register";
 import { InstallPrompt } from "@/components/shell/install-prompt";
 import { ViewportHeightSync } from "@/components/shell/viewport-height-sync";
+import { NativeBridge } from "@/components/shell/native-bridge";
 import { BootSplash } from "@/components/shell/boot-splash";
 import { AnalyticsPageview } from "@/lib/analytics/client";
 import { ThemeHydration } from "@/components/theme/theme-hydration";
@@ -221,6 +222,7 @@ export default function RootLayout({
         <ThemeHydration />
         <ServiceWorkerRegister />
         <ViewportHeightSync />
+        <NativeBridge />
         <Suspense fallback={null}>
           <AnalyticsPageview />
         </Suspense>

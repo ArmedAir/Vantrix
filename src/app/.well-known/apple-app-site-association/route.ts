@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { EXACT_PATHS, PATH_PREFIXES } from "@/lib/native/deep-link-paths";
 
 /**
  * Apple Universal Links association file. Must be served at exactly
@@ -25,27 +26,15 @@ export function GET() {
         {
           appID: APP_ID,
           appIDs: [APP_ID],
-          // "*" with NOT-excludes would work too, but an explicit allowlist
-          // avoids accidentally deep-linking marketing/admin/api routes
-          // that were never designed to be opened from a cold app launch.
+          // Built from src/lib/native/deep-link-paths.ts — the single
+          // source of truth shared with the Android manifest and the
+          // client-side resolver. An explicit allowlist (vs. "*" with
+          // excludes) avoids accidentally deep-linking marketing/admin/api
+          // routes that were never designed to be opened from a cold
+          // app launch.
           paths: [
-            "/chat/*",
-            "/chats",
-            "/characters/*",
-            "/community/*",
-            "/dating",
-            "/dating/*",
-            "/feed",
-            "/notifications",
-            "/notifications/*",
-            "/profile",
-            "/profile/*",
-            "/premium",
-            "/r/*",
-            "/roleplay/*",
-            "/share/*",
-            "/world",
-            "/world/*",
+            ...EXACT_PATHS,
+            ...PATH_PREFIXES.map((prefix) => `${prefix}*`),
           ],
         },
       ],

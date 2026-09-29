@@ -1,18 +1,36 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-// Alternate mobile path (Phase B) alongside the Tauri mobile build in
-// ../desktop. Capacitor wraps the same deployed PWA (vantrix.ink) but uses
-// the standard Cordova/Capacitor plugin ecosystem instead of Rust/Tauri —
-// pick this route if you'd rather stay in the JS/TS toolchain end-to-end
-// (e.g. easier Firebase Cloud Messaging push setup, bigger plugin catalog).
+// The native shell loads the deployed web app (https://vantrix.ink) in a
+// WebView. Everything that makes it a *native* app — push registration, deep
+// links, share sheet — lives in the web app itself under src/lib/native/ and
+// only activates when window.Capacitor is present (see NativeBridge in
+// src/components/shell/native-bridge.tsx). It used to live in
+// mobile-capacitor/src/*.ts, which the WebView never loaded: in remote-URL
+// mode nothing in this folder's TypeScript ships to the device.
+//
+// See docs/native/NATIVE_REQUIREMENTS.md for the full native plan, store
+// requirements, and what is still open.
 const config: CapacitorConfig = {
   appId: 'app.vantrix.mobile',
   appName: 'Vantrix',
-  webDir: 'www', // offline placeholder only; server.url below is what actually loads
+  webDir: 'www', // holds only the offline fallback page; server.url is what loads
+  backgroundColor: '#0A0A0A', // WebView/window colour before first paint — no white flash
+  // Lets the server recognise native-shell traffic (SSR-time decisions such as
+  // hiding web-only checkout or the PWA install prompt) without relying on
+  // client JS. boot-init.js separately detects window.Capacitor client-side.
+  appendUserAgent: 'VantrixNative/1.0',
   server: {
     url: 'https://vantrix.ink',
     cleartext: false,
     androidScheme: 'https',
+    // Shown when vantrix.ink can't be reached (airplane mode, DNS, outage).
+    // Without this the user gets a blank #0A0A0A screen with no way forward.
+    // Path is relative to webDir. On Android this page cannot call plugins.
+    errorPath: 'offline.html',
+  },
+  android: {
+    allowMixedContent: false,
+    webContentsDebuggingEnabled: false,
   },
   plugins: {
     PushNotifications: {
@@ -30,6 +48,13 @@ const config: CapacitorConfig = {
       backgroundColor: '#0A0A0A',
       androidSplashResourceName: 'splash',
       showSpinner: false,
+    },
+    // Capacitor 8 edge-to-edge (Android 15+/targetSdk 35+ enforces it).
+    // 'css' pads/insets the WebView and also injects --safe-area-inset-*.
+    // DARK = light icons on our dark background.
+    SystemBars: {
+      insetsHandling: 'css',
+      style: 'DARK',
     },
   },
 };
