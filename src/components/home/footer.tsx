@@ -55,6 +55,7 @@ const COMPANY_LINKS: FooterLink[] = [
   { label: "About", href: "/about" },
   { label: "We're hiring", href: "/careers" },
   { label: "Blog", href: "/blog" },
+  { label: "Guides", href: "/guides" },
 ];
 
 function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {

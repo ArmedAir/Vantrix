@@ -5,6 +5,7 @@ import { getPublicCharacterIds } from "@/lib/seo/public-character";
 import { getPublicLocationSlugs } from "@/lib/seo/public-location";
 import { getPublicTagSlugs } from "@/lib/seo/public-tag";
 import { getBlogSlugs } from "@/lib/blog/posts";
+import { getGuideSlugs } from "@/lib/guides/posts";
 
 /**
  * ROUTING-FIX: /discover, /about, /careers, /blog, /support, /terms, and
@@ -124,6 +125,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...getBlogSlugs().map((slug) => ({
       url: absoluteUrl(`/blog/${slug}`),
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+    {
+      url: absoluteUrl("/guides"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.3,
+    },
+    ...getGuideSlugs().map((slug) => ({
+      url: absoluteUrl(`/guides/${slug}`),
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.6,
