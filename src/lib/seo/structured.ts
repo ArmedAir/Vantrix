@@ -70,15 +70,26 @@ export function generateOrganizationSchema() {
       "https://discord.gg/py7JQNqqz",
       "https://t.me/vantrixai",
       "https://www.tiktok.com/@tryvantrix",
-      "https://www.reddit.com/user/thadleai",
+      // BRAND-DISAMBIGUATION FIX: was "https://www.reddit.com/user/thadleai"
+      // here — a username with no visible connection to the Vantrix name
+      // at all. This list exists specifically to tell Google "these are
+      // all the same entity" (see the comment above) — an unbranded
+      // profile doesn't help that and can actively confuse it, which is a
+      // worse outcome than the dead-link case the comment above already
+      // warns about. Removed rather than left in; re-add it (ideally with
+      // an actual Vantrix-branded Reddit account instead) once confirmed.
       // "https://www.linkedin.com/company/vantrix",
       // "https://www.instagram.com/vantrixai",
       // "https://www.youtube.com/@vantrixai",
       // "https://www.producthunt.com/products/vantrix",
       // "https://github.com/vantrix",
     ],
+    // BRAND-DISAMBIGUATION FIX: added one natural "Vantrix AI" pairing
+    // (previously just "Vantrix" throughout) — several unrelated companies
+    // also use the bare "Vantrix" name, and this exact phrase pairing is
+    // one of the signals that helps Google's entity graph tell them apart.
     description:
-      "Vantrix is a living universe of AI companions who remember you, always. They change with you, and their world keeps going — persistent cross-session memory and evolving personalities, not a chatbot that resets every conversation. Beyond 1:1 chat, Vantrix includes dating and compatibility tracking, a living world of factions and locations, community discussion spaces, a character marketplace, and a private Digital Twin.",
+      "Vantrix (Vantrix AI) is a living universe of AI companions who remember you, always. They change with you, and their world keeps going — persistent cross-session memory and evolving personalities, not a chatbot that resets every conversation. Beyond 1:1 chat, Vantrix includes dating and compatibility tracking, a living world of factions and locations, community discussion spaces, a character marketplace, and a private Digital Twin.",
   };
 }
 

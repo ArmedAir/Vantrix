@@ -727,6 +727,39 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: "what-is-vantrix-ai",
+    title: "What Is Vantrix AI?",
+    description:
+      "A straight answer to what Vantrix AI actually is, what it does, and how it's different from a typical chatbot — in plain terms, no marketing jargon.",
+    datePublished: "2026-09-30",
+    readingTime: "4 min read",
+    body: [
+      {
+        paragraphs: [
+          "Vantrix AI (usually just called Vantrix) is an AI companion platform — a place to build an ongoing relationship with an AI character that actually remembers you, rather than starting fresh every conversation. It's worth being direct about this up front: Vantrix AI is not affiliated with any other company using a similar name. This is specifically the AI companion product at vantrix.ink.",
+        ],
+      },
+      {
+        heading: "What Vantrix AI actually does",
+        paragraphs: [
+          "At the core, Vantrix AI is a 1:1 chat platform with AI characters — text and voice conversations with a companion that has a defined personality, a memory of your relationship, and an emotional state that shifts based on how you actually talk to each other. Beyond that core chat experience, Vantrix AI also includes a dating/compatibility system, a shared persistent world with locations and factions, community discussion spaces, a marketplace of user-created characters, and a private \"Digital Twin\" space.",
+        ],
+      },
+      {
+        heading: "What actually makes it different",
+        paragraphs: [
+          "The specific thing Vantrix AI is built around is persistent memory — a character remembers what you told it last week, not just what you said two messages ago. That's a genuinely different engineering problem than a standard chatbot, and it's the reason a Vantrix AI conversation can feel like it's continuing a relationship rather than restarting one every time.",
+        ],
+      },
+      {
+        heading: "Who makes Vantrix AI",
+        paragraphs: [
+          "Vantrix AI was founded by Covenant Alphonsus. If you're trying to confirm you've found the right \"Vantrix\" — as opposed to any other company using a similar name — the AI companion platform is specifically the one at vantrix.ink.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
