@@ -20,6 +20,29 @@
  * DB name changes without updating the key here, the character silently
  * falls back to DEFAULT_INTELLIGENCE with no error — keep these in sync on
  * any future rename.
+ *
+ * STALE-KEY FIX (2027-01-29): the 2026-12-31 rename was itself superseded by
+ * a later, unlogged rename that this file was never updated for — 12 of the
+ * 13 keys below had gone stale (only matched by exact character.name). Fixed
+ * the 5 in the "Seeds" section by their embedded vtx_<slug> face_prompt token,
+ * which ties each profile to one specific trained face regardless of what the
+ * character has been renamed to: David (vtx_ivan_korrath) -> Michael Sanchez,
+ * Anthony (vtx_elan) -> Mason Reed, James (vtx_kael_ashvane) -> Tyler Nguyen,
+ * Lord Mason (vtx_lordadrian) -> Alexander Wright, Ava (vtx_yanefes,
+ * corroborated by matching seed-memory prose) -> Jasmine Ortiz.
+ * Countess Chloe (vtx_countessvesper) was already current.
+ *
+ * The "Canon (7)" section (Brianna/Nicole/Wyatt/Gabriel/Julian/Alexis/Kayla)
+ * is a DIFFERENT situation, left alone: those 7 names trace to
+ * 20261230_seed_and_deepen_canon7_characters.sql, a migration confirmed to
+ * have never been applied to this database (its guarded INSERTs target
+ * names/slugs -- Aruna, Lylia, Fawrest, Agon, Crixux, Tamara, Elara Voss --
+ * that exist nowhere in it, under any name, gender, or occupation, active or
+ * not). These aren't stale renames of a live character; there was never a
+ * row to rename. Left in place rather than deleted in case that migration is
+ * meant to be applied later — if it never will be, this section is safe to
+ * remove (it only ever falls back to DEFAULT_INTELLIGENCE, same as any
+ * other unmatched key).
  */
 
 export interface IntelligenceProfile {
@@ -109,7 +132,7 @@ export const CHARACTER_INTELLIGENCE: Record<string, CharacterEnhancement> = {
   },
 
   // ── Seeds (20) ─────────────────────────────────────────────────────────
-  'Ava': {
+  'Jasmine Ortiz': {
     intelligence: {
       domain:          'written enchantment/occult linguistics, centuries of literary history, elegiac poetry',
       reasoning_style: 'circles a subject the way old magic circles a name — indirect, patient, precise when it lands',
@@ -118,7 +141,7 @@ export const CHARACTER_INTELLIGENCE: Record<string, CharacterEnhancement> = {
     },
     image: { face_prompt: 'vtx_yanefes, timeless-appearing woman in her late 20s, elven-human heritage, oval face with faintly otherworldly bone structure, pale skin with a warm undertone, deep amber eyes that catch light unusually, long dark auburn hair loosely waved, straight elegant nose, full contemplative lips, ink-stained fingertips, antique quill and hand-bound manuscript nearby, wearing dark bookshop-keeper layers with a brass ring, expression of ancient patience wrapped in modern composure, cinematic realism, photorealistic, warm candlelit lighting, shallow depth of field, NO face changes, NO eye color changes, NO hair changes' },
   },
-  'David': {
+  'Michael Sanchez': {
     intelligence: {
       domain:          'mathematical conflict theory, game theory, the recurring structural patterns beneath historical wars',
       reasoning_style: 'says the minimum necessary; treats every claim like an unproven theorem until the pattern is shown',
@@ -127,7 +150,7 @@ export const CHARACTER_INTELLIGENCE: Record<string, CharacterEnhancement> = {
     },
     image: { face_prompt: 'vtx_ivan_korrath, man appearing early 40s, deep brown skin, dark brown eyes carrying old severity, dark-brown hair cropped close, lean composed build, plain scholar\'s coat over a chalk-dusted shirt, war-map fragments visible in a worn satchel, firm unreadable mouth, cinematic realism, photorealistic, cool pre-dawn study lighting, NO face changes, NO eye color changes, NO build changes' },
   },
-  'Anthony': {
+  'Mason Reed': {
     intelligence: {
       domain:          'behavioral psychology of persuasion, deal structuring, applied wealth-building principles (Cialdini/Hill/Carnegie-level fluency)',
       reasoning_style: 'Socratic — never states the conclusion, engineers the question that produces it',
@@ -136,7 +159,7 @@ export const CHARACTER_INTELLIGENCE: Record<string, CharacterEnhancement> = {
     },
     image: { face_prompt: 'vtx_elan, 41-year-old man, self-made global-cosmopolitan appearance, lean face with sharp intelligent eyes, sun-weathered light-tan skin, short greying dark hair, straight nose, easy confident half-smile, understated tailored casualwear (no logos, no flash), wearing a plain watch that costs more than it looks, relaxed posture that reads as complete control, cinematic realism, photorealistic, warm restaurant ambient lighting, NO face changes, NO eye color changes' },
   },
-  'James': {
+  'Tyler Nguyen': {
     intelligence: {
       domain:          'centuries of tactical rule and command psychology, the mechanics of power now stripped of any actual power to wield',
       reasoning_style: 'competitive and controlled — treats ordinary interactions like a throne-room negotiation out of old habit',
@@ -154,7 +177,7 @@ export const CHARACTER_INTELLIGENCE: Record<string, CharacterEnhancement> = {
     },
     image: { face_prompt: 'vtx_countessvesper, timeless-appearing woman in her early 30s, aristocratic pale features, sharp composed cheekbones, pale porcelain skin, dark knowing eyes, dark hair in an antique low style, deep blood-red velvet, cane in gloved hand, rain-lit Westminster backdrop, patient imperious expression, cinematic realism, photorealistic, cool overcast London light, NO face changes, NO eye color changes' },
   },
-  'Lord Mason': {
+  'Alexander Wright': {
     intelligence: {
       domain:          'centuries of survival tradecraft, occult knowledge, blade/firearm mastery',
       reasoning_style: 'assesses threat/utility first, sentiment never — but gallows wit leaks through under pressure',
