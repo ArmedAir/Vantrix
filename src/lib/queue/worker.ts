@@ -256,11 +256,19 @@ async function executeJob(job: ChatJob): Promise<{ reply: string; tokensUsed: nu
       .eq('id', characterId)
       .single(),
 
-    // Conversation history
+    // Conversation history — CONTEXT-CONTINUITY FIX (from
+    // vantrix-edited-files.zip, applied 2026-09-29): see the matching fix +
+    // full explanation in chat/stream/route.ts's historyPromise (same bug —
+    // ascending-order-then-limit returned the OLDEST N messages forever,
+    // not the most recent N, once a conversation passed historyLimit).
+    // Fetch newest-first, limited, then reversed to chronological order
+    // below at the rawHistory line — this path (the queue worker, which
+    // drives proactive/queued message generation) was using the exact same
+    // broken query independently.
     job.conversationId
       ? supabaseAdmin.from('messages').select('role,content')
           .eq('conversation_id', job.conversationId)
-          .order('created_at', { ascending: true })
+          .order('created_at', { ascending: false })
           .limit(historyLimit)
       : Promise.resolve({ data: [] }),
 
@@ -312,7 +320,7 @@ async function executeJob(job: ChatJob): Promise<{ reply: string; tokensUsed: nu
     throw new Error(`MATURE_CONTENT_BLOCKED: ${matureGate.reason ?? 'mature content is currently unavailable'}`);
   }
 
-  const rawHistory = (historyResult.data ?? []) as { role: string; content: string }[];
+  const rawHistory = ((historyResult.data ?? []) as { role: string; content: string }[]).reverse();
   const history    = trimHistoryForPlan(rawHistory, tier);
 
   const {

@@ -1004,9 +1004,22 @@ export async function POST(req: NextRequest) {
         const { data: msgs } = await supabase
           .from('messages').select('role,content')
           .eq('conversation_id', conversationId)
-          .order('created_at', { ascending: true })
+          // CONTEXT-CONTINUITY FIX (from vantrix-edited-files.zip, applied
+          // 2026-09-29): this was .order(ascending: true).limit(N) —
+          // ascending order applied BEFORE the limit means Postgres returns
+          // the OLDEST N rows, not the most recent N. For any conversation
+          // longer than historyLimitForTier(tier) (8 messages on free, 40
+          // on premium — trivially exceeded), the model saw only the very
+          // start of the relationship on every turn, forever, no matter how
+          // long the conversation ran since. Fetch the most recent N
+          // descending, then reverse back to chronological order — verified
+          // this matches trimToTokenBudget's .shift()-from-front eviction
+          // (token-budget.ts), which assumes ascending order to correctly
+          // drop the oldest-of-the-recent message when still over budget,
+          // not the newest.
+          .order('created_at', { ascending: false })
           .limit(historyLimitForTier(tier));
-        return { notFound: false, rows: msgs ?? [] };
+        return { notFound: false, rows: (msgs ?? []).reverse() };
       })()
     : Promise.resolve({ notFound: false, rows: [] as { role: string; content: string }[] });
 
