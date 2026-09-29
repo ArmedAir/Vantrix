@@ -325,6 +325,42 @@ export async function POST(req: NextRequest) {
       }, { status: 422 });
     }
 
+    // ── UNIQUENESS: no two characters may share a name or a portrait ──────
+    // Checked here, before the token deduction below, so a colliding
+    // request is rejected before the user is charged — the DB-level
+    // unique indexes added alongside this (see
+    // 20270128_character_name_image_uniqueness.sql) are the actual
+    // guarantee (this check has a race window between two concurrent
+    // creates), this pre-check just keeps the common case from charging
+    // tokens for a request that was always going to fail. Name match is
+    // case-insensitive/trimmed (citext-equivalent via ilike) so "Emma
+    // Carter" and "emma carter " are treated as the same name; image
+    // match is exact (character portraits are unique-per-upload URLs, so
+    // an accidental exact match means the same file was reused, not a
+    // coincidence).
+    const { data: nameCollision } = await supabaseAdmin
+      .from('characters')
+      .select('id')
+      .ilike('name', d.name.trim())
+      .maybeSingle();
+    if (nameCollision) {
+      return NextResponse.json({
+        error: `A character named "${d.name.trim()}" already exists. Choose a different name.`,
+        code: 'NAME_TAKEN',
+      }, { status: 409 });
+    }
+    const { data: imageCollision } = await supabaseAdmin
+      .from('characters')
+      .select('id')
+      .eq('image_url', d.image_url)
+      .maybeSingle();
+    if (imageCollision) {
+      return NextResponse.json({
+        error: 'This portrait is already used by another character. Generate or upload a different image.',
+        code: 'IMAGE_TAKEN',
+      }, { status: 409 });
+    }
+
     // Sanitize all user-controlled text fields
     const sanitized = {
       name:        sanitizeField(d.name, 80),
