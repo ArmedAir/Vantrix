@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Script from "next/script";
 import { display, sans } from "@/lib/fonts";
 import { ServiceWorkerRegister } from "@/components/shell/sw-register";
+import { NativeShellInit } from "@/components/shell/native-shell-init";
 import { InstallPrompt } from "@/components/shell/install-prompt";
 import { ViewportHeightSync } from "@/components/shell/viewport-height-sync";
 import { BootSplash } from "@/components/shell/boot-splash";
@@ -220,6 +221,7 @@ export default function RootLayout({
         />
         <ThemeHydration />
         <ServiceWorkerRegister />
+        <NativeShellInit />
         <ViewportHeightSync />
         <Suspense fallback={null}>
           <AnalyticsPageview />

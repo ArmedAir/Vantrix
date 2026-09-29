@@ -1,29 +1,40 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-// Alternate mobile path (Phase B) alongside the Tauri mobile build in
-// ../desktop. Capacitor wraps the same deployed PWA (vantrix.ink) but uses
-// the standard Cordova/Capacitor plugin ecosystem instead of Rust/Tauri —
-// pick this route if you'd rather stay in the JS/TS toolchain end-to-end
-// (e.g. easier Firebase Cloud Messaging push setup, bigger plugin catalog).
+// Capacitor shell around the deployed web app (https://vantrix.ink). The web
+// app IS the UI; this shell adds what a browser tab can't: a real launcher
+// icon, native push (FCM), verified app links, back-button handling, an
+// invisible native splash, and a branded offline screen.
 const config: CapacitorConfig = {
   appId: 'app.vantrix.mobile',
   appName: 'Vantrix',
-  webDir: 'www', // offline placeholder only; server.url below is what actually loads
+  webDir: 'www', // offline.html lives here; server.url is what normally loads
+  backgroundColor: '#0A0A0A', // no white flash while the WebView spins up
   server: {
     url: 'https://vantrix.ink',
     cleartext: false,
     androidScheme: 'https',
+    // If vantrix.ink can't be reached (airplane mode, server down) show the
+    // bundled branded page with a Retry button instead of Chrome's error page.
+    errorPath: 'offline.html',
+    // Only the app's own origin stays in-app; everything else (Stripe/Paddle
+    // checkout, external links) opens in the system browser. Verified App
+    // Links bring the user back into the app afterwards.
+    allowNavigation: ['vantrix.ink', '*.vantrix.ink'],
+  },
+  android: {
+    backgroundColor: '#0A0A0A',
+    allowMixedContent: false,
+    webContentsDebuggingEnabled: false,
+    // Lets the server tell app traffic apart in logs/analytics.
+    appendUserAgent: 'VantrixApp/1.0',
   },
   plugins: {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
     // ONE OPENING ONLY: the animated launch splash lives in the web app
-    // (BootSplash, plays automatically inside the native shell because
-    // boot-init.js detects window.Capacitor). The native layer must
-    // therefore show NOTHING visible: no icon, background identical to the
-    // web splash base (#0A0A0A), and no minimum duration. See
-    // android/app/src/main/res/values/styles.xml for the Android 12+ half.
+    // (BootSplash plays automatically inside the shell because boot-init.js
+    // detects window.Capacitor). The native layer shows NOTHING visible.
     SplashScreen: {
       launchShowDuration: 0,
       launchAutoHide: true,
@@ -31,6 +42,8 @@ const config: CapacitorConfig = {
       androidSplashResourceName: 'splash',
       showSpinner: false,
     },
+    Keyboard: { resize: 'native', resizeOnFullScreen: true },
+    StatusBar: { style: 'DARK', backgroundColor: '#0A0A0A', overlaysWebView: false },
   },
 };
 

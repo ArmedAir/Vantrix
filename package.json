@@ -83,7 +83,8 @@
     "firebase-admin": "^12.6.0",
     "web-push": "^3.6.7",
     "zod": "^3.23.8",
-    "zustand": "^5.0.1"
+    "zustand": "^5.0.1",
+    "vantrix-mobile-capacitor": "file:./mobile-capacitor"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.3.1",

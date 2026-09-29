@@ -38,6 +38,12 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // vantrix-mobile-capacitor (mobile-capacitor/, wired in via
+  // NativeShellInit) is a local file: dependency shipped as TS source with
+  // no build step of its own — transpilePackages tells Next's SWC to
+  // compile it same as first-party src/, instead of expecting a prebuilt
+  // dist/ from node_modules the way a normal published package would need.
+  transpilePackages: ["vantrix-mobile-capacitor"],
   experimental: {
     // Full parallelism by default — Next.js auto-detects available cores
     // (os.cpus().length - 1) when cpus/workerThreads are left unset. Only
