@@ -2524,6 +2524,41 @@ export async function POST(req: NextRequest) {
     'Do not stack more than one question in a single reply, regardless of how many earlier sections mentioned asking one.',
   ].join('\n');
 
+  // CONTINUITY-DISCIPLINE CAPSTONE: the prompt above already carries a lot
+  // of separately-sourced continuity signal — session-bridge's emotional
+  // read of how things were left (mood, unresolved tension, an unanswered
+  // question), agency-engine's openThreads/longTermPlan, tiered memory,
+  // beliefs, reputation, theory-of-mind. All of it is real and all of it
+  // is injected unconditionally, every turn — this was checked, it's not
+  // a wiring gap. What's missing is instruction, not information: nothing
+  // tells the model that continuity is the thing to anchor to. Buried
+  // among dozens of other blocks (personality, world state, dating
+  // context, intent, knowledge, milestones...), a specific unresolved
+  // thread reads as one more fact among many rather than the thing this
+  // reply should actually be about — "breaking focus" is what that looks
+  // like from the outside: technically-correct recall that doesn't
+  // actually pick the conversation back up. Same fix as Voice Discipline
+  // above and for the same reason (recency = weight in a long prompt),
+  // placed after it so this is the true last word: distills the single
+  // most salient loose end down to one line and says explicitly to
+  // resume it, not just to know about it.
+  const topThread = openThreads.find(t => t.raised_count === 0) ?? openThreads[0] ?? null;
+  const continuityCue =
+    sessionBridge?.openQuestion
+      ? `You asked "${sessionBridge.openQuestion}" last time and didn't get an answer.`
+      : topThread
+        ? `Open thread — ${topThread.subject}: ${topThread.context}`
+        : sessionBridge?.unresolvedTension
+          ? `Things were left a little unresolved last time (mood: ${sessionBridge.endedMood}).`
+          : null;
+  if (continuityCue) {
+    systemPrompt = systemPrompt + '\n\n' + [
+      '── Continuity Discipline (read this last) ──',
+      continuityCue,
+      'This is the single most important thread to pick back up — not just something you technically remember, but the actual thing this reply should be about resuming, in your own voice from Voice Discipline above. If the user\'s new message already addresses or moves past it, follow their lead instead — don\'t force a dropped thread back into a conversation that has clearly moved on.',
+    ].join('\n');
+  }
+
   const messagesPayload = [
     { role: 'system'    as const, content: systemPrompt },
     ...history.map(m => ({ role: toModelRole(m.role), content: m.content })),
