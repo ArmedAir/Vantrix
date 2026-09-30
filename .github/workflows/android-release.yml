@@ -1,0 +1,75 @@
+name: Build Android app (signed release AAB)
+
+# Produces the signed .aab Play Store submission needs — the existing
+# "Build Android app (APK)" workflow only builds an unsigned debug APK for
+# side-loading/testing, which Play will not accept.
+#
+# Requires these repository secrets (Settings -> Secrets and variables ->
+# Actions) before this can produce a real signed build:
+#   ANDROID_KEYSTORE_BASE64   -- `base64 -w0 your-upload-keystore.jks`
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+# Generate the keystore once with:
+#   keytool -genkeypair -v -keystore upload-keystore.jks -alias vantrix-upload \
+#     -keyalg RSA -keysize 2048 -validity 10000
+# Keep that file and its passwords somewhere safe outside git — losing it
+# means losing the ability to ship updates to an already-published app.
+#
+# Without those secrets set, this job still runs (so config/compile errors
+# surface in CI) but produces an UNSIGNED build that Play will reject.
+on:
+  workflow_dispatch:
+    inputs:
+      versionCode:
+        description: 'Integer version code (must be higher than the last Play Store upload)'
+        required: true
+      versionName:
+        description: 'Human-readable version name, e.g. 1.0.0'
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile-capacitor
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile-capacitor/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npx cap sync android
+
+      - name: Decode signing keystore
+        if: ${{ vars.ANDROID_KEYSTORE_BASE64 != '' || secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        working-directory: mobile-capacitor/android
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > upload-keystore.jks
+
+      - name: Build signed release AAB
+        working-directory: mobile-capacitor/android
+        env:
+          ANDROID_VERSION_CODE: ${{ inputs.versionCode }}
+          ANDROID_VERSION_NAME: ${{ inputs.versionName }}
+          ANDROID_KEYSTORE_PATH: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && 'upload-keystore.jks' || '' }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: chmod +x gradlew && ./gradlew bundleRelease --no-daemon
+
+      - name: Clean up decoded keystore
+        if: always()
+        working-directory: mobile-capacitor/android
+        run: rm -f upload-keystore.jks
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vantrix-android-release-aab
+          path: mobile-capacitor/android/app/build/outputs/bundle/release/app-release.aab

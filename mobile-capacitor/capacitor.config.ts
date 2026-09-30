@@ -8,7 +8,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 // mobile-capacitor/src/*.ts, which the WebView never loaded: in remote-URL
 // mode nothing in this folder's TypeScript ships to the device.
 //
-// See docs/native/NATIVE_REQUIREMENTS.md for the full native plan, store
+// See NATIVE_APP.md for the full native plan, store
 // requirements, and what is still open.
 const config: CapacitorConfig = {
   appId: 'app.vantrix.mobile',

@@ -1,0 +1,69 @@
+name: Build iOS app (simulator smoke test)
+
+# There is no Mac available anywhere else in this project's toolchain (see
+# NATIVE_APP.md "Why nothing gets built to a binary here"), so this is the
+# ONLY place the iOS Capacitor project actually gets generated and compiled
+# before someone has real hardware/an Apple Developer account to take over.
+#
+# Builds for the SIMULATOR only -- no signing identity or provisioning
+# profile required, so this can run and catch config/compile breakage
+# (Podfile issues, Swift/Capacitor plugin API changes, etc.) well before
+# anyone touches Xcode. It does NOT produce something installable on a real
+# device or submittable to TestFlight/the App Store -- that needs an Apple
+# Developer Program enrollment, a real signing certificate, and someone
+# running this from an actual Mac (or a follow-up workflow with those
+# secrets configured).
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'mobile-capacitor/**'
+      - '.github/workflows/ios-simulator-build.yml'
+
+jobs:
+  simulator-build:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: mobile-capacitor
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile-capacitor/package-lock.json
+      - run: npm ci
+
+      - name: Generate iOS project (first run only — committed after that)
+        run: |
+          if [ ! -d ios ]; then
+            npx cap add ios
+          fi
+          npx cap sync ios
+
+      - name: Install CocoaPods dependencies
+        working-directory: mobile-capacitor/ios/App
+        run: pod install --repo-update
+
+      - name: Build for the simulator (unsigned)
+        working-directory: mobile-capacitor/ios/App
+        run: |
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      # Committing the generated ios/ project (rather than regenerating it
+      # every run) is what lets this stay incremental and lets a real Mac
+      # `git pull` a working starting point instead of running `cap add ios`
+      # blind. Uncomment once the project has been reviewed and its Info.plist
+      # (bundle ID, deep-link entitlements, push capability) confirmed correct:
+      # - uses: stefanzweifel/git-auto-commit-action@v5
+      #   with:
+      #     commit_message: 'ios: sync generated Xcode project [skip ci]'
+      #     file_pattern: 'mobile-capacitor/ios/**'

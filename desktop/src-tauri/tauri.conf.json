@@ -4,13 +4,13 @@
   "version": "1.0.0",
   "identifier": "app.vantrix.desktop",
   "build": {
-    "frontendDist": "https://vantrix.app"
+    "frontendDist": "https://vantrix.ink"
   },
   "app": {
     "windows": [
       {
         "title": "Vantrix",
-        "url": "https://vantrix.app",
+        "url": "https://vantrix.ink",
         "width": 1280,
         "height": 840,
         "minWidth": 900,
@@ -37,7 +37,7 @@
     "deep-link": {
       "mobile": [
         {
-          "host": "vantrix.app"
+          "host": "vantrix.ink"
         }
       ],
       "desktop": {
@@ -47,7 +47,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://vantrix.app/api/updater/{{target}}/{{arch}}/{{current_version}}"
+        "https://vantrix.ink/api/updater/{{target}}/{{arch}}/{{current_version}}"
       ],
       "pubkey": "REPLACE_WITH_GENERATED_UPDATER_PUBKEY"
     }

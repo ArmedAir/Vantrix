@@ -17,7 +17,7 @@ import { clientLogger } from "@/lib/logger.client";
  * (capacitor.config.ts server.url) the WebView loads the deployed web app
  * directly — nothing under mobile-capacitor/ ever ships to a device. The
  * code that actually needs to call native plugins has to live HERE, in the
- * app that's actually running. See docs/native/NATIVE_REQUIREMENTS.md.
+ * app that's actually running. See NATIVE_APP.md.
  *
  * Three responsibilities, each independent (one failing doesn't block the
  * others — a native shell with, say, push permission denied should still

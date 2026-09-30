@@ -1,6 +1,6 @@
 # Vantrix Desktop
 
-Thin Tauri shell that wraps the deployed Vantrix web app (vantrix.app) into a
+Thin Tauri shell that wraps the deployed Vantrix web app (vantrix.ink) into a
 native, downloadable desktop app for macOS, Windows, and Linux — reusing the
 same PWA manifest/service worker, no separate frontend to maintain.
 
@@ -20,9 +20,13 @@ npm run tauri build
 Installers land in `desktop/src-tauri/target/release/bundle/`.
 
 ## Config
-`src-tauri/tauri.conf.json` points `build.devPath`/`distDir` at the production
-URL (`VANTRIX_URL`, defaults to https://vantrix.app). Update it once the
-production domain is finalized. Auth, push notifications, and the service
+`src-tauri/tauri.conf.json` hardcodes the production URL in two places —
+`build.frontendDist` and `app.windows[0].url` — both currently
+`https://vantrix.ink`. Tauri's config file doesn't do env-var substitution
+on its own, so if the domain ever changes, update both fields directly
+(and `plugins.deep-link.mobile[0].host` / the updater `endpoints` entry
+alongside them) rather than expecting an environment variable to do it.
+Auth, push notifications, and the service
 worker all work as-is since this is just a native window around the same
 deployed site — no code duplication with `src/app`.
 
