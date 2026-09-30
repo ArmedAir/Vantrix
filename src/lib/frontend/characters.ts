@@ -58,6 +58,7 @@ export interface CharacterDetail {
   // a "Created by @handle" link on this page — see creator-credit.tsx and
   // the matching field on PublicCharacter (lib/seo/public-character.ts).
   is_user_created: boolean;
+  is_public: boolean;
   /** The profile that created this character — used to gate owner-only
    *  actions like posting as the character (see /api/characters/:id/posts). */
   creator_id: string | null;
@@ -91,11 +92,38 @@ export interface CharacterDetail {
 // the whole profile down; (2) `error` is now checked and logged here so
 // any future failure of the *core* query is loud instead of silent.
 const CHAR_SELECT =
-  "id,name,age,gender,description,image_url,tags,is_premium,min_tier,is_new,is_live,is_nsfw,tokens_cost,archetype,opening_line,like_count,follower_count,intro_video_url,gallery_image_urls,gallery_video_urls,model_url,hair_color,eye_color,skin_tone,body_type,creator_id,is_user_created";
+  "id,name,age,gender,description,image_url,tags,is_premium,min_tier,is_new,is_live,is_public,is_nsfw,tokens_cost,archetype,opening_line,like_count,follower_count,intro_video_url,gallery_image_urls,gallery_video_urls,model_url,hair_color,eye_color,skin_tone,body_type,creator_id,is_user_created";
+
+/**
+ * PRIVATE-CHARACTER-CLEAN-STATE FIX: getCharacterDetail() used to filter
+ * on is_public=true unconditionally, same as is_live/active — so the
+ * instant an owner flipped their character private, every existing link
+ * to it (shared, bookmarked, or just sitting in someone's chat history)
+ * started 404ing with zero explanation, indistinguishable from the
+ * character never having existed at all. The owner couldn't even view
+ * their own character's page anymore to check on it.
+ *
+ * is_public is a genuinely different kind of gate than is_live/active:
+ * the latter two mean "this row shouldn't be servable to anyone, it's
+ * not really a real/live character" (a true 404 is correct there) — the
+ * former means "the owner doesn't want this listed for other people
+ * right now," which isn't the same thing as not existing, and the owner
+ * themselves should never be locked out by their own privacy setting.
+ *
+ * Now returns a discriminated result instead of null for that middle
+ * case, so the page can render a real "this character is private"
+ * message instead of the generic not-found page — see
+ * (app)/characters/[id]/page.tsx's use of this.
+ */
+export type CharacterDetailResult =
+  | { status: "ok"; character: CharacterDetail }
+  | { status: "private"; name: string; imageUrl: string | null }
+  | { status: "not_found" };
 
 export async function getCharacterDetail(
-  id: string
-): Promise<CharacterDetail | null> {
+  id: string,
+  viewerId?: string | null
+): Promise<CharacterDetailResult> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("characters")
@@ -103,7 +131,6 @@ export async function getCharacterDetail(
     .eq("id", id)
     .eq("is_live", true)
     .eq("active", true)
-    .eq("is_public", true)
     .maybeSingle();
 
   if (error) {
@@ -112,10 +139,14 @@ export async function getCharacterDetail(
       code: error.code,
       characterId: id,
     });
-    return null;
+    return { status: "not_found" };
   }
-  if (!data) return null;
+  if (!data) return { status: "not_found" };
   const row = data as Omit<CharacterDetail, "remixed_from_character_id" | "remix_count">;
+
+  if (!row.is_public && row.creator_id !== viewerId) {
+    return { status: "private", name: row.name, imageUrl: row.image_url };
+  }
 
   const lineage = await getRemixLineage(id);
 
@@ -123,11 +154,14 @@ export async function getCharacterDetail(
   // in case a row was written before the 20260717 migration's default
   // applied, or via a path that set the column to NULL directly.
   return {
-    ...row,
-    gallery_image_urls: row.gallery_image_urls ?? [],
-    gallery_video_urls: row.gallery_video_urls ?? [],
-    remixed_from_character_id: lineage.remixed_from_character_id,
-    remix_count: lineage.remix_count,
+    status: "ok",
+    character: {
+      ...row,
+      gallery_image_urls: row.gallery_image_urls ?? [],
+      gallery_video_urls: row.gallery_video_urls ?? [],
+      remixed_from_character_id: lineage.remixed_from_character_id,
+      remix_count: lineage.remix_count,
+    },
   };
 }
 

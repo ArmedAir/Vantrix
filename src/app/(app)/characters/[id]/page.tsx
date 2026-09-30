@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, Lock } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getCharacterDetail, getRemixSourceName } from "@/lib/frontend/characters";
+import { SafeImage } from "@/components/ui/safe-image";
+import { resolveImageSrc } from "@/lib/utils";
 import { getAuthedUser } from "@/lib/auth/get-authed-user";
 import { resolveMatureAccessStatus } from "@/lib/access/character-gate";
 import { getFeedPostsPage } from "@/lib/feed/get-posts";
@@ -62,14 +64,45 @@ export default async function CharacterDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  // PERF: getCharacterDetail(id) and getAuthedUser() don't depend on each
-  // other — no reason to pay both round-trips back to back. Only the
-  // NSFW-gate check right below genuinely needs both results.
-  const [character, { user }] = await Promise.all([
-    getCharacterDetail(id),
-    getAuthedUser(),
-  ]);
-  if (!character) notFound();
+  // PRIVATE-CHARACTER-CLEAN-STATE FIX: getCharacterDetail() now needs to
+  // know the viewer's id to decide whether a private character's owner
+  // is the one looking (full access) or someone else (clean private
+  // message, not a 404) — so getAuthedUser() has to resolve first rather
+  // than running in parallel the way it used to.
+  const { user } = await getAuthedUser();
+  const result = await getCharacterDetail(id, user?.id ?? null);
+
+  if (result.status === "not_found") notFound();
+
+  if (result.status === "private") {
+    return (
+      <div className="min-h-screen bg-base flex flex-col items-center justify-center px-6 text-center">
+        <div className="relative h-20 w-20 rounded-full overflow-hidden border border-border-hairline mb-5">
+          {result.imageUrl ? (
+            <SafeImage
+              src={resolveImageSrc(result.imageUrl)}
+              alt={result.name}
+              fill
+              sizes="80px"
+              className="object-cover object-top"
+            />
+          ) : (
+            <div className="h-full w-full bg-surface-raised" />
+          )}
+        </div>
+        <Lock className="h-5 w-5 text-text-tertiary mb-3" aria-hidden="true" />
+        <h1 className="font-display text-2xl mb-2">{result.name} is private</h1>
+        <p className="text-text-secondary mb-8 max-w-sm">
+          The creator has made this character private. It's no longer visible to other people.
+        </p>
+        <Button asChild variant="primary">
+          <Link href="/discover">Discover other companions</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  const character = result.character;
 
   const remixSourceName = character.remixed_from_character_id
     ? await getRemixSourceName(character.remixed_from_character_id)
