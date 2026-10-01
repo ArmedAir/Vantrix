@@ -271,8 +271,36 @@ export async function POST(req: NextRequest) {
       voiceRow?.elevenlabs_voice_id ??
       DEFAULT_ELEVENLABS_VOICE_IDS[genderBucket];
 
-    const stability = ttsParams
-      ? Math.max(0.3, Math.min(1, ttsParams.warmth / 100))
+    // COMPANION-VOICE FIX, two bugs fixed together (both were fighting
+    // the "feel like a companion" goal):
+    //
+    // 1. Inverted mapping: this used to be
+    //    `Math.max(0.3, Math.min(1, ttsParams.warmth / 100))` -- feeding
+    //    warmth straight into stability as if they moved the same
+    //    direction. They don't: in ElevenLabs, LOWER stability means MORE
+    //    expressive/varied delivery, HIGHER stability means flatter and
+    //    more consistent. So the warmest, most emotionally-present
+    //    characters -- the ones most central to what this app is selling
+    //    -- were being pushed toward the flattest, most monotone end of
+    //    the range. Inverted below: high warmth -> low stability (expressive).
+    //    Kept inside ElevenLabs' own recommended 0.3-0.75 band rather than
+    //    letting it swing to the extremes, where very low stability can
+    //    sound unstable/glitchy and very high reads as a flat monotone.
+    //
+    // 2. Static-per-character, ignoring the message: a character with any
+    //    custom voice profile got ONE fixed stability value for every
+    //    message, forever -- a heartbroken line and an excited line from
+    //    the same character came out with identical vocal consistency,
+    //    only `style` (below) responded to tone-detector.ts's per-message
+    //    read. Now blended: the character's baseline (from warmth) sets
+    //    their resting expressiveness, and the detected tone of THIS
+    //    message nudges around it, same as it already did for
+    //    characters with no custom voice profile.
+    const baselineStability = ttsParams
+      ? Math.max(0.3, Math.min(0.75, 0.75 - (ttsParams.warmth / 100) * 0.45))
+      : null;
+    const stability = baselineStability != null
+      ? Math.max(0.3, Math.min(0.75, (baselineStability + tone.stability) / 2))
       : Math.max(0.3, tone.stability);
     const style = tone.style;
 
@@ -327,7 +355,18 @@ export async function POST(req: NextRequest) {
               },
               body: JSON.stringify({
                 text: cleanedText,
-                model_id: 'eleven_turbo_v2_5',
+                // COMPANION-VOICE FIX: was eleven_turbo_v2_5 -- ElevenLabs'
+                // own docs describe Turbo as optimized for real-time
+                // low-latency agents "with a slight trade-off in accuracy
+                // and stability." This app isn't a live voice call: it
+                // synthesizes an already-written chat message and caches
+                // the result (see cacheKeyFor above), so the ~extra latency
+                // multilingual_v2 costs on a cache miss is a non-issue next
+                // to how much more natural/emotionally present it sounds --
+                // directly the thing a companion app is selling. See
+                // ElevenLabs' own model docs: multilingual_v2 is described
+                // as their "most life-like, emotionally rich" model.
+                model_id: 'eleven_multilingual_v2',
                 voice_settings: {
                   stability,
                   similarity_boost: 0.85,
