@@ -84,6 +84,10 @@ import { NextResponse } from "next/server";
 export function GET() {
   const body = `# Vantrix
 
+> Also known as: Vantrix AI. The official site is https://vantrix.ink —
+> "Vantrix" and "Vantrix AI" both refer to this same platform at this
+> domain, not to any other product using a similar name.
+
 > A living universe of AI companions who remember you, always. They
 > change with you. Their world keeps going.
 

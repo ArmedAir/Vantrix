@@ -28,6 +28,15 @@ export function generateOrganizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Vantrix Ai",
+    // ENTITY-SYNONYM FIX: schema.org's `alternateName` is the field Google's
+    // Knowledge Graph actually reads to learn that a name variant refers to
+    // the SAME entity as `name` + `url` below — this is the direct,
+    // machine-readable way to make "Vantrix AI" resolve to vantrix.ink,
+    // rather than relying only on the prose pairing in `description`
+    // further down (which helps on-page but isn't a structured signal).
+    // Kept as an array so future variants (e.g. a common misspelling) can
+    // be added here without another schema change.
+    alternateName: ["Vantrix AI", "Vantrix.ink"],
     url: absoluteUrl("/"),
     // LOGO-FIELD FIX (2026-09-13): Organization had no `logo` at all —
     // this is the specific field Google's structured-data pipeline reads
@@ -98,6 +107,9 @@ export function generateWebSiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Vantrix Ai",
+    // Same ENTITY-SYNONYM reasoning as generateOrganizationSchema() above —
+    // ties the "Vantrix AI" name variant to this exact WebSite/url too.
+    alternateName: ["Vantrix AI", "Vantrix.ink"],
     url: absoluteUrl("/"),
     potentialAction: {
       "@type": "SearchAction",
@@ -212,6 +224,8 @@ export function generateSoftwareApplicationSchema() {
     "@type": "SoftwareApplication",
     "@id": absoluteUrl("/#software"),
     name: "Vantrix Ai",
+    // Same ENTITY-SYNONYM reasoning as generateOrganizationSchema() above.
+    alternateName: ["Vantrix AI", "Vantrix.ink"],
     creator: {
       "@type": "Person",
       name: "Covenant Alphonsus",

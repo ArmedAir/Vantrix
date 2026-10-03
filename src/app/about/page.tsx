@@ -23,11 +23,15 @@ export default async function AboutPage() {
         <h1 className="font-display text-3xl text-text-primary">About Vantrix</h1>
         <div className="mt-6 space-y-5 text-[15px] leading-relaxed text-text-secondary">
           <p>
-            Vantrix builds AI companions that remember you — conversations,
-            preferences, the small details that make a relationship feel
-            real. Our characters carry memory, emotion, and personality
-            forward from one chat to the next instead of starting over every
-            session.
+            Vantrix — also known as Vantrix AI — builds AI companions that
+            remember you — conversations, preferences, the small details that
+            make a relationship feel real. Our characters carry memory,
+            emotion, and personality forward from one chat to the next
+            instead of starting over every session. This page,{" "}
+            <Link href="/" className="text-gold-400 hover:text-gold-300">
+              vantrix.ink
+            </Link>
+            , is the one official home for both names.
           </p>
           <p>
             Every character on Vantrix is an AI system, not a person. We
