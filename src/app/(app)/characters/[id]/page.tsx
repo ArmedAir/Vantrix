@@ -93,7 +93,7 @@ export default async function CharacterDetailPage({
         <Lock className="h-5 w-5 text-text-tertiary mb-3" aria-hidden="true" />
         <h1 className="font-display text-2xl mb-2">{result.name} is private</h1>
         <p className="text-text-secondary mb-8 max-w-sm">
-          The creator has made this character private. It's no longer visible to other people.
+          The creator has made this character private. It&apos;s no longer visible to other people.
         </p>
         <Button asChild variant="primary">
           <Link href="/discover">Discover other companions</Link>
