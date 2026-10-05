@@ -142,6 +142,12 @@ export function generateCharacterSchema(character: {
   // sits on for the same reason (it's a self-reference, not a separate
   // destination), so it now points at the public companion page too.
   const charUrl = `${APP_URL}/companions/${character.id ?? "unknown"}`;
+  // The CommunicateAction below targets the actual chat surface, which is
+  // intentionally auth-walled (you can't message a character without an
+  // account) — that's a legitimate "this is where the action happens"
+  // target, distinct from charUrl above, which is the citable entity page
+  // itself and must stay fetchable with no session.
+  const chatUrl = `${APP_URL}/chat/${character.id ?? "unknown"}`;
   return {
     "@context":   "https://schema.org",
     "@type":      "Person",
@@ -154,6 +160,19 @@ export function generateCharacterSchema(character: {
     ...(character.age && { age: character.age }),
     ...(character.tags?.length && { keywords: character.tags.filter(Boolean).join(", ") }),
     mainEntityOfPage: { "@type": "WebPage", "@id": charUrl },
+    // CHAT-ACTION-FIX: nothing here previously told a crawler this Person
+    // is an interactive agent rather than a static bio/profile — the
+    // same gap llms.txt's ROSTER-FIX closed at the summary-file level,
+    // closed here at the per-page structured-data level so it's present
+    // even for a crawler that only ever fetches this one page and never
+    // reads llms.txt. CommunicateAction is schema.org's actual vocabulary
+    // for "you can talk to this entity" (vs. a generic Action), target
+    // points at the real chat URL used elsewhere in this file.
+    potentialAction: {
+      "@type": "CommunicateAction",
+      name:    `Chat with ${character.name}`,
+      target:  chatUrl,
+    },
   };
 }
 
