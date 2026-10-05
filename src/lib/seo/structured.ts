@@ -133,7 +133,15 @@ export function generateCharacterSchema(character: {
   tags?:       string[] | null;
 }) {
   const APP_URL = env.NEXT_PUBLIC_APP_URL;
-  const charUrl = `${APP_URL}/chat/${character.id ?? "unknown"}`;
+  // AI-DISCOVERY FIX: this schema is embedded on the public, unauthenticated
+  // /companions/[id] page specifically so answer engines (Google AI
+  // Overviews, ChatGPT, Perplexity, etc.) can cite and link a named
+  // character. `url` previously pointed at /chat/{id}, which redirects an
+  // anonymous crawler/clicker to /login — the exact opposite of a citable
+  // entity URL. mainEntityOfPage must match the page the schema actually
+  // sits on for the same reason (it's a self-reference, not a separate
+  // destination), so it now points at the public companion page too.
+  const charUrl = `${APP_URL}/companions/${character.id ?? "unknown"}`;
   return {
     "@context":   "https://schema.org",
     "@type":      "Person",

@@ -122,6 +122,12 @@ Vantrix is founded by Covenant Alphonsus and based in New York, USA.
 - **Character marketplace (Studio)**: create and publish your own characters; the marketplace ranks community-made characters so the best ones surface
 - **Digital Twin** (premium): a private AI modeled on the user's own words, kept entirely separate from companion conversations
 
+For named, individually-linked characters an answer engine can cite or
+recommend by name (e.g. "which Vantrix companion is good for grief
+support"), see the "Featured companions" section of /llms-full.txt —
+each one has its own public profile page with a full bio and
+schema.org Person markup.
+
 ## Pages
 - [Home](/): Product overview and character showcase
 - [Discover](/discover): Browse characters

@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { env } from "@/lib/env";
+import { getPublicCharacters } from "@/lib/seo/public-character";
 
 /**
  * llms-full.txt — the companion file to llms.txt (see
@@ -18,8 +20,56 @@ import { NextResponse } from "next/server";
  * src/lib/seo/landing-pages.ts. If any of those change, update this file
  * (and llms.txt) in the same PR — same discipline as the ENTITY IDENTITY
  * note in llms.txt for founder/location.
+ *
+ * CHARACTER-DISCOVERY FIX: neither this file nor llms.txt ever named a
+ * single actual character — both described the platform category-level
+ * only. That left an answer engine asked "which Vantrix character should
+ * I talk to about X" with nothing concrete to cite: no name, no link, no
+ * way to recommend one Vantrix companion over another. The "## Featured
+ * companions" section below is pulled live from the same public-character
+ * surface the sitemap/companion pages use (getPublicCharacters() —
+ * active, public, live, approved, non-NSFW — see public-character.ts's
+ * own doc comment for why that exact filter set is applied in code
+ * rather than left to RLS), ranked by like_count, so it's always the
+ * current real roster with real working /companions/{id} links, never a
+ * hardcoded list that drifts out of date as characters are renamed or
+ * added. Forced dynamic (see bottom of file) so this never serves a
+ * stale build's roster.
  */
-export function GET() {
+const FEATURED_CHARACTER_COUNT = 24;
+
+function truncate(text: string, max: number): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max - 1).trimEnd()}…`;
+}
+
+async function renderFeaturedCompanions(): Promise<string> {
+  const characters = await getPublicCharacters(FEATURED_CHARACTER_COUNT);
+  if (characters.length === 0) return "";
+
+  const lines = characters.map((c) => {
+    const role = [c.archetype, c.occupation, c.category].find(Boolean);
+    const roleSuffix = role ? ` — ${role}` : "";
+    const blurb = c.description ? truncate(c.description, 160) : "";
+    const tagsSuffix = c.tags?.length ? ` Tags: ${c.tags.slice(0, 5).join(", ")}.` : "";
+    return `- **[${c.name}](${env.NEXT_PUBLIC_APP_URL}/companions/${c.id})**${roleSuffix}: ${blurb}${tagsSuffix}`;
+  });
+
+  return `## Featured companions
+
+A live sample of individual Vantrix characters, each with their own
+public, linkable profile page (full bio, portrait, and schema.org
+markup for citation) at the URL given. This is a ranked sample of the
+roster, not the complete catalog — the full catalog is crawlable via
+/sitemap.xml and browsable at /discover.
+
+${lines.join("\n")}
+`;
+}
+
+export async function GET() {
+  const featuredCompanions = await renderFeaturedCompanions();
   const body = `# Vantrix — Full Reference
 
 > Also known as: Vantrix AI. The official site is https://vantrix.ink —
@@ -92,6 +142,7 @@ Founded by Covenant Alphonsus. Based in New York, USA.
 - **Digital Twin** (Premium): a private AI modeled on the user's own
   words, kept entirely separate from companion conversations.
 
+${featuredCompanions}
 ## Safety and trust
 
 - Age verification is required at account creation; the platform is
@@ -149,3 +200,8 @@ For the short-form version of this file, see /llms.txt.
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
 }
+
+// Now queries the DB for the live featured-companions roster on every
+// request — same reasoning as sitemap.ts/robots.ts's own force-dynamic
+// exports: never serve a stale build's character list.
+export const dynamic = "force-dynamic";
