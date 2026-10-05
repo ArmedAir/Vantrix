@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { env } from "@/lib/env";
+import { env } from "@/env";
 import { getPublicCharacters } from "@/lib/seo/public-character";
 
 /**
