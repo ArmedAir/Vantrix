@@ -1,14 +1,14 @@
 {
   "baseUrl": "https://vantrix.ink",
-  "crawledAt": "2026-09-28T17:33:35.392Z",
+  "crawledAt": "2026-10-05T18:15:27.702Z",
   "robotsFindings": [],
   "results": [
     {
       "url": "https://www.vantrix.ink/",
       "ok": true,
       "status": 200,
-      "ms": 2855,
-      "wordCount": 1580,
+      "ms": 4847,
+      "wordCount": 1615,
       "findings": [
         {
           "severity": "warn",
@@ -20,64 +20,64 @@
       "url": "https://www.vantrix.ink/ai-girlfriend",
       "ok": true,
       "status": 200,
-      "ms": 2734,
-      "wordCount": 464,
+      "ms": 3692,
+      "wordCount": 461,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/ai-boyfriend",
       "ok": true,
       "status": 200,
-      "ms": 2774,
-      "wordCount": 424,
+      "ms": 3772,
+      "wordCount": 425,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/anime-ai-chat",
       "ok": true,
       "status": 200,
-      "ms": 1838,
-      "wordCount": 374,
+      "ms": 3877,
+      "wordCount": 375,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/ai-dating-app-africa",
       "ok": true,
       "status": 200,
-      "ms": 1722,
-      "wordCount": 395,
+      "ms": 4943,
+      "wordCount": 393,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/ai-friend",
       "ok": true,
       "status": 200,
-      "ms": 649,
-      "wordCount": 384,
+      "ms": 666,
+      "wordCount": 382,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/virtual-companion",
       "ok": true,
       "status": 200,
-      "ms": 454,
-      "wordCount": 372,
+      "ms": 866,
+      "wordCount": 370,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/web-login",
       "ok": true,
       "status": 200,
-      "ms": 382,
-      "wordCount": 462,
+      "ms": 719,
+      "wordCount": 460,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/character-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 460,
-      "wordCount": 480,
+      "ms": 615,
+      "wordCount": 478,
       "findings": [
         {
           "severity": "warn",
@@ -89,23 +89,23 @@
       "url": "https://www.vantrix.ink/candy-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 431,
-      "wordCount": 460,
+      "ms": 587,
+      "wordCount": 457,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/kindroid-alternative",
       "ok": true,
       "status": 200,
-      "ms": 534,
-      "wordCount": 449,
+      "ms": 613,
+      "wordCount": 447,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/login",
       "ok": true,
       "status": 200,
-      "ms": 229,
+      "ms": 298,
       "wordCount": 55,
       "findings": [
         {
@@ -122,7 +122,7 @@
       "url": "https://www.vantrix.ink/premium",
       "ok": true,
       "status": 200,
-      "ms": 333,
+      "ms": 372,
       "wordCount": 117,
       "findings": [
         {
@@ -135,7 +135,7 @@
       "url": "https://www.vantrix.ink/relationships",
       "ok": true,
       "status": 200,
-      "ms": 191,
+      "ms": 417,
       "wordCount": 176,
       "findings": [
         {
@@ -152,16 +152,16 @@
       "url": "https://www.vantrix.ink/discover",
       "ok": true,
       "status": 200,
-      "ms": 471,
-      "wordCount": 448,
+      "ms": 661,
+      "wordCount": 449,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/about",
       "ok": true,
       "status": 200,
-      "ms": 223,
-      "wordCount": 182,
+      "ms": 222,
+      "wordCount": 201,
       "findings": [
         {
           "severity": "warn",
@@ -169,7 +169,7 @@
         },
         {
           "severity": "info",
-          "message": "~182 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~201 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -177,7 +177,7 @@
       "url": "https://www.vantrix.ink/careers",
       "ok": true,
       "status": 200,
-      "ms": 226,
+      "ms": 266,
       "wordCount": 65,
       "findings": [
         {
@@ -190,8 +190,8 @@
       "url": "https://www.vantrix.ink/blog",
       "ok": true,
       "status": 200,
-      "ms": 312,
-      "wordCount": 828,
+      "ms": 544,
+      "wordCount": 869,
       "findings": [
         {
           "severity": "warn",
@@ -203,24 +203,24 @@
       "url": "https://www.vantrix.ink/blog/why-most-ai-companions-forget-you",
       "ok": true,
       "status": 200,
-      "ms": 311,
-      "wordCount": 521,
+      "ms": 303,
+      "wordCount": 522,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/ai-companion-with-memory-what-to-look-for",
       "ok": true,
       "status": 200,
-      "ms": 211,
-      "wordCount": 438,
+      "ms": 504,
+      "wordCount": 439,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/the-case-for-ai-characters-that-have-a-life-of-their-own",
       "ok": true,
       "status": 200,
-      "ms": 296,
-      "wordCount": 471,
+      "ms": 323,
+      "wordCount": 472,
       "findings": [
         {
           "severity": "warn",
@@ -232,8 +232,8 @@
       "url": "https://www.vantrix.ink/blog/how-ai-character-memory-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 218,
-      "wordCount": 433,
+      "ms": 372,
+      "wordCount": 434,
       "findings": [
         {
           "severity": "warn",
@@ -245,48 +245,48 @@
       "url": "https://www.vantrix.ink/blog/signs-youre-talking-to-a-stateless-chatbot",
       "ok": true,
       "status": 200,
-      "ms": 278,
-      "wordCount": 382,
+      "ms": 373,
+      "wordCount": 383,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/why-persistent-memory-changes-how-you-write-characters",
       "ok": true,
       "status": 200,
-      "ms": 198,
-      "wordCount": 337,
+      "ms": 279,
+      "wordCount": 338,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/the-difference-between-a-chatbot-and-a-companion",
       "ok": true,
       "status": 200,
-      "ms": 306,
-      "wordCount": 373,
+      "ms": 299,
+      "wordCount": 374,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/what-a-living-universe-means-for-ai-characters",
       "ok": true,
       "status": 200,
-      "ms": 305,
-      "wordCount": 381,
+      "ms": 265,
+      "wordCount": 382,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/browse-companions-by-personality-tag",
       "ok": true,
       "status": 200,
-      "ms": 176,
-      "wordCount": 345,
+      "ms": 323,
+      "wordCount": 346,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/how-vantrix-approaches-search-and-discoverability",
       "ok": true,
       "status": 200,
-      "ms": 271,
-      "wordCount": 329,
+      "ms": 259,
+      "wordCount": 330,
       "findings": [
         {
           "severity": "warn",
@@ -298,32 +298,32 @@
       "url": "https://www.vantrix.ink/blog/ai-companion-privacy-what-actually-happens-to-your-data",
       "ok": true,
       "status": 200,
-      "ms": 278,
-      "wordCount": 415,
+      "ms": 358,
+      "wordCount": 416,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different",
       "ok": true,
       "status": 200,
-      "ms": 275,
-      "wordCount": 343,
+      "ms": 665,
+      "wordCount": 344,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/how-ai-personality-engines-actually-work-ocean-model",
       "ok": true,
       "status": 200,
-      "ms": 290,
-      "wordCount": 418,
+      "ms": 342,
+      "wordCount": 419,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/what-is-a-digital-twin-ai-companion-explained",
       "ok": true,
       "status": 200,
-      "ms": 276,
-      "wordCount": 367,
+      "ms": 256,
+      "wordCount": 368,
       "findings": [
         {
           "severity": "warn",
@@ -335,40 +335,40 @@
       "url": "https://www.vantrix.ink/blog/ai-voice-companions-how-text-to-speech-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 183,
-      "wordCount": 350,
+      "ms": 832,
+      "wordCount": 351,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/can-you-create-your-own-ai-character-a-guide-to-creator-tools",
       "ok": true,
       "status": 200,
-      "ms": 203,
-      "wordCount": 366,
+      "ms": 363,
+      "wordCount": 367,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/ai-companion-safety-what-good-moderation-actually-looks-like",
       "ok": true,
       "status": 200,
-      "ms": 213,
-      "wordCount": 381,
+      "ms": 241,
+      "wordCount": 382,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/freemium-ai-companion-apps-how-the-pricing-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 203,
-      "wordCount": 409,
+      "ms": 550,
+      "wordCount": 410,
       "findings": []
     },
     {
       "url": "https://www.vantrix.ink/blog/how-vantrix-compares-to-other-ai-companion-apps",
       "ok": true,
       "status": 200,
-      "ms": 270,
-      "wordCount": 1093,
+      "ms": 291,
+      "wordCount": 1094,
       "findings": [
         {
           "severity": "warn",
@@ -377,10 +377,135 @@
       ]
     },
     {
+      "url": "https://www.vantrix.ink/blog/what-is-vantrix-ai",
+      "ok": true,
+      "status": 200,
+      "ms": 284,
+      "wordCount": 368,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/guides",
+      "ok": true,
+      "status": 200,
+      "ms": 337,
+      "wordCount": 468,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "Meta description is 161 chars, over 160 - will be truncated in results"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/best-ai-companions",
+      "ok": true,
+      "status": 200,
+      "ms": 303,
+      "wordCount": 577,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/ai-companions-with-memory",
+      "ok": true,
+      "status": 200,
+      "ms": 294,
+      "wordCount": 471,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/ai-companion-memory-test",
+      "ok": true,
+      "status": 200,
+      "ms": 273,
+      "wordCount": 557,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "<title> is 63 chars, over 60 - Google will truncate it in results: \"The AI Companion Memory Test: 5 Prompts That Expose Fake Memory\""
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/ai-companion-character-creation",
+      "ok": true,
+      "status": 200,
+      "ms": 379,
+      "wordCount": 552,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "<title> is 65 chars, over 60 - Google will truncate it in results: \"AI Companion Character Creation: How to Build One That Feels Real\""
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/ai-companion-comparison",
+      "ok": true,
+      "status": 200,
+      "ms": 509,
+      "wordCount": 530,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/candy-ai-alternatives",
+      "ok": true,
+      "status": 200,
+      "ms": 329,
+      "wordCount": 435,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/character-ai-alternatives",
+      "ok": true,
+      "status": 200,
+      "ms": 297,
+      "wordCount": 533,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "<title> is 68 chars, over 60 - Google will truncate it in results: \"Character.AI Alternatives: What Changed in 2026 and What to Consider\""
+        },
+        {
+          "severity": "warn",
+          "message": "Meta description is 162 chars, over 160 - will be truncated in results"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/nomi-alternatives",
+      "ok": true,
+      "status": 200,
+      "ms": 413,
+      "wordCount": 456,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "Meta description is 162 chars, over 160 - will be truncated in results"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/kindroid-alternatives",
+      "ok": true,
+      "status": 200,
+      "ms": 285,
+      "wordCount": 438,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/guides/replika-alternatives",
+      "ok": true,
+      "status": 200,
+      "ms": 264,
+      "wordCount": 540,
+      "findings": []
+    },
+    {
       "url": "https://www.vantrix.ink/support",
       "ok": true,
       "status": 200,
-      "ms": 345,
+      "ms": 258,
       "wordCount": 223,
       "findings": [
         {
@@ -393,8 +518,8 @@
       "url": "https://www.vantrix.ink/press",
       "ok": true,
       "status": 200,
-      "ms": 244,
-      "wordCount": 294,
+      "ms": 341,
+      "wordCount": 295,
       "findings": [
         {
           "severity": "warn",
@@ -402,7 +527,7 @@
         },
         {
           "severity": "info",
-          "message": "~294 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~295 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -410,8 +535,8 @@
       "url": "https://www.vantrix.ink/terms",
       "ok": true,
       "status": 200,
-      "ms": 314,
-      "wordCount": 624,
+      "ms": 233,
+      "wordCount": 625,
       "findings": [
         {
           "severity": "info",
@@ -423,8 +548,8 @@
       "url": "https://www.vantrix.ink/privacy",
       "ok": true,
       "status": 200,
-      "ms": 293,
-      "wordCount": 894,
+      "ms": 346,
+      "wordCount": 895,
       "findings": [
         {
           "severity": "info",
@@ -436,12 +561,12 @@
       "url": "https://www.vantrix.ink/companions/3d48a930-8f40-483c-b68b-37f1900ec51c",
       "ok": true,
       "status": 200,
-      "ms": 268,
-      "wordCount": 214,
+      "ms": 415,
+      "wordCount": 215,
       "findings": [
         {
           "severity": "info",
-          "message": "~214 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~215 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -449,8 +574,8 @@
       "url": "https://www.vantrix.ink/companions/02378d6a-371c-426e-ae2f-b23e3d68e79e",
       "ok": true,
       "status": 200,
-      "ms": 285,
-      "wordCount": 175,
+      "ms": 314,
+      "wordCount": 176,
       "findings": [
         {
           "severity": "warn",
@@ -458,7 +583,7 @@
         },
         {
           "severity": "info",
-          "message": "~175 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~176 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -466,12 +591,12 @@
       "url": "https://www.vantrix.ink/companions/d4138c58-92b7-4328-b4a8-21fbcf92caaf",
       "ok": true,
       "status": 200,
-      "ms": 297,
-      "wordCount": 199,
+      "ms": 271,
+      "wordCount": 200,
       "findings": [
         {
           "severity": "info",
-          "message": "~199 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~200 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -479,20 +604,7 @@
       "url": "https://www.vantrix.ink/companions/b11fac85-2678-48d4-b2e9-694460ad00f8",
       "ok": true,
       "status": 200,
-      "ms": 242,
-      "wordCount": 174,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~174 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/e6cec2c7-6ffa-486f-8b36-e0b2d69766a6",
-      "ok": true,
-      "status": 200,
-      "ms": 216,
+      "ms": 331,
       "wordCount": 175,
       "findings": [
         {
@@ -502,15 +614,28 @@
       ]
     },
     {
-      "url": "https://www.vantrix.ink/companions/e8413970-dbad-4dd7-88e4-3e0abb2ef675",
+      "url": "https://www.vantrix.ink/companions/e6cec2c7-6ffa-486f-8b36-e0b2d69766a6",
       "ok": true,
       "status": 200,
-      "ms": 315,
-      "wordCount": 249,
+      "ms": 480,
+      "wordCount": 176,
       "findings": [
         {
           "severity": "info",
-          "message": "~249 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~176 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/e8413970-dbad-4dd7-88e4-3e0abb2ef675",
+      "ok": true,
+      "status": 200,
+      "ms": 301,
+      "wordCount": 250,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~250 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -518,7 +643,33 @@
       "url": "https://www.vantrix.ink/companions/2030d9d7-9e86-4c4b-938f-15f89bebf6b7",
       "ok": true,
       "status": 200,
-      "ms": 211,
+      "ms": 334,
+      "wordCount": 258,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~258 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/b1c77b1c-f923-46f8-8ab5-3d1da16ec73d",
+      "ok": true,
+      "status": 200,
+      "ms": 400,
+      "wordCount": 229,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~229 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/126dc769-d0b0-4fc8-9b80-03ee8c9c7970",
+      "ok": true,
+      "status": 200,
+      "ms": 314,
       "wordCount": 257,
       "findings": [
         {
@@ -528,287 +679,10 @@
       ]
     },
     {
-      "url": "https://www.vantrix.ink/companions/126dc769-d0b0-4fc8-9b80-03ee8c9c7970",
-      "ok": true,
-      "status": 200,
-      "ms": 305,
-      "wordCount": 256,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~256 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/c9487a6b-9dda-4799-bb00-f6193ed22b4e",
-      "ok": true,
-      "status": 200,
-      "ms": 314,
-      "wordCount": 216,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~216 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
       "url": "https://www.vantrix.ink/companions/552e7bbd-53f1-467b-b4eb-754127625181",
       "ok": true,
       "status": 200,
-      "ms": 315,
-      "wordCount": 208,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~208 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/e35fcb8e-1b6d-43fb-9cb0-ee475357cbee",
-      "ok": true,
-      "status": 200,
-      "ms": 502,
-      "wordCount": 227,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~227 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/b4ece831-aae2-4a72-af94-22d34f19521c",
-      "ok": true,
-      "status": 200,
-      "ms": 231,
-      "wordCount": 196,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~196 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/6166db2c-99dc-4025-99a4-2da40dd0407e",
-      "ok": true,
-      "status": 200,
-      "ms": 331,
-      "wordCount": 219,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~219 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/6b79f90e-3020-4bba-ae84-a53f8f15e91c",
-      "ok": true,
-      "status": 200,
-      "ms": 345,
-      "wordCount": 235,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~235 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/790d69d7-cf49-4c34-8c63-b489ee06ec6e",
-      "ok": true,
-      "status": 200,
-      "ms": 245,
-      "wordCount": 244,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~244 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/528d3015-50dd-441c-aed8-96e566e0fda2",
-      "ok": true,
-      "status": 200,
-      "ms": 323,
-      "wordCount": 216,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~216 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/968b2b0f-0574-4968-8dd3-0bbe2d2bc4fc",
-      "ok": true,
-      "status": 200,
-      "ms": 302,
-      "wordCount": 197,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~197 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/ea700c95-7a64-4ebc-b46b-3ab45d258117",
-      "ok": true,
-      "status": 200,
-      "ms": 208,
-      "wordCount": 233,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~233 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/98bf6241-d4b7-4085-9e32-5b5e5faf16bb",
-      "ok": true,
-      "status": 200,
-      "ms": 320,
-      "wordCount": 216,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~216 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/78839bcc-5af5-4c0b-add3-c756b1d57e8a",
-      "ok": true,
-      "status": 200,
-      "ms": 307,
-      "wordCount": 281,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~281 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/1b8d43d8-8c8a-438d-96bc-fde255b35fc6",
-      "ok": true,
-      "status": 200,
-      "ms": 221,
-      "wordCount": 213,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Meta description is 165 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "~213 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/d30833ef-ba8f-41ac-8e6d-da773e2909de",
-      "ok": true,
-      "status": 200,
-      "ms": 201,
-      "wordCount": 251,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~251 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/bfd14dbc-1629-4293-91ef-aec42526a26c",
-      "ok": true,
-      "status": 200,
-      "ms": 412,
-      "wordCount": 234,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~234 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/b6de5ebc-b2ba-4a86-8536-ab780c9618b1",
-      "ok": true,
-      "status": 200,
-      "ms": 314,
-      "wordCount": 232,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~232 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/47b4a177-d469-4004-aa69-606892bf88ab",
-      "ok": true,
-      "status": 200,
-      "ms": 302,
-      "wordCount": 230,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~230 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/db0cf362-4e37-4463-83ad-f73b17245ba7",
-      "ok": true,
-      "status": 200,
-      "ms": 328,
-      "wordCount": 245,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~245 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/394d47a1-c6f8-46f9-aeb5-422b5975a8e3",
-      "ok": true,
-      "status": 200,
-      "ms": 319,
-      "wordCount": 260,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~260 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/3d273314-8a27-4d9f-9293-2b2e4d95797f",
-      "ok": true,
-      "status": 200,
-      "ms": 333,
-      "wordCount": 285,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~285 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/companions/5ff3ab87-e70e-457b-9114-5fe8d7fbfe12",
-      "ok": true,
-      "status": 200,
-      "ms": 302,
+      "ms": 399,
       "wordCount": 209,
       "findings": [
         {
@@ -818,15 +692,279 @@
       ]
     },
     {
-      "url": "https://www.vantrix.ink/locations/the-capital",
+      "url": "https://www.vantrix.ink/companions/e35fcb8e-1b6d-43fb-9cb0-ee475357cbee",
       "ok": true,
       "status": 200,
-      "ms": 427,
-      "wordCount": 129,
+      "ms": 375,
+      "wordCount": 228,
       "findings": [
         {
           "severity": "info",
-          "message": "~129 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~228 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/b4ece831-aae2-4a72-af94-22d34f19521c",
+      "ok": true,
+      "status": 200,
+      "ms": 313,
+      "wordCount": 197,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~197 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/6166db2c-99dc-4025-99a4-2da40dd0407e",
+      "ok": true,
+      "status": 200,
+      "ms": 300,
+      "wordCount": 220,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~220 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/6b79f90e-3020-4bba-ae84-a53f8f15e91c",
+      "ok": true,
+      "status": 200,
+      "ms": 380,
+      "wordCount": 236,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~236 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/790d69d7-cf49-4c34-8c63-b489ee06ec6e",
+      "ok": true,
+      "status": 200,
+      "ms": 287,
+      "wordCount": 245,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~245 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/528d3015-50dd-441c-aed8-96e566e0fda2",
+      "ok": true,
+      "status": 200,
+      "ms": 393,
+      "wordCount": 217,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~217 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/968b2b0f-0574-4968-8dd3-0bbe2d2bc4fc",
+      "ok": true,
+      "status": 200,
+      "ms": 374,
+      "wordCount": 198,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~198 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/ea700c95-7a64-4ebc-b46b-3ab45d258117",
+      "ok": true,
+      "status": 200,
+      "ms": 290,
+      "wordCount": 234,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~234 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/98bf6241-d4b7-4085-9e32-5b5e5faf16bb",
+      "ok": true,
+      "status": 200,
+      "ms": 332,
+      "wordCount": 217,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~217 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/78839bcc-5af5-4c0b-add3-c756b1d57e8a",
+      "ok": true,
+      "status": 200,
+      "ms": 311,
+      "wordCount": 282,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~282 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/1b8d43d8-8c8a-438d-96bc-fde255b35fc6",
+      "ok": true,
+      "status": 200,
+      "ms": 339,
+      "wordCount": 214,
+      "findings": [
+        {
+          "severity": "warn",
+          "message": "Meta description is 165 chars, over 160 - will be truncated in results"
+        },
+        {
+          "severity": "info",
+          "message": "~214 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/d30833ef-ba8f-41ac-8e6d-da773e2909de",
+      "ok": true,
+      "status": 200,
+      "ms": 277,
+      "wordCount": 252,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~252 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/bfd14dbc-1629-4293-91ef-aec42526a26c",
+      "ok": true,
+      "status": 200,
+      "ms": 393,
+      "wordCount": 235,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~235 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/b6de5ebc-b2ba-4a86-8536-ab780c9618b1",
+      "ok": true,
+      "status": 200,
+      "ms": 378,
+      "wordCount": 233,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~233 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/47b4a177-d469-4004-aa69-606892bf88ab",
+      "ok": true,
+      "status": 200,
+      "ms": 289,
+      "wordCount": 231,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~231 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/db0cf362-4e37-4463-83ad-f73b17245ba7",
+      "ok": true,
+      "status": 200,
+      "ms": 280,
+      "wordCount": 246,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~246 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/394d47a1-c6f8-46f9-aeb5-422b5975a8e3",
+      "ok": true,
+      "status": 200,
+      "ms": 306,
+      "wordCount": 261,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~261 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/3d273314-8a27-4d9f-9293-2b2e4d95797f",
+      "ok": true,
+      "status": 200,
+      "ms": 280,
+      "wordCount": 286,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~286 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/5ff3ab87-e70e-457b-9114-5fe8d7fbfe12",
+      "ok": true,
+      "status": 200,
+      "ms": 278,
+      "wordCount": 210,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~210 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/companions/c9487a6b-9dda-4799-bb00-f6193ed22b4e",
+      "ok": true,
+      "status": 200,
+      "ms": 325,
+      "wordCount": 217,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~217 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/the-capital",
+      "ok": true,
+      "status": 200,
+      "ms": 464,
+      "wordCount": 130,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~130 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -834,12 +972,12 @@
       "url": "https://www.vantrix.ink/locations/iron-reach",
       "ok": true,
       "status": 200,
-      "ms": 365,
-      "wordCount": 146,
+      "ms": 355,
+      "wordCount": 147,
       "findings": [
         {
           "severity": "info",
-          "message": "~146 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~147 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -847,12 +985,12 @@
       "url": "https://www.vantrix.ink/locations/the-undercroft",
       "ok": true,
       "status": 200,
-      "ms": 221,
-      "wordCount": 127,
+      "ms": 342,
+      "wordCount": 130,
       "findings": [
         {
           "severity": "info",
-          "message": "~127 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~130 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -860,12 +998,12 @@
       "url": "https://www.vantrix.ink/locations/cloudspire",
       "ok": true,
       "status": 200,
-      "ms": 329,
-      "wordCount": 118,
+      "ms": 371,
+      "wordCount": 119,
       "findings": [
         {
           "severity": "info",
-          "message": "~118 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~119 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -874,32 +1012,6 @@
       "ok": true,
       "status": 200,
       "ms": 367,
-      "wordCount": 116,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~116 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/obsidian-tower",
-      "ok": true,
-      "status": 200,
-      "ms": 275,
-      "wordCount": 126,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~126 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/the-ruins",
-      "ok": true,
-      "status": 200,
-      "ms": 236,
       "wordCount": 117,
       "findings": [
         {
@@ -909,11 +1021,37 @@
       ]
     },
     {
+      "url": "https://www.vantrix.ink/locations/obsidian-tower",
+      "ok": true,
+      "status": 200,
+      "ms": 380,
+      "wordCount": 127,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~127 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/the-ruins",
+      "ok": true,
+      "status": 200,
+      "ms": 318,
+      "wordCount": 118,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~118 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
       "url": "https://www.vantrix.ink/locations/wing-of-the-root",
       "ok": true,
       "status": 200,
-      "ms": 218,
-      "wordCount": 156,
+      "ms": 576,
+      "wordCount": 157,
       "findings": [
         {
           "severity": "warn",
@@ -921,7 +1059,7 @@
         },
         {
           "severity": "info",
-          "message": "~156 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~157 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -929,8 +1067,8 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-drowned-court",
       "ok": true,
       "status": 200,
-      "ms": 241,
-      "wordCount": 147,
+      "ms": 439,
+      "wordCount": 148,
       "findings": [
         {
           "severity": "warn",
@@ -938,7 +1076,7 @@
         },
         {
           "severity": "info",
-          "message": "~147 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~148 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -946,12 +1084,12 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-ash-camps",
       "ok": true,
       "status": 200,
-      "ms": 377,
-      "wordCount": 142,
+      "ms": 327,
+      "wordCount": 143,
       "findings": [
         {
           "severity": "info",
-          "message": "~142 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~143 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
@@ -959,136 +1097,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-long-sky",
       "ok": true,
       "status": 200,
-      "ms": 347,
-      "wordCount": 146,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~146 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/wing-of-the-fallen-stair",
-      "ok": true,
-      "status": 200,
-      "ms": 396,
-      "wordCount": 156,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "<title> is 61 chars, over 60 - Google will truncate it in results: \"Wing of the Fallen Stair — A Vantrix World Location | Vantrix\""
-        },
-        {
-          "severity": "info",
-          "message": "~156 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/wing-of-the-crack",
-      "ok": true,
-      "status": 200,
-      "ms": 309,
-      "wordCount": 158,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Meta description is 165 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "~158 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/wing-of-the-crossroads",
-      "ok": true,
-      "status": 200,
-      "ms": 320,
-      "wordCount": 156,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~156 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/wing-of-between-light",
-      "ok": true,
-      "status": 200,
-      "ms": 306,
-      "wordCount": 143,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~143 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/wing-of-the-storm-wall",
-      "ok": true,
-      "status": 200,
-      "ms": 301,
-      "wordCount": 153,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~153 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/wing-of-the-long-market",
-      "ok": true,
-      "status": 200,
-      "ms": 224,
-      "wordCount": 151,
-      "findings": [
-        {
-          "severity": "warn",
-          "message": "Meta description is 170 chars, over 160 - will be truncated in results"
-        },
-        {
-          "severity": "info",
-          "message": "~151 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/the-ashen-cloister",
-      "ok": true,
-      "status": 200,
-      "ms": 253,
-      "wordCount": 143,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~143 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/wing-of-hidden-names",
-      "ok": true,
-      "status": 200,
-      "ms": 311,
-      "wordCount": 140,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~140 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/locations/the-fourth-wall-wing",
-      "ok": true,
-      "status": 200,
-      "ms": 235,
+      "ms": 432,
       "wordCount": 147,
       "findings": [
         {
@@ -1098,109 +1107,70 @@
       ]
     },
     {
-      "url": "https://www.vantrix.ink/locations/the-research-wing",
+      "url": "https://www.vantrix.ink/locations/wing-of-the-fallen-stair",
       "ok": true,
       "status": 200,
-      "ms": 270,
-      "wordCount": 145,
+      "ms": 427,
+      "wordCount": 157,
       "findings": [
         {
+          "severity": "warn",
+          "message": "<title> is 61 chars, over 60 - Google will truncate it in results: \"Wing of the Fallen Stair — A Vantrix World Location | Vantrix\""
+        },
+        {
           "severity": "info",
-          "message": "~145 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~157 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://www.vantrix.ink/tags/legendary",
+      "url": "https://www.vantrix.ink/locations/wing-of-the-crack",
       "ok": true,
       "status": 200,
-      "ms": 335,
-      "wordCount": 312,
-      "findings": []
-    },
-    {
-      "url": "https://www.vantrix.ink/tags/slow-burn",
-      "ok": true,
-      "status": 200,
-      "ms": 359,
-      "wordCount": 277,
+      "ms": 321,
+      "wordCount": 159,
       "findings": [
         {
+          "severity": "warn",
+          "message": "Meta description is 165 chars, over 160 - will be truncated in results"
+        },
+        {
           "severity": "info",
-          "message": "~277 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~159 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://www.vantrix.ink/tags/intellectual",
+      "url": "https://www.vantrix.ink/locations/wing-of-the-crossroads",
       "ok": true,
       "status": 200,
-      "ms": 479,
-      "wordCount": 180,
+      "ms": 300,
+      "wordCount": 157,
       "findings": [
         {
           "severity": "info",
-          "message": "~180 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~157 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://www.vantrix.ink/tags/profound",
+      "url": "https://www.vantrix.ink/locations/wing-of-between-light",
       "ok": true,
       "status": 200,
-      "ms": 320,
-      "wordCount": 172,
+      "ms": 290,
+      "wordCount": 144,
       "findings": [
         {
           "severity": "info",
-          "message": "~172 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~144 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://www.vantrix.ink/tags/warm",
+      "url": "https://www.vantrix.ink/locations/wing-of-the-storm-wall",
       "ok": true,
       "status": 200,
-      "ms": 338,
-      "wordCount": 169,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~169 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/tags/precise",
-      "ok": true,
-      "status": 200,
-      "ms": 320,
-      "wordCount": 164,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~164 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/tags/anime",
-      "ok": true,
-      "status": 200,
-      "ms": 333,
-      "wordCount": 149,
-      "findings": [
-        {
-          "severity": "info",
-          "message": "~149 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
-        }
-      ]
-    },
-    {
-      "url": "https://www.vantrix.ink/tags/architect",
-      "ok": true,
-      "status": 200,
-      "ms": 367,
+      "ms": 290,
       "wordCount": 154,
       "findings": [
         {
@@ -1210,36 +1180,53 @@
       ]
     },
     {
-      "url": "https://www.vantrix.ink/tags/direct",
+      "url": "https://www.vantrix.ink/locations/wing-of-the-long-market",
       "ok": true,
       "status": 200,
-      "ms": 235,
-      "wordCount": 150,
+      "ms": 302,
+      "wordCount": 152,
       "findings": [
         {
+          "severity": "warn",
+          "message": "Meta description is 170 chars, over 160 - will be truncated in results"
+        },
+        {
           "severity": "info",
-          "message": "~150 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~152 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://www.vantrix.ink/tags/grief",
+      "url": "https://www.vantrix.ink/locations/the-ashen-cloister",
       "ok": true,
       "status": 200,
-      "ms": 276,
-      "wordCount": 149,
+      "ms": 296,
+      "wordCount": 144,
       "findings": [
         {
           "severity": "info",
-          "message": "~149 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+          "message": "~144 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
     },
     {
-      "url": "https://www.vantrix.ink/tags/mysterious",
+      "url": "https://www.vantrix.ink/locations/wing-of-hidden-names",
       "ok": true,
       "status": 200,
-      "ms": 227,
+      "ms": 304,
+      "wordCount": 141,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~141 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/locations/the-fourth-wall-wing",
+      "ok": true,
+      "status": 200,
+      "ms": 368,
       "wordCount": 148,
       "findings": [
         {
@@ -1249,10 +1236,83 @@
       ]
     },
     {
-      "url": "https://www.vantrix.ink/tags/wry",
+      "url": "https://www.vantrix.ink/locations/the-research-wing",
       "ok": true,
       "status": 200,
-      "ms": 255,
+      "ms": 527,
+      "wordCount": 146,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~146 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/legendary",
+      "ok": true,
+      "status": 200,
+      "ms": 452,
+      "wordCount": 313,
+      "findings": []
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/slow-burn",
+      "ok": true,
+      "status": 200,
+      "ms": 561,
+      "wordCount": 278,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~278 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/intellectual",
+      "ok": true,
+      "status": 200,
+      "ms": 519,
+      "wordCount": 181,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~181 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/profound",
+      "ok": true,
+      "status": 200,
+      "ms": 454,
+      "wordCount": 173,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~173 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/warm",
+      "ok": true,
+      "status": 200,
+      "ms": 291,
+      "wordCount": 170,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~170 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/mysterious",
+      "ok": true,
+      "status": 200,
+      "ms": 311,
       "wordCount": 155,
       "findings": [
         {
@@ -1260,11 +1320,89 @@
           "message": "~155 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
         }
       ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/precise",
+      "ok": true,
+      "status": 200,
+      "ms": 535,
+      "wordCount": 165,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~165 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/anime",
+      "ok": true,
+      "status": 200,
+      "ms": 429,
+      "wordCount": 150,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~150 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/architect",
+      "ok": true,
+      "status": 200,
+      "ms": 499,
+      "wordCount": 155,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~155 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/direct",
+      "ok": true,
+      "status": 200,
+      "ms": 308,
+      "wordCount": 151,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~151 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/grief",
+      "ok": true,
+      "status": 200,
+      "ms": 310,
+      "wordCount": 150,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~150 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
+    },
+    {
+      "url": "https://www.vantrix.ink/tags/wry",
+      "ok": true,
+      "status": 200,
+      "ms": 383,
+      "wordCount": 156,
+      "findings": [
+        {
+          "severity": "info",
+          "message": "~156 visible words - under ~300 is \"thin content\" territory for a page meant to rank on its own"
+        }
+      ]
     }
   ],
   "counts": {
     "critical": 0,
-    "warn": 19,
-    "info": 70
+    "warn": 25,
+    "info": 71
   }
 }
