@@ -146,6 +146,19 @@ export function generateCharacterSchema(character: {
     ...(character.age && { age: character.age }),
     ...(character.tags?.length && { keywords: character.tags.filter(Boolean).join(", ") }),
     mainEntityOfPage: { "@type": "WebPage", "@id": charUrl },
+    // CHAT-ACTION-FIX: nothing here previously told a crawler this Person
+    // is an interactive agent rather than a static bio/profile — the
+    // same gap llms.txt's ROSTER-FIX closed at the summary-file level,
+    // closed here at the per-page structured-data level so it's present
+    // even for a crawler that only ever fetches this one page and never
+    // reads llms.txt. CommunicateAction is schema.org's actual vocabulary
+    // for "you can talk to this entity" (vs. a generic Action), target
+    // points at the real chat URL used elsewhere in this file.
+    potentialAction: {
+      "@type": "CommunicateAction",
+      name:    `Chat with ${character.name}`,
+      target:  charUrl,
+    },
   };
 }
 

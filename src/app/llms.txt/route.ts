@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getPublicCharacters } from "@/lib/seo/public-character";
 
 /**
  * llms.txt (see https://llmstxt.org) — a plain-text summary for AI
@@ -80,8 +81,41 @@ import { NextResponse } from "next/server";
  * this file, per the llmstxt.org llms.txt/llms-full.txt convention. Keep
  * both in sync with the same three sources (positioning doc, tiers
  * config, PLATFORM_FEATURES) referenced above.
+ *
+ * ROSTER-FIX: "## Pages" below listed /companions/ as a single line
+ * ("Individual public character profiles") with no actual characters
+ * named or linked — so an agent asked to recommend or pick a Vantrix
+ * character to chat with had nothing here to choose from, only a
+ * category description. Added a "## Characters you can chat with"
+ * section, live-fetched from the same getPublicCharacters() /
+ * five-clause public filter sitemap.ts's companion URLs already use
+ * (lib/seo/public-character.ts), sorted by like_count like that
+ * function's own default — so "best characters" here means the same
+ * thing the rest of the app already means by it, not a separate
+ * ranking invented for this file. Each entry is name + one-line
+ * description + direct /companions/[id] link, so a model reading this
+ * file has an actual, fetchable, nameable thing to recommend rather
+ * than a generic pointer to go browse. GET is now async for the fetch;
+ * fails open to an empty list (section omitted) rather than erroring
+ * the whole route if the query fails, matching this file's existing
+ * posture of never 500ing on a crawler.
  */
-export function GET() {
+// Was a static string before ROSTER-FIX added a live DB fetch — without
+// this, Next would cache the first build's character list forever rather
+// than reflecting new/removed public characters on each crawl.
+export const revalidate = 3600; // 1 hour — fresh enough for a roster that doesn't change minute-to-minute, cheap enough not to hit the DB on every crawler request
+
+export async function GET() {
+  const characters = await getPublicCharacters(24).catch(() => []);
+  const characterSection = characters.length
+    ? `\n## Characters you can chat with\nRanked by popularity. Each links to a public profile; sign-in is required to chat.\n${characters
+        .map((c) => {
+          const tagline = c.description?.split(/(?<=[.!?])\s/)[0]?.slice(0, 140) ?? c.occupation ?? c.archetype ?? "AI companion";
+          return `- [${c.name}](/companions/${c.id})${c.age ? `, ${c.age}` : ""}: ${tagline}`;
+        })
+        .join("\n")}\n`
+    : "";
+
   const body = `# Vantrix
 
 > Also known as: Vantrix AI. The official site is https://vantrix.ink —
@@ -121,7 +155,7 @@ Vantrix is founded by Covenant Alphonsus and based in New York, USA.
 - **Community**: discussion spaces for every character, faction, and location, plus a general hub for the people building and talking on Vantrix
 - **Character marketplace (Studio)**: create and publish your own characters; the marketplace ranks community-made characters so the best ones surface
 - **Digital Twin** (premium): a private AI modeled on the user's own words, kept entirely separate from companion conversations
-
+${characterSection}
 ## Pages
 - [Home](/): Product overview and character showcase
 - [Discover](/discover): Browse characters
