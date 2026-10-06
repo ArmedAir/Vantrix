@@ -39,10 +39,17 @@ const ANNUAL_DISCOUNT_LABEL = `${Math.round(BILLING_DISCOUNT_PCT.annual * 100)}%
 // which characters-browse.tsx now seeds its filter pill from (see that
 // file's own CATEGORY-SEED FIX) — a tap here actually lands pre-filtered,
 // not just on the unfiltered default view.
-const BROWSE_CATEGORIES: { value: "female" | "male" | "anime"; label: string }[] = [
+// LGBTQ-NAV FIX: "lgbtq" isn't a `gender`/`category` value (female/male/
+// anime/other) — it's the separate `orientation` axis, already resolved
+// by lib/characters/orientation-filter.ts and already reachable via
+// characters-browse.tsx's own "LGBTQ+" pill (?orientation=lgbtq). `href`
+// is optional here so this one entry can point at that destination
+// instead of the usual `?gender=<value>` construction below.
+const BROWSE_CATEGORIES: { value: "female" | "male" | "anime" | "lgbtq"; label: string; href?: string }[] = [
   { value: "female", label: "Female" },
   { value: "male", label: "Male" },
   { value: "anime", label: "Anime" },
+  { value: "lgbtq", label: "LGBTQ+", href: "/characters?orientation=lgbtq" },
 ];
 
 /**
@@ -446,7 +453,7 @@ export function MobileDrawer({
                 {BROWSE_CATEGORIES.map((cat) => (
                   <Link
                     key={cat.value}
-                    href={`/characters?gender=${cat.value}`}
+                    href={cat.href ?? `/characters?gender=${cat.value}`}
                     onClick={() => {
                       setSelectedCategory(cat);
                       setCategoryOpen(false);

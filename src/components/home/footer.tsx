@@ -43,6 +43,11 @@ const CATEGORY_LINKS: FooterLink[] = [
   { label: "Women", href: "/characters?gender=female" },
   { label: "Anime", href: "/characters?gender=anime" },
   { label: "Men", href: "/characters?gender=male" },
+  // LGBTQ-NAV FIX: same resolved destination as characters-browse.tsx's
+  // own "LGBTQ+" filter pill and the sidebar/mobile-drawer entries added
+  // alongside this one — orientation is a separate axis from gender, not
+  // a gender value, so this bypasses `?gender=` entirely.
+  { label: "LGBTQ+", href: "/characters?orientation=lgbtq" },
 ];
 
 const LEGAL_LINKS: FooterLink[] = [

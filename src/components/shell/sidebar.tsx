@@ -49,6 +49,17 @@ const CATEGORY_OPTIONS = [
   { value: "female", label: "Female" },
   { value: "male", label: "Male" },
   { value: "anime", label: "Anime" },
+  // LGBTQ-NAV FIX: this list drives /characters?gender=<value>, but
+  // "lgbtq" isn't a value of the `gender`/`category` column (zod enum is
+  // female/male/anime/other) — it's a distinct axis, the `orientation`
+  // column (gay/lesbian/bi), already resolved by
+  // lib/characters/orientation-filter.ts's resolveOrientationFilter() and
+  // already reachable today via characters-browse.tsx's own "LGBTQ+"
+  // filter pill (?orientation=lgbtq). This entry reuses that exact same
+  // resolved destination rather than inventing a second definition of
+  // "LGBTQ+", so `href` overrides the usual `?gender=` construction
+  // below — see the Link below that checks option.href first.
+  { value: "lgbtq", label: "LGBTQ+", href: "/characters?orientation=lgbtq" },
 ] as const;
 
 /**
@@ -171,13 +182,20 @@ export function Sidebar({
   const setRailCollapsedFromBreakpoint = useShellStore((s) => s.setRailCollapsedFromBreakpoint);
   const unreadCount = useNotificationStore((s) => s.unreadCount);
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const genderParam = pathname.startsWith("/characters")
-    ? new URLSearchParams(
-        typeof window !== "undefined" ? window.location.search : ""
-      ).get("gender")
-    : null;
+  const currentSearch =
+    pathname.startsWith("/characters") && typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const genderParam = currentSearch?.get("gender") ?? null;
+  const orientationParam = currentSearch?.get("orientation") ?? null;
   const activeCategory =
-    genderParam === "male" ? "male" : genderParam === "anime" ? "anime" : "female";
+    orientationParam === "lgbtq"
+      ? "lgbtq"
+      : genderParam === "male"
+        ? "male"
+        : genderParam === "anime"
+          ? "anime"
+          : "female";
 
   async function signOut() {
     const supabase = createClient();
@@ -272,7 +290,7 @@ export function Sidebar({
               {CATEGORY_OPTIONS.map((option) => (
                 <Link
                   key={option.value}
-                  href={`/characters?gender=${option.value}`}
+                  href={"href" in option ? option.href : `/characters?gender=${option.value}`}
                   onClick={() => setCategoryOpen(false)}
                   className={cn(
                     "flex items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-white/[0.04] transition-colors ease-premium",
