@@ -34,6 +34,15 @@ export interface Guide {
   readingTime: string;
   body: { heading?: string; paragraphs: string[] }[];
   related?: string[]; // other guide slugs
+  /**
+   * CROSS-LINK-FIX: slug of the matching /[slug]-alternative direct
+   * comparison landing page (see relatedGuideSlug's own comment in
+   * lib/seo/landing-pages.ts for the full reasoning) ? this guide and that
+   * landing page cover the same competitor and near-identical head
+   * keyword, so each links to the other rather than silently competing
+   * for the same query.
+   */
+  landingPageSlug?: string;
 }
 
 export const GUIDES: Guide[] = [
@@ -292,6 +301,7 @@ export const GUIDES: Guide[] = [
   },
   {
     slug: "candy-ai-alternatives",
+    landingPageSlug: "candy-ai-alternative",
     title: "Candy AI Alternatives: What to Consider Before You Switch",
     description:
       "Candy AI is known for image and video generation, but memory is average and images run on a token system. Here's what to weigh, including Vantrix.",
@@ -332,6 +342,7 @@ export const GUIDES: Guide[] = [
   },
   {
     slug: "character-ai-alternatives",
+    landingPageSlug: "character-ai-alternative",
     title: "Character.AI Alternatives: What Changed in 2026 and What to Consider",
     description:
       "Character.AI's 2026 policy changes (age verification, content restrictions, catalog removals) pushed many users to look elsewhere. Here's what to weigh.",
@@ -418,6 +429,7 @@ export const GUIDES: Guide[] = [
   },
   {
     slug: "kindroid-alternatives",
+    landingPageSlug: "kindroid-alternative",
     title: "Kindroid Alternatives: What It Does Well and What to Weigh",
     description:
       "Kindroid's cascaded memory system and deep customization are genuinely strong. Here's an honest comparison for anyone considering alternatives.",
@@ -458,6 +470,7 @@ export const GUIDES: Guide[] = [
   },
   {
     slug: "replika-alternatives",
+    landingPageSlug: "replika-alternative",
     title: "Replika Alternatives: What to Know Before You Switch",
     description:
       "Replika is the most recognizable AI companion, but its history of policy reversals and memory complaints send many longtime users looking elsewhere.",

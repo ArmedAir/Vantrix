@@ -229,6 +229,20 @@ export default async function LandingPage({
             </div>
           ))}
         </div>
+
+        {/* CROSS-LINK-FIX: real <Link>, not a URL mentioned in prose ?
+            see relatedGuideSlug's own comment in landing-pages.ts. */}
+        {page.relatedGuideSlug && (
+          <p className="mt-8 text-center text-sm text-text-secondary">
+            Want the fuller picture?{" "}
+            <Link
+              href={`/guides/${page.relatedGuideSlug}`}
+              className="font-medium text-gold-500 hover:text-gold-400"
+            >
+              Read our in-depth guide &rarr;
+            </Link>
+          </p>
+        )}
       </section>
 
       {/* Final CTA */}

@@ -99,6 +99,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    // BEST-OF-SEO: /best-ai-companion-apps ranks Vantrix against the apps
+    // it's most often searched/compared against (see
+    // lib/seo/best-companion-apps.ts and its own page.tsx). Same tier as
+    // the other comparison/conversion pages driven by LANDING_PAGES below.
+    {
+      url: absoluteUrl("/best-ai-companion-apps"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
     {
       url: absoluteUrl("/discover"),
       lastModified: now,

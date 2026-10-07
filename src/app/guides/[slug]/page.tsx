@@ -134,6 +134,23 @@ export default async function GuidePage({
           </div>
         )}
 
+        {/* CROSS-LINK-FIX: links to the matching direct-comparison landing
+            page when this guide covers one competitor by name ? see
+            landingPageSlug's own comment in lib/guides/posts.ts. */}
+        {guide.landingPageSlug && (
+          <div className="mt-12 pt-8 border-t border-border-hairline text-center">
+            <p className="text-text-secondary text-sm">
+              Want the direct feature-by-feature comparison?
+            </p>
+            <Link
+              href={`/${guide.landingPageSlug}`}
+              className="mt-3 inline-block text-sm font-semibold text-gold-400 hover:text-gold-300"
+            >
+              See the full comparison →
+            </Link>
+          </div>
+        )}
+
         <div className="mt-12 pt-8 border-t border-border-hairline text-center">
           <p className="text-text-secondary text-sm">
             Want to see persistent AI memory for yourself?

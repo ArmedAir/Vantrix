@@ -95,6 +95,7 @@ const PUBLIC_ALLOW = [
   "/privacy",
   "/premium",
   "/relationships",
+  "/best-ai-companion-apps",
   "/companions/",
   "/locations/",
   "/tags/",

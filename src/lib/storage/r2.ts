@@ -32,6 +32,22 @@ export function getR2Client(): S3Client {
       accessKeyId: env.R2_ACCESS_KEY_ID,
       secretAccessKey: env.R2_SECRET_ACCESS_KEY,
     },
+    // R2-COMPAT-FIX: aws-sdk v3 versions newer than 3.726.1 (we're on
+    // 3.1075.x) default to CRC32 request-checksum calculation and
+    // response-checksum validation, which R2's S3-compatible endpoint does
+    // not fully support the same way AWS S3 does ? this is Cloudflare's own
+    // documented mitigation (developers.cloudflare.com/r2/examples/aws/
+    // aws-sdk-js-v3/), and matches the symptom reported here: uploads
+    // failing at the connection/TLS layer before ever reaching application
+    // code, despite correct credentials and a reachable bucket.
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
+    // R2 historically has had better compatibility with path-style
+    // addressing (account.r2.cloudflarestorage.com/bucket/key) than
+    // virtual-hosted-style (bucket.account.r2.cloudflarestorage.com),
+    // which the SDK uses by default. Low-risk, Cloudflare-recommended;
+    // flip back off only if a specific reason emerges to need the default.
+    forcePathStyle: true,
   });
   return _r2Client;
 }

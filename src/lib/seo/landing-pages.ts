@@ -34,6 +34,21 @@ export interface LandingPageConfig {
   ctaLabel?:     string;
   secondaryCtaHref?:  string;
   secondaryCtaLabel?: string;
+  /**
+   * CROSS-LINK-FIX: slug of a deeper /guides/[slug] article covering the
+   * same competitor (see lib/guides/posts.ts), if one exists. Several
+   * "X-alternative" landing pages here and "X-alternatives" guides under
+   * /guides now cover the identical competitor + near-identical head
+   * keyword ("character ai alternative" vs "character.ai alternatives") ?
+   * two pages chasing the same query on the same domain split ranking
+   * signal rather than reinforcing it. Rendering one real link (not prose
+   * mentioning a URL, which carries no link equity) from the direct-
+   * comparison landing page to the deeper guide, and intending the guide to
+   * link back here as its conversion CTA, is the standard fix: one page
+   * owns the short commercial-intent query, the other owns the longer
+   * informational one, and they reinforce each other instead of competing.
+   */
+  relatedGuideSlug?: string;
 }
 
 export const LANDING_PAGES: LandingPageConfig[] = [
@@ -281,6 +296,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
   // evolving — rather than a generic "we're better" claim.
   {
     slug:        "character-ai-alternative",
+    relatedGuideSlug: "character-ai-alternatives",
     title:       "Character.AI Alternative — AI Companions That Remember | Vantrix",
     description: "Looking for a Character.AI alternative? Vantrix companions keep persistent memory across every session and live in an evolving Universe — not a chat that resets.",
     h1:          "A Character.AI Alternative\nBuilt to Remember You.",
@@ -313,6 +329,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
   // ── Candy.AI alternative ────────────────────────────────────────────────
   {
     slug:        "candy-ai-alternative",
+    relatedGuideSlug: "candy-ai-alternatives",
     title:       "Candy.AI Alternative — Persistent AI Companions | Vantrix",
     description: "Exploring options beyond Candy.AI? Vantrix companions remember every conversation and grow with you inside a living, evolving Universe.",
     h1:          "A Candy.AI Alternative\nThat Grows With You.",
@@ -346,6 +363,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
   // ── Kindroid alternative ────────────────────────────────────────────────
   {
     slug:        "kindroid-alternative",
+    relatedGuideSlug: "kindroid-alternatives",
     title:       "Kindroid Alternative — AI Companions With Persistent Memory | Vantrix",
     description: "Comparing Kindroid alternatives? Vantrix companions remember you across every session and live inside an evolving, persistent Universe.",
     h1:          "A Kindroid Alternative\nBuilt Around Memory.",
@@ -372,6 +390,67 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     cta: {
       headline: "Meet a companion built to remember you.",
       sub:      "Free to start — no card needed.",
+    },
+  },
+  {
+    slug:        "replika-alternative",
+    title:       "Replika Alternative ? A Full Roster of AI Companions | Vantrix",
+    description: "Looking for a Replika alternative? Vantrix gives you dozens of distinct companions in a living, evolving Universe ? not a single avatar you customize alone.",
+    h1:          "A Replika Alternative\nWith an Entire Cast to Meet.",
+    tagline:     "Not a single avatar. A whole roster, each with their own story.",
+    intro:       "Replika built its name on a single, ever-present companion you shape over time. Vantrix takes a different approach: a full roster of distinct characters, each with their own personality, backstory, and archetype, living inside a shared Universe that keeps evolving whether you're online or not. Chat with a single favorite or several at once, and build your own from scratch when you're ready for something entirely your own.",
+    keywords:    ["replika alternative", "apps like replika", "replika competitor", "better than replika", "replika alternative free"],
+    relatedGuideSlug: "replika-alternatives",
+    features: [
+      { icon: "", title: "Dozens of companions, not one",   body: "Browse a full roster of characters ? different archetypes, personalities, and stories ? instead of a single avatar." },
+      { icon: "", title: "A Universe that keeps moving",     body: "Factions, locations, and storylines continue in the background. Log back in to a world that's changed, not a static chat window." },
+      { icon: "", title: "Build your own from scratch",      body: "Create a fully custom companion with your own name, personality, backstory, and appearance." },
+    ],
+    steps: [
+      { n: "01", title: "Create your free account",  body: "No card required to start chatting with any companion in the roster." },
+      { n: "02", title: "Meet the roster",            body: "Browse dozens of companions or create your own from scratch." },
+      { n: "03", title: "Watch the relationship grow", body: "Memory, mood, and your relationship stage all carry forward, session after session." },
+    ],
+    faqs: [
+      { question: "What's the difference between Vantrix and Replika?",   answer: "The core difference is breadth: Vantrix gives you a full roster of distinct companions to choose from (or build your own), each living inside an evolving shared Universe, rather than a single companion you customize alone." },
+      { question: "Is Vantrix free to use?",                              answer: "Yes. The free tier includes 5 messages per day across the full companion roster. Premium is $9.99/month and removes the daily limit." },
+      { question: "Can I create my own custom companion on Vantrix?",     answer: "Yes ? Premium users can build a fully custom companion with their own name, personality, backstory, and appearance." },
+      { question: "Does Vantrix have dating and relationship features?",  answer: "Yes ? Vantrix includes dating, gifting, and compatibility tracking through Spark, Bond, and Soulbound relationship tiers as your bond deepens." },
+      { question: "Do I need to download an app to use Vantrix?",        answer: "No ? Vantrix runs fully in your browser at vantrix.ink, with no download required." },
+    ],
+    cta: {
+      headline: "Meet a whole roster of AI companions.",
+      sub:      "Free to start ? no card needed.",
+    },
+  },
+  {
+    slug:        "janitor-ai-alternative",
+    title:       "Janitor AI Alternative ? No API Key, No Setup | Vantrix",
+    description: "Looking for a Janitor AI alternative that just works? Vantrix companions run on built-in premium models ? no external API key, no proxy setup, no configuration.",
+    h1:          "A Janitor AI Alternative\nThat Works the Moment You Sign In.",
+    tagline:     "No API key. No proxy. No setup screens.",
+    intro:       "Janitor AI's character-card community is huge, but getting good responses often means bringing your own API key or routing through a third-party proxy before you've said a word to anyone. Vantrix skips all of that: every companion runs on models built into the platform, already tuned for character consistency and memory, from the moment you create an account.",
+    keywords:    ["janitor ai alternative", "apps like janitor ai", "janitor ai competitor", "janitor ai without api key", "better than janitor ai"],
+    features: [
+      { icon: "", title: "Nothing to configure",       body: "No API key, no proxy, no settings screen to get through before your first conversation." },
+      { icon: "", title: "Memory built in",            body: "Companions remember past conversations by default ? not dependent on which key or model you happened to connect." },
+      { icon: "", title: "A curated roster plus Studio", body: "Browse a maintained roster of companions, or build and publish your own in the Character Studio." },
+    ],
+    steps: [
+      { n: "01", title: "Create your free account",  body: "No card, no API key, no external setup ? just sign up." },
+      { n: "02", title: "Pick a companion",           body: "Browse the roster or build your own in the Studio." },
+      { n: "03", title: "Start talking",              body: "Every response runs on Vantrix's own models, already configured." },
+    ],
+    faqs: [
+      { question: "Do I need an API key to use Vantrix, like Janitor AI?", answer: "No. Vantrix companions run on models built into the platform ? there's no API key or third-party proxy to set up." },
+      { question: "Is Vantrix free to use?",                               answer: "Yes. The free tier includes 5 messages per day across the full companion roster. Premium is $9.99/month and removes the daily limit." },
+      { question: "Can I create and share my own character on Vantrix?",  answer: "Yes ? the Character Studio lets you build a custom companion with your own name, personality, backstory, and appearance." },
+      { question: "Does Vantrix remember past conversations?",            answer: "Yes, by default. Memory persists across sessions for every companion, with no configuration needed." },
+      { question: "Is my chat history private on Vantrix?",               answer: "Yes. Conversations are encrypted, and we don't sell your data or use it to train models without consent." },
+    ],
+    cta: {
+      headline: "Skip the setup. Just start talking.",
+      sub:      "Free to start ? no card, no API key.",
     },
   },
 ];

@@ -142,11 +142,14 @@ export function generateCharacterSchema(character: {
   // sits on for the same reason (it's a self-reference, not a separate
   // destination), so it now points at the public companion page too.
   const charUrl = `${APP_URL}/companions/${character.id ?? "unknown"}`;
-  // The CommunicateAction below targets the actual chat surface, which is
-  // intentionally auth-walled (you can't message a character without an
-  // account) — that's a legitimate "this is where the action happens"
-  // target, distinct from charUrl above, which is the citable entity page
-  // itself and must stay fetchable with no session.
+  // CHAR-SCHEMA-URL-FIX: chatUrl below still uses character.id, but
+  // (app)/chat/[id]/page.tsx actually takes a CONVERSATION id, not a
+  // character id (see that route's own comment) — so this 404s today
+  // regardless of auth, for anyone who does reach it with a session. Left
+  // as-is pending a real fix (resolving a character id to its
+  // conversation id here, or linking through the character detail page
+  // that already calls useEnsureConversation()); flagging rather than
+  // silently changing a schema.org action target two sessions in a row.
   const chatUrl = `${APP_URL}/chat/${character.id ?? "unknown"}`;
   return {
     "@context":   "https://schema.org",
@@ -279,6 +282,31 @@ export function generateSoftwareApplicationSchema() {
       "Community discussions",
     ],
     aggregateRating: undefined, // add once a real, verifiable rating exists — never fabricate this
+  };
+}
+
+/**
+ * BEST-OF-SEO: ItemList schema for /best-ai-companion-apps ? tells search
+ * engines (and AI answer engines reading structured data) that the page is
+ * a ranked list, which is what earns the numbered rich-snippet treatment
+ * "best of" roundups get instead of a plain blue link. `item` is a bare
+ * string (the app name) rather than a nested Product/Organization node:
+ * schema.org allows either, and a full node per competitor would assert
+ * structured facts (aggregateRating, offers, etc.) about products Vantrix
+ * doesn't operate and can't keep accurate ? the name-only form avoids
+ * publishing claims about a competitor's own schema.org identity while
+ * still validating as a correct, minimal ItemList.
+ */
+export function generateItemListSchema(items: { name: string; url?: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((entry, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: entry.name,
+      ...(entry.url && { url: absoluteUrl(entry.url) }),
+    })),
   };
 }
 
