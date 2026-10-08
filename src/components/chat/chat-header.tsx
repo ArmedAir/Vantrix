@@ -4,6 +4,7 @@ import { resolveImageSrc } from "@/lib/utils";
 import { GiftDrawer } from "@/components/dating/gift-drawer";
 import { ChatHeaderAvatar } from "@/components/chat/chat-header-avatar";
 import { SanctuaryToggle } from "@/components/chat/sanctuary-toggle";
+import { VoiceCallButton } from "@/components/chat/voice-call-button";
 
 /**
  * Sits directly under the persistent TopBar (§2). Kept as a Server
@@ -85,6 +86,12 @@ export function ChatHeader({
         <Brain className="h-5 w-5" />
       </Link>
       <SanctuaryToggle conversationId={conversationId} initialSanctuaryMode={sanctuaryMode} />
+      <VoiceCallButton
+        conversationId={conversationId}
+        characterId={characterId}
+        characterName={characterName}
+        characterImage={characterImage}
+      />
       <GiftDrawer characterId={characterId} characterName={characterName} />
     </div>
   );

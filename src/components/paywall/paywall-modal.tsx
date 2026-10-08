@@ -15,6 +15,7 @@ import {
   Lock,
   Heart,
   Coins,
+  Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +60,7 @@ const REASON_ICON: Record<UpgradeReason, typeof Crown> = {
   character: Lock,
   swipes: Heart,
   tokens: Coins,
+  call: Phone,
 };
 
 export function PaywallModal({

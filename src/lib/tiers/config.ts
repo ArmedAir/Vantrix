@@ -278,7 +278,8 @@ export type UpgradeReason =
   | 'twin'
   | 'character'
   | 'swipes'
-  | 'tokens';
+  | 'tokens'
+  | 'call';
 
 export function getUpgradePrompt(_userTier: TierId, reason: UpgradeReason): {
   headline: string;
@@ -341,6 +342,15 @@ export function getUpgradePrompt(_userTier: TierId, reason: UpgradeReason): {
       cta: 'Explore Premium',
       targetTier: 'premium',
     },
+    call: {
+      headline: 'Hear them say it.',
+      // 15 here matches lib/voice/call-limits.ts's FREE_MINUTES_PER_MONTH —
+      // not imported directly to avoid a cross-module coupling for a
+      // single copy string; keep these two in sync if that value changes.
+      subhead: 'Premium membership includes 15 minutes of voice calling a month, in their real voice.',
+      cta: 'Unlock voice calling',
+      targetTier: 'premium',
+    },
   };
   return prompts[reason] ?? prompts.messages;
 }
@@ -378,4 +388,7 @@ export const ERROR_CODE_TO_UPGRADE_REASON: Record<string, UpgradeReason> = {
   // instead of relying on this fallback — see chat-window.tsx's mediaError
   // effect for the pattern.
   PLAN_GATED: 'lora',
+  // Real code from api/voice/call/start/route.ts: out of both free
+  // minutes and spare tokens for overage.
+  CALL_LIMIT_EXCEEDED: 'call',
 };

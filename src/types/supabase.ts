@@ -9966,6 +9966,41 @@ export type Database = {
           },
         ]
       }
+      voice_call_usage: {
+        Row: {
+          free_seconds_used: number
+          overage_seconds: number
+          overage_tokens_charged: number
+          period: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          free_seconds_used?: number
+          overage_seconds?: number
+          overage_tokens_charged?: number
+          period: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          free_seconds_used?: number
+          overage_seconds?: number
+          overage_tokens_charged?: number
+          period?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_call_usage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       voice_fingerprints: {
         Row: {
           character_id: string
