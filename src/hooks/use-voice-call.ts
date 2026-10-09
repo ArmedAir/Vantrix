@@ -5,13 +5,19 @@ import { useChatStream } from "@/hooks/use-chat-stream";
 import { useVoicePlayback } from "@/hooks/use-voice-playback";
 
 /**
- * Orchestrates a voice call with a character by composing three pieces
- * that already exist and are left completely untouched:
+ * Orchestrates a voice call with a character by composing pieces that
+ * already exist, left untouched:
  *
- *   1. Speech-to-text — the browser's native SpeechRecognition API,
- *      push-to-talk (hold to speak, release to send). No new backend
- *      cost (runs client-side), no new STT pipeline to build or
- *      maintain.
+ *   1. Speech-to-text — MediaRecorder captures a push-to-talk clip
+ *      (hold to speak, release to send), uploaded to
+ *      POST /api/voice/call/transcribe, which forwards it to
+ *      ElevenLabs Scribe server-side. NOT the browser's built-in
+ *      SpeechRecognition — see transcribe/route.ts's own STT-PLATFORM-
+ *      FIX doc: that API has zero support on iOS Safari/WebView, which
+ *      silently broke the call for every iOS user (the mic would
+ *      "listen" and never produce a transcript — exactly "the character
+ *      doesn't react"). MediaRecorder + getUserMedia work broadly,
+ *      iOS included.
  *   2. The reply — useChatStream, the SAME hook and SAME
  *      /api/chat/stream endpoint ordinary text chat uses, with the same
  *      conversationId. This is the whole reason a character on a call
@@ -28,7 +34,7 @@ import { useVoicePlayback } from "@/hooks/use-voice-playback";
  * pick up the character's own TTS audio as it plays (no echo
  * cancellation in this pipeline — that needs real WebRTC infrastructure,
  * which this does not attempt to build). Push-to-talk sidesteps the
- * whole echo problem by construction: the mic is only ever listening
+ * whole echo problem by construction: the mic is only ever recording
  * while TTS playback is stopped. A full-duplex, interrupt-capable call
  * (closer to ElevenLabs' own Conversational AI agent product) is a
  * larger, separate follow-up, not this.
@@ -41,7 +47,7 @@ import { useVoicePlayback } from "@/hooks/use-voice-playback";
 
 const USAGE_TICK_MS = 20_000;
 
-export type CallState = "idle" | "listening" | "thinking" | "speaking" | "ended";
+export type CallState = "idle" | "listening" | "transcribing" | "thinking" | "speaking" | "ended";
 
 interface UseVoiceCallOptions {
   conversationId: string;
@@ -49,38 +55,39 @@ interface UseVoiceCallOptions {
   onInsufficientBalance?: () => void;
 }
 
-// Minimal ambient types for the two vendor-prefixed SpeechRecognition
-// globals — not in lib.dom.d.ts, and this app has no @types package for
-// it. Kept local to this file rather than a global.d.ts since nothing
-// else in the codebase uses the Web Speech API.
-interface MinimalSpeechRecognition extends EventTarget {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  start(): void;
-  stop(): void;
-  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  onerror: ((event: { error: string }) => void) | null;
-  onend: (() => void) | null;
+function getSttSupport(): boolean {
+  if (typeof window === "undefined") return false;
+  // navigator.mediaDevices itself (not just .getUserMedia, which the DOM
+  // types declare as always-present on the MediaDevices interface) is
+  // what's actually missing in a non-secure context or an older WebView
+  // — checking the parent object is the real feature-detection here.
+  return Boolean(navigator.mediaDevices) && typeof window.MediaRecorder !== "undefined";
 }
 
-function getSpeechRecognitionCtor(): (new () => MinimalSpeechRecognition) | null {
-  if (typeof window === "undefined") return null;
-  const w = window as unknown as {
-    SpeechRecognition?: new () => MinimalSpeechRecognition;
-    webkitSpeechRecognition?: new () => MinimalSpeechRecognition;
-  };
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
+// Picked in preference order — not every browser's MediaRecorder
+// supports every container; Chrome/Firefox take webm/opus, Safari
+// (desktop and iOS) only takes mp4. Falls through to the browser's
+// default (undefined mimeType) if neither is supported, rather than
+// throwing — ElevenLabs Scribe accepts a broad range of containers, so
+// an unlisted-but-supported type still works.
+function pickRecorderMimeType(): string | undefined {
+  if (typeof window === "undefined" || typeof window.MediaRecorder === "undefined") return undefined;
+  for (const type of ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"]) {
+    if (window.MediaRecorder.isTypeSupported?.(type)) return type;
+  }
+  return undefined;
 }
 
 export function useVoiceCall({ conversationId, characterId, onInsufficientBalance }: UseVoiceCallOptions) {
   const [callState, setCallState] = useState<CallState>("idle");
   const [transcript, setTranscript] = useState("");
-  const [sttSupported] = useState(() => getSpeechRecognitionCtor() !== null);
+  const [sttSupported] = useState(getSttSupport);
   const [error, setError] = useState<string | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-  const recognitionRef = useRef<MinimalSpeechRecognition | null>(null);
+  const mediaStreamRef  = useRef<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
   const callActiveRef  = useRef(false);
   const unbilledSecondsRef = useRef(0);
   const tickTimerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -110,9 +117,18 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
     }
   }, [onInsufficientBalance]);
 
+  const stopMediaStream = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+    }
+    mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+    mediaStreamRef.current = null;
+    mediaRecorderRef.current = null;
+  }, []);
+
   const endCall = useCallback(() => {
     callActiveRef.current = false;
-    recognitionRef.current?.stop();
+    stopMediaStream();
     if (tickTimerRef.current) clearInterval(tickTimerRef.current);
     if (elapsedTimerRef.current) clearInterval(elapsedTimerRef.current);
     if (unbilledSecondsRef.current > 0) {
@@ -120,7 +136,7 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
       unbilledSecondsRef.current = 0;
     }
     setCallState("ended");
-  }, [reportUsage]);
+  }, [reportUsage, stopMediaStream]);
 
   const startCall = useCallback(() => {
     callActiveRef.current = true;
@@ -165,64 +181,104 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
     }
   }, [playingId, callState]);
 
-  const startListening = useCallback(() => {
-    const Ctor = getSpeechRecognitionCtor();
-    if (!Ctor || callState === "speaking" || callState === "thinking") return;
+  // Hold-to-talk start: opens the mic and begins recording into memory.
+  // No live partial transcript — unlike SpeechRecognition, server-side
+  // transcription has nothing to show until the clip is actually
+  // uploaded, so `transcript` here is set only once, after release (see
+  // stopListeningAndSend), not updated continuously while held.
+  const startListening = useCallback(async () => {
+    if (!sttSupported || callState === "speaking" || callState === "thinking" || callState === "transcribing") return;
     setError(null);
     setTranscript("");
 
-    const recognition = new Ctor();
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.onresult = (event) => {
-      let text = "";
-      for (let i = 0; i < event.results.length; i++) text += event.results[i][0]?.transcript ?? "";
-      setTranscript(text);
-    };
-    recognition.onerror = (event) => {
-      if (event.error === "no-speech" || event.error === "aborted") return;
-      setError(
-        event.error === "not-allowed"
-          ? "Microphone access was denied — check your browser's site permissions."
-          : "Couldn't hear that — try again.",
-      );
-    };
-    recognition.onend = () => {
-      recognitionRef.current = null;
-    };
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      recordedChunksRef.current = [];
 
-    recognitionRef.current = recognition;
-    setCallState("listening");
-    recognition.start();
-  }, [callState]);
+      const recorder = new MediaRecorder(stream, { mimeType: pickRecorderMimeType() });
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+      };
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setCallState("listening");
+    } catch {
+      setError("Microphone access was denied — check your browser's site permissions.");
+    }
+  }, [sttSupported, callState]);
 
-  // Release-to-send: stops recognition, then hands whatever transcript
-  // accumulated off to the exact same reply pipeline text chat uses.
+  // Release-to-send: stops the recording, uploads the clip for
+  // transcription, then hands the resulting text off to the exact same
+  // reply pipeline text chat uses.
   const stopListeningAndSend = useCallback(() => {
-    recognitionRef.current?.stop();
-    const text = transcript.trim();
-    setTranscript("");
-    if (!text) {
-      setCallState("idle");
+    const recorder = mediaRecorderRef.current;
+    const stream = mediaStreamRef.current;
+    if (!recorder || recorder.state === "inactive") {
+      setCallState(callActiveRef.current ? "idle" : "ended");
       return;
     }
-    setCallState("thinking");
-    onDoneRef.current = (fullText: string) => {
-      if (fullText.trim()) speak(fullText);
-      else setCallState(callActiveRef.current ? "idle" : "ended");
-    };
-    void sendMessage(text, 0).then((ok) => {
-      // sendMessage resolving false means it failed before ever
-      // streaming a reply (network/validation/rate-limit) — onDone
-      // never fires in that case, so without this the call would be
-      // stuck on "thinking" forever instead of recovering.
-      if (!ok) {
-        setError("Couldn't reach the character — try again.");
+
+    setCallState("transcribing");
+    recorder.onstop = () => {
+      stream?.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+      mediaRecorderRef.current = null;
+
+      const blob = new Blob(recordedChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+      recordedChunksRef.current = [];
+
+      // A clip under ~400ms is almost certainly an accidental tap, not
+      // real speech — skip the upload rather than charging a
+      // transcription call for silence.
+      if (blob.size < 2000) {
         setCallState(callActiveRef.current ? "idle" : "ended");
+        return;
       }
-    });
-  }, [transcript, sendMessage, onDoneRef, speak]);
+
+      void (async () => {
+        try {
+          const form = new FormData();
+          form.append("audio", blob, "call-clip.webm");
+          const res = await fetch("/api/voice/call/transcribe", { method: "POST", body: form });
+          const body = await res.json().catch(() => null);
+
+          if (!res.ok || !body?.text) {
+            if (res.status !== 400) setError("Couldn't hear that — try again.");
+            setCallState(callActiveRef.current ? "idle" : "ended");
+            return;
+          }
+
+          const text: string = body.text.trim();
+          setTranscript(text);
+          if (!text) {
+            setCallState(callActiveRef.current ? "idle" : "ended");
+            return;
+          }
+
+          setCallState("thinking");
+          onDoneRef.current = (fullText: string) => {
+            if (fullText.trim()) speak(fullText);
+            else setCallState(callActiveRef.current ? "idle" : "ended");
+          };
+          void sendMessage(text, 0).then((ok) => {
+            // sendMessage resolving false means it failed before ever
+            // streaming a reply (network/validation/rate-limit) — onDone
+            // never fires in that case, so without this the call would be
+            // stuck on "thinking" forever instead of recovering.
+            if (!ok) {
+              setError("Couldn't reach the character — try again.");
+              setCallState(callActiveRef.current ? "idle" : "ended");
+            }
+          });
+        } catch {
+          setError("Couldn't reach the server — try again.");
+          setCallState(callActiveRef.current ? "idle" : "ended");
+        }
+      })();
+    };
+    recorder.stop();
+  }, [sendMessage, onDoneRef, speak]);
 
   useEffect(() => () => endCall(), [endCall]);
 

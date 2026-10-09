@@ -88,9 +88,7 @@ export function ChatHeader({
       <SanctuaryToggle conversationId={conversationId} initialSanctuaryMode={sanctuaryMode} />
       <VoiceCallButton
         conversationId={conversationId}
-        characterId={characterId}
         characterName={characterName}
-        characterImage={characterImage}
       />
       <GiftDrawer characterId={characterId} characterName={characterName} />
     </div>

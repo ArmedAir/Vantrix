@@ -7,17 +7,28 @@ import { usePaywall } from "@/components/paywall/paywall-provider";
 import { useVoiceCall } from "@/hooks/use-voice-call";
 
 /**
- * Full-screen voice call UI. Premium + balance gating happens via a
- * POST /api/voice/call/start preflight before this even mounts the real
- * call state (see onOpen below) — this component assumes it's only ever
- * rendered for a call that's allowed to happen, same "gate before the
- * expensive UI mounts" posture as the rest of this app's premium
- * surfaces.
+ * OWN-PAGE FIX: was a client-side modal mounted over the chat screen
+ * (voice-call-button.tsx held an `open` boolean and rendered this on
+ * top of everything). Now rendered by its own route,
+ * (app)/call/[id]/page.tsx, reached by navigating there rather than by
+ * toggling local state — a real "screen" the back button/history/deep
+ * links all work with normally, not an overlay a page refresh or a
+ * shared link would lose. Same component either way; `onClose` is now
+ * "navigate back to the conversation" (passed in by the page) rather
+ * than "flip a boolean."
+ *
+ * Premium + balance gating happens via a POST /api/voice/call/start
+ * preflight before this even mounts the real call state — this
+ * component assumes it's only ever reached for a call that's allowed to
+ * happen, same "gate before the expensive UI mounts" posture as the
+ * rest of this app's premium surfaces.
  *
  * Push-to-talk: press-and-hold the mic button to speak, release to send
- * — see use-voice-call.ts's own doc for why this isn't always-on duplex.
+ * — see use-voice-call.ts's own doc for why this isn't always-on duplex,
+ * and for why speech-to-text is a server round-trip (transcribe/route.ts)
+ * rather than the browser's own SpeechRecognition.
  */
-export function VoiceCallModal({
+export function VoiceCallScreen({
   conversationId,
   characterId,
   characterName,
@@ -28,6 +39,8 @@ export function VoiceCallModal({
   characterId: string;
   characterName: string;
   characterImage: string | null;
+  /** Navigate back to the conversation — see the page component, which
+   *  passes `() => router.push(`/chat/${conversationId}`)`. */
   onClose: () => void;
 }) {
   const { openPaywallForError } = usePaywall();
@@ -95,6 +108,7 @@ export function VoiceCallModal({
     starting ? "Connecting…"
     : callState === "idle" ? "Hold to talk"
     : callState === "listening" ? "Listening…"
+    : callState === "transcribing" ? "Hearing you out…"
     : callState === "thinking" ? `${characterName} is thinking`
     : callState === "speaking" ? `${characterName} is speaking`
     : "";
@@ -180,7 +194,7 @@ export function VoiceCallModal({
         )}
         {error && <p className="text-sm text-danger text-center max-w-xs">{error}</p>}
 
-        {transcript && callState === "listening" ? (
+        {transcript && (callState === "thinking" || callState === "speaking") ? (
           <p className="max-w-sm text-center text-[15px] text-white/90 italic">
             &ldquo;{transcript}&rdquo;
           </p>
@@ -194,7 +208,7 @@ export function VoiceCallModal({
             onMouseUp={stopListeningAndSend}
             onTouchStart={(e) => { e.preventDefault(); startListening(); }}
             onTouchEnd={(e) => { e.preventDefault(); stopListeningAndSend(); }}
-            disabled={starting || !sttSupported || callState === "thinking" || callState === "speaking"}
+            disabled={starting || !sttSupported || callState === "thinking" || callState === "speaking" || callState === "transcribing"}
             aria-label="Hold to talk"
             className={
               "relative flex h-[72px] w-[72px] select-none items-center justify-center rounded-full border transition-[transform,background-color,border-color,box-shadow] duration-200 ease-premium disabled:opacity-40 " +
@@ -203,7 +217,7 @@ export function VoiceCallModal({
                 : "border-white/20 bg-white/[0.06] backdrop-blur-md hover:border-gold-500/40")
             }
           >
-            {starting || callState === "thinking" ? (
+            {starting || callState === "thinking" || callState === "transcribing" ? (
               <Loader2 className="h-6 w-6 animate-spin text-white/70" />
             ) : (
               <Mic className={"h-6 w-6 " + (callState === "listening" ? "text-[#160F02]" : "text-white")} />
