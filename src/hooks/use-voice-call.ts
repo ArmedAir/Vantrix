@@ -64,6 +64,33 @@ function getSttSupport(): boolean {
   return Boolean(navigator.mediaDevices) && typeof window.MediaRecorder !== "undefined";
 }
 
+// IOS-AUTOPLAY-FIX: iOS Safari only allows HTMLMediaElement.play() to
+// succeed when it's called synchronously inside a genuine user gesture
+// (tap/click) — by the time this call's audio is ready to play
+// (upload -> transcribe -> chat reply, all async), that window has long
+// closed, so play() gets silently rejected. The fix most mobile web apps
+// use: play (and immediately pause) a near-silent clip synchronously
+// inside the gesture itself — on WebKit this "unlocks" audio playback
+// for the rest of the page session, not just this one element, so the
+// later async-triggered play() in useVoicePlayback succeeds normally.
+// Call this at the very start of stopListeningAndSend, which — unlike
+// speak() — IS still running synchronously inside the mic button's own
+// onMouseUp/onTouchEnd handler.
+function unlockAudioPlayback() {
+  if (typeof window === "undefined" || typeof Audio === "undefined") return;
+  try {
+    // 1 sample of silence, valid WAV — smallest reliable "something
+    // actually played" signal, no network fetch needed.
+    const silent = new Audio(
+      "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=",
+    );
+    void silent.play().then(() => silent.pause()).catch(() => {});
+  } catch {
+    // Best-effort — a failure here just means the later real playback
+    // might still get blocked, which the watchdog above already covers.
+  }
+}
+
 // Picked in preference order — not every browser's MediaRecorder
 // supports every container; Chrome/Firefox take webm/opus, Safari
 // (desktop and iOS) only takes mp4. Falls through to the browser's
@@ -94,8 +121,12 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
   const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { sendMessage, onDoneRef } = useChatStreamForCall(conversationId, characterId);
-  const { play, playingId } = useVoicePlayback();
+  const { play, playingId, error: playbackError } = useVoicePlayback();
   const speakingMessageIdRef = useRef<string | null>(null);
+  // RACE-FIX: distinguishes "hasn't started playing yet" from "finished
+  // playing" — see the playingId effect below for the bug this closes.
+  const speakingStartedRef = useRef(false);
+  const speakingWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const reportUsage = useCallback(async (seconds: number) => {
     if (seconds <= 0) return;
@@ -166,20 +197,64 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
   const speak = useCallback((text: string) => {
     const id = `call-${Date.now()}`;
     speakingMessageIdRef.current = id;
+    speakingStartedRef.current = false;
     setCallState("speaking");
     void play(id, text, characterId);
+
+    // WATCHDOG: covers every way playback can fail to ever start —
+    // iOS Safari's autoplay-gesture policy rejecting audio.play() since
+    // it's no longer inside the synchronous scope of a tap by the time
+    // this runs (upload -> transcribe -> chat reply all happened first),
+    // a slow/failed /api/voice/tts call, or any other silent failure in
+    // useVoicePlayback. Without this, a playback that never starts left
+    // the call stuck on "speaking" forever (mic disabled, nothing
+    // happens) — indistinguishable from "the character isn't
+    // responding" even though a reply WAS generated.
+    if (speakingWatchdogRef.current) clearTimeout(speakingWatchdogRef.current);
+    speakingWatchdogRef.current = setTimeout(() => {
+      if (speakingMessageIdRef.current === id && !speakingStartedRef.current) {
+        speakingMessageIdRef.current = null;
+        setError("Couldn't play the reply — try again.");
+        setCallState(callActiveRef.current ? "idle" : "ended");
+      }
+    }, 8000);
   }, [play, characterId]);
 
-  // Playback actually ending (playingId clearing for OUR message) is
-  // what returns the call to idle/listening-ready, not play() resolving
-  // — see use-voice-playback.ts, play() kicks playback off rather than
-  // awaiting its completion.
+  // RACE-FIX: the old version of this effect checked only
+  // `playingId !== speakingMessageIdRef.current`, which is true both
+  // "before playback has started" (playingId is still null/someone
+  // else's id) and "after it finished" — so it fired the instant
+  // speak() set callState to "speaking", before any audio had even
+  // started loading, snapping the call straight back to idle with
+  // nothing audibly played. speakingStartedRef now tracks whether
+  // playingId has actually matched our message at least once; only a
+  // transition AWAY from that counts as "finished."
   useEffect(() => {
-    if (speakingMessageIdRef.current && playingId !== speakingMessageIdRef.current && callState === "speaking") {
+    if (!speakingMessageIdRef.current || callState !== "speaking") return;
+
+    if (playingId === speakingMessageIdRef.current) {
+      speakingStartedRef.current = true;
+      return;
+    }
+    if (speakingStartedRef.current) {
+      if (speakingWatchdogRef.current) clearTimeout(speakingWatchdogRef.current);
       speakingMessageIdRef.current = null;
       setCallState(callActiveRef.current ? "idle" : "ended");
     }
   }, [playingId, callState]);
+
+  // Surfaces useVoicePlayback's own error (e.g. a DOMException from a
+  // blocked audio.play(), "Voice playback failed.") into the call's
+  // error state — previously read nowhere in this hook, so a playback
+  // failure had no visible explanation at all beyond the watchdog above
+  // eventually timing out.
+  useEffect(() => {
+    if (playbackError) setError(playbackError);
+  }, [playbackError]);
+
+  useEffect(() => () => {
+    if (speakingWatchdogRef.current) clearTimeout(speakingWatchdogRef.current);
+  }, []);
 
   // Hold-to-talk start: opens the mic and begins recording into memory.
   // No live partial transcript — unlike SpeechRecognition, server-side
@@ -212,6 +287,11 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
   // transcription, then hands the resulting text off to the exact same
   // reply pipeline text chat uses.
   const stopListeningAndSend = useCallback(() => {
+    // Still synchronous relative to the mic button's own release event
+    // at this point — see unlockAudioPlayback's own doc for why that
+    // matters on iOS.
+    unlockAudioPlayback();
+
     const recorder = mediaRecorderRef.current;
     const stream = mediaStreamRef.current;
     if (!recorder || recorder.state === "inactive") {
