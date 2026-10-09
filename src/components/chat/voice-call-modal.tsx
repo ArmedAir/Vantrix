@@ -90,78 +90,134 @@ export function VoiceCallModal({
 
   if (startError) return null; // paywall or inline toast already surfaced it via onClose
 
+  const isLive = callState === "listening" || callState === "speaking";
+  const statusLine =
+    starting ? "Connecting…"
+    : callState === "idle" ? "Hold to talk"
+    : callState === "listening" ? "Listening…"
+    : callState === "thinking" ? `${characterName} is thinking`
+    : callState === "speaking" ? `${characterName} is speaking`
+    : "";
+
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-between bg-base/98 backdrop-blur-xl px-6 py-10 animate-fade-in">
-      <div className="flex flex-col items-center gap-3 mt-10">
-        <div className="relative h-28 w-28 rounded-full overflow-hidden border border-border-hairline shadow-gold-glow">
-          {characterImage && (
-            // eslint-disable-next-line @next/next/no-img-element -- call overlay avatar, not worth a next/image round-trip for a 112px circle
-            <img src={resolveImageSrc(characterImage)} alt={characterName} className="h-full w-full object-cover" />
-          )}
-          {(callState === "listening" || callState === "speaking") && (
-            <span
-              className="absolute inset-0 rounded-full ring-2 ring-gold-400 animate-pulse"
-              aria-hidden
-            />
-          )}
-        </div>
-        <p className="font-display text-xl text-text-primary">{characterName}</p>
-        <p className="text-sm text-text-tertiary">
-          {starting ? "Connecting…" : `${mm}:${ss}`}
-          {minutesLeft !== null && minutesLeft <= 3 && !starting && (
-            <span className="text-gold-400"> · {minutesLeft} min left this month</span>
-          )}
+    <div className="fixed inset-0 z-50 overflow-hidden bg-black animate-fade-in">
+      {/* FULL-BLEED PORTRAIT: the character's own image as the entire
+          screen, not a small avatar on a plain panel — the call itself
+          is the scene. `animate-sway` is the same slow perspective tilt
+          LivingPortrait already gives every large character portrait
+          site-wide (tailwind.config.ts) — reused here rather than
+          inventing a second "living image" treatment, so a call feels
+          like a continuation of the character's presence elsewhere in
+          the app, not a different product bolted on. Swapped for a
+          faster, more pronounced version of the same keyframe while
+          `isLive`, so the portrait visibly quickens when the character
+          is actually present in the conversation (listening/speaking)
+          versus idly waiting. */}
+      {characterImage && (
+        // eslint-disable-next-line @next/next/no-img-element -- full-bleed call background, not worth a next/image fill-layout round-trip for a fixed-position overlay
+        <img
+          src={resolveImageSrc(characterImage)}
+          alt=""
+          aria-hidden
+          className={
+            "absolute inset-0 h-full w-full object-cover transform-gpu " +
+            (isLive ? "animate-sway-live" : "animate-sway")
+          }
+        />
+      )}
+
+      {/* SCRIM: asymmetric — heavier at the bottom, where the glass
+          control bar needs real contrast underneath it, lighter at the
+          top where only the name/status/timer sit. A flat single
+          overlay would either wash out the portrait or leave the
+          controls illegible; this is the same two-stop gradient logic
+          character-hero.tsx already uses for its own scrim, stretched
+          across a full screen instead of one card. */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-black/85" aria-hidden />
+
+      {/* PRESENCE RING: a soft gold glow breathing at the screen's own
+          edges while the character is listening or speaking — the full-
+          screen analog of the small ring this component used to draw
+          around a tiny avatar, now felt rather than seen as a discrete
+          shape, in keeping with "immersive" meaning the whole screen
+          responds, not one element on it. */}
+      <div
+        className={
+          "pointer-events-none absolute inset-0 transition-opacity duration-700 ease-premium " +
+          (isLive ? "opacity-100" : "opacity-0")
+        }
+        style={{ boxShadow: "inset 0 0 120px 10px rgba(var(--gold-500), 0.22)" }}
+        aria-hidden
+      />
+
+      {/* TOP: name + live status, no chrome beyond what the scrim and
+          type treatment themselves provide — the brief asked for
+          immersive and luxurious, and a bordered card or label pill up
+          here would be exactly the "template chrome" that undercuts
+          that. */}
+      <div className="absolute inset-x-0 top-0 flex flex-col items-center pt-14 px-6">
+        <p className="font-display text-[28px] leading-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">
+          {characterName}
         </p>
+        <p className="mt-1.5 text-[13px] tracking-wide text-white/70">
+          {starting ? "Connecting…" : `${mm}:${ss}`}
+        </p>
+        {minutesLeft !== null && minutesLeft <= 3 && !starting && (
+          <span className="mt-3 rounded-full border border-gold-500/30 bg-black/30 px-3 py-1 text-[11px] text-gold-300 backdrop-blur-md">
+            {minutesLeft} min left this month
+          </span>
+        )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+      {/* BOTTOM: status line, live transcript caption, controls — one
+          glass surface the eye reads as a single control bar, rather
+          than several separate floating pieces. */}
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-5 px-6 pb-10 pt-16">
         {!sttSupported && (
-          <p className="text-sm text-danger text-center px-4">
+          <p className="text-sm text-danger text-center max-w-xs">
             Voice input isn&apos;t supported in this browser — try Chrome, Edge, or Safari.
           </p>
         )}
-        {error && <p className="text-sm text-danger text-center px-4">{error}</p>}
-        {transcript && callState === "listening" && (
-          <p className="text-sm text-text-secondary text-center px-4 italic">&ldquo;{transcript}&rdquo;</p>
+        {error && <p className="text-sm text-danger text-center max-w-xs">{error}</p>}
+
+        {transcript && callState === "listening" ? (
+          <p className="max-w-sm text-center text-[15px] text-white/90 italic">
+            &ldquo;{transcript}&rdquo;
+          </p>
+        ) : (
+          <p className="text-[11px] uppercase tracking-[0.14em] text-white/55">{statusLine}</p>
         )}
-        <p className="text-xs text-text-tertiary uppercase tracking-wide">
-          {starting && "Connecting"}
-          {callState === "idle" && "Hold to talk"}
-          {callState === "listening" && "Listening…"}
-          {callState === "thinking" && `${characterName} is thinking…`}
-          {callState === "speaking" && `${characterName} is speaking…`}
-        </p>
-      </div>
 
-      <div className="flex items-center gap-8 mb-6">
-        <button
-          onMouseDown={startListening}
-          onMouseUp={stopListeningAndSend}
-          onTouchStart={(e) => { e.preventDefault(); startListening(); }}
-          onTouchEnd={(e) => { e.preventDefault(); stopListeningAndSend(); }}
-          disabled={starting || !sttSupported || callState === "thinking" || callState === "speaking"}
-          aria-label="Hold to talk"
-          className={
-            "h-20 w-20 rounded-full flex items-center justify-center border-2 transition-[transform,background-color,border-color] ease-premium select-none disabled:opacity-40 " +
-            (callState === "listening"
-              ? "bg-gold-500 border-gold-400 scale-110"
-              : "bg-white/[0.04] border-border-hairline hover:border-gold-500/40")
-          }
-        >
-          {starting || callState === "thinking" ? (
-            <Loader2 className="h-7 w-7 animate-spin text-text-secondary" />
-          ) : (
-            <Mic className={"h-7 w-7 " + (callState === "listening" ? "text-[#160F02]" : "text-text-primary")} />
-          )}
-        </button>
+        <div className="flex items-center gap-10">
+          <button
+            onMouseDown={startListening}
+            onMouseUp={stopListeningAndSend}
+            onTouchStart={(e) => { e.preventDefault(); startListening(); }}
+            onTouchEnd={(e) => { e.preventDefault(); stopListeningAndSend(); }}
+            disabled={starting || !sttSupported || callState === "thinking" || callState === "speaking"}
+            aria-label="Hold to talk"
+            className={
+              "relative flex h-[72px] w-[72px] select-none items-center justify-center rounded-full border transition-[transform,background-color,border-color,box-shadow] duration-200 ease-premium disabled:opacity-40 " +
+              (callState === "listening"
+                ? "scale-110 border-gold-400 bg-gold-500 shadow-gold-glow"
+                : "border-white/20 bg-white/[0.06] backdrop-blur-md hover:border-gold-500/40")
+            }
+          >
+            {starting || callState === "thinking" ? (
+              <Loader2 className="h-6 w-6 animate-spin text-white/70" />
+            ) : (
+              <Mic className={"h-6 w-6 " + (callState === "listening" ? "text-[#160F02]" : "text-white")} />
+            )}
+          </button>
 
-        <button
-          onClick={handleClose}
-          aria-label="End call"
-          className="h-14 w-14 rounded-full bg-danger/90 hover:bg-danger flex items-center justify-center transition-colors ease-premium"
-        >
-          <PhoneOff className="h-6 w-6 text-white" />
-        </button>
+          <button
+            onClick={handleClose}
+            aria-label="End call"
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-danger/90 transition-colors ease-premium hover:bg-danger"
+          >
+            <PhoneOff className="h-6 w-6 text-white" />
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -210,6 +210,12 @@ const config: Config = {
         "shimmer-slide": "shimmer-slide 2.4s linear infinite",
         breathe: "breathe 7s ease-in-out infinite",
         sway: "sway 9s ease-in-out infinite",
+        // VOICE-CALL FIX: same `sway` keyframe (no shape change, just a
+        // quicker loop) — used by voice-call-modal.tsx while the
+        // character is actively listening/speaking, so the full-bleed
+        // portrait visibly quickens rather than needing a second,
+        // differently-shaped animation just for that state.
+        "sway-live": "sway 4.5s ease-in-out infinite",
         "glow-pulse": "glow-pulse 2.8s ease-in-out infinite",
       },
       transitionTimingFunction: {
