@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PhoneOff, Mic, Loader2 } from "lucide-react";
+import { PhoneOff, Mic, MicOff, Loader2, Phone } from "lucide-react";
 import { resolveImageSrc } from "@/lib/utils";
 import { usePaywall } from "@/components/paywall/paywall-provider";
 import { useVoiceCall } from "@/hooks/use-voice-call";
@@ -23,10 +23,14 @@ import { useVoiceCall } from "@/hooks/use-voice-call";
  * happen, same "gate before the expensive UI mounts" posture as the
  * rest of this app's premium surfaces.
  *
- * Push-to-talk: press-and-hold the mic button to speak, release to send
- * — see use-voice-call.ts's own doc for why this isn't always-on duplex,
- * and for why speech-to-text is a server round-trip (transcribe/route.ts)
- * rather than the browser's own SpeechRecognition.
+ * TURN-TAKING-FIX: hands-free, not push-to-talk — a real voice-activity
+ * detector decides when the user has started and finished talking (see
+ * use-voice-call.ts's startVadLoop). The one required tap is
+ * "beginCall," below — WebKit only allows audio playback to be unlocked
+ * from a genuine gesture, and hands-free has no natural per-turn
+ * press/release gesture to hang that on anymore, so there's a single
+ * explicit "Start talking" tap before the mic ever opens. After that,
+ * the mic button is a mute toggle, not a hold target.
  */
 export function VoiceCallScreen({
   conversationId,
@@ -47,10 +51,11 @@ export function VoiceCallScreen({
   const [starting, setStarting] = useState(true);
   const [startError, setStartError] = useState<string | null>(null);
   const [freeSecondsRemaining, setFreeSecondsRemaining] = useState<number | null>(null);
+  const [hasBegun, setHasBegun] = useState(false);
 
   const {
-    callState, transcript, error, sttSupported, elapsedSeconds,
-    startCall, endCall, startListening, stopListeningAndSend,
+    callState, transcript, error, sttSupported, elapsedSeconds, micMuted, liveVolume,
+    startCall, beginCall, endCall, toggleMute,
   } = useVoiceCall({
     conversationId,
     characterId,
@@ -61,6 +66,10 @@ export function VoiceCallScreen({
   });
 
   // Preflight: premium + balance check before the mic is ever touched.
+  // Only readies timers/billing (startCall) — does NOT request mic
+  // access or touch audio playback, both of which wait for the explicit
+  // "Start talking" tap (beginCall) below, since only a real gesture can
+  // unlock either reliably on iOS.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -97,6 +106,11 @@ export function VoiceCallScreen({
     onClose();
   }
 
+  function handleBeginTap() {
+    setHasBegun(true);
+    beginCall();
+  }
+
   const minutesLeft = freeSecondsRemaining !== null ? Math.floor(freeSecondsRemaining / 60) : null;
   const mm = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
   const ss = String(elapsedSeconds % 60).padStart(2, "0");
@@ -106,12 +120,19 @@ export function VoiceCallScreen({
   const isLive = callState === "listening" || callState === "speaking";
   const statusLine =
     starting ? "Connecting…"
-    : callState === "idle" ? "Hold to talk"
+    : !hasBegun ? "Tap to start talking"
+    : micMuted ? "Muted"
+    : callState === "idle" ? "Listening…"
     : callState === "listening" ? "Listening…"
     : callState === "transcribing" ? "Hearing you out…"
     : callState === "thinking" ? `${characterName} is thinking`
     : callState === "speaking" ? `${characterName} is speaking`
     : "";
+
+  // Mic ring grows slightly with live mic volume while actually
+  // listening — the one place liveVolume is used, purely as a luxurious
+  // "it's really hearing me" cue, not a VAD decision itself.
+  const micScale = callState === "listening" && !micMuted ? 1 + Math.min(0.22, liveVolume * 0.3) : 1;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black animate-fade-in">
@@ -189,7 +210,7 @@ export function VoiceCallScreen({
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-5 px-6 pb-10 pt-16">
         {!sttSupported && (
           <p className="text-sm text-danger text-center max-w-xs">
-            Voice input isn&apos;t supported in this browser — try Chrome, Edge, or Safari.
+            Voice calling isn&apos;t supported in this browser — try Chrome, Edge, or Safari.
           </p>
         )}
         {error && <p className="text-sm text-danger text-center max-w-xs">{error}</p>}
@@ -203,26 +224,43 @@ export function VoiceCallScreen({
         )}
 
         <div className="flex items-center gap-10">
-          <button
-            onMouseDown={startListening}
-            onMouseUp={stopListeningAndSend}
-            onTouchStart={(e) => { e.preventDefault(); startListening(); }}
-            onTouchEnd={(e) => { e.preventDefault(); stopListeningAndSend(); }}
-            disabled={starting || !sttSupported || callState === "thinking" || callState === "speaking" || callState === "transcribing"}
-            aria-label="Hold to talk"
-            className={
-              "relative flex h-[72px] w-[72px] select-none items-center justify-center rounded-full border transition-[transform,background-color,border-color,box-shadow] duration-200 ease-premium disabled:opacity-40 " +
-              (callState === "listening"
-                ? "scale-110 border-gold-400 bg-gold-500 shadow-gold-glow"
-                : "border-white/20 bg-white/[0.06] backdrop-blur-md hover:border-gold-500/40")
-            }
-          >
-            {starting || callState === "thinking" || callState === "transcribing" ? (
-              <Loader2 className="h-6 w-6 animate-spin text-white/70" />
-            ) : (
-              <Mic className={"h-6 w-6 " + (callState === "listening" ? "text-[#160F02]" : "text-white")} />
-            )}
-          </button>
+          {!hasBegun ? (
+            <button
+              onClick={handleBeginTap}
+              disabled={starting || !sttSupported}
+              aria-label="Start talking"
+              className="relative flex h-[72px] w-[72px] items-center justify-center rounded-full border border-gold-400 bg-gold-500 shadow-gold-glow transition-transform duration-200 ease-premium disabled:opacity-40"
+            >
+              {starting ? (
+                <Loader2 className="h-6 w-6 animate-spin text-[#160F02]" />
+              ) : (
+                <Phone className="h-6 w-6 text-[#160F02]" />
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={toggleMute}
+              aria-label={micMuted ? "Unmute" : "Mute"}
+              aria-pressed={micMuted}
+              style={{ transform: `scale(${micScale})` }}
+              className={
+                "relative flex h-[72px] w-[72px] select-none items-center justify-center rounded-full border transition-[background-color,border-color,box-shadow] duration-150 ease-premium " +
+                (micMuted
+                  ? "border-white/15 bg-white/[0.03]"
+                  : callState === "listening"
+                    ? "border-gold-400 bg-gold-500/90 shadow-gold-glow"
+                    : "border-white/20 bg-white/[0.06] backdrop-blur-md")
+              }
+            >
+              {callState === "thinking" || callState === "transcribing" ? (
+                <Loader2 className="h-6 w-6 animate-spin text-white/70" />
+              ) : micMuted ? (
+                <MicOff className="h-6 w-6 text-white/50" />
+              ) : (
+                <Mic className={"h-6 w-6 " + (callState === "listening" ? "text-[#160F02]" : "text-white")} />
+              )}
+            </button>
+          )}
 
           <button
             onClick={handleClose}

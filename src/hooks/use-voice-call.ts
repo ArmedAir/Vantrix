@@ -8,16 +8,13 @@ import { useVoicePlayback } from "@/hooks/use-voice-playback";
  * Orchestrates a voice call with a character by composing pieces that
  * already exist, left untouched:
  *
- *   1. Speech-to-text — MediaRecorder captures a push-to-talk clip
- *      (hold to speak, release to send), uploaded to
- *      POST /api/voice/call/transcribe, which forwards it to
- *      ElevenLabs Scribe server-side. NOT the browser's built-in
+ *   1. Speech-to-text — MediaRecorder captures what the user says,
+ *      uploaded to POST /api/voice/call/transcribe, which forwards it
+ *      to ElevenLabs Scribe server-side. NOT the browser's built-in
  *      SpeechRecognition — see transcribe/route.ts's own STT-PLATFORM-
  *      FIX doc: that API has zero support on iOS Safari/WebView, which
- *      silently broke the call for every iOS user (the mic would
- *      "listen" and never produce a transcript — exactly "the character
- *      doesn't react"). MediaRecorder + getUserMedia work broadly,
- *      iOS included.
+ *      silently broke the call for every iOS user. MediaRecorder +
+ *      getUserMedia work broadly, iOS included.
  *   2. The reply — useChatStream, the SAME hook and SAME
  *      /api/chat/stream endpoint ordinary text chat uses, with the same
  *      conversationId. This is the whole reason a character on a call
@@ -28,16 +25,37 @@ import { useVoicePlayback } from "@/hooks/use-voice-playback";
  *   3. Speech playback — useVoicePlayback, the SAME hook and SAME
  *      /api/voice/tts endpoint message bubbles already use for the
  *      speaker-icon playback, so the same per-character ElevenLabs
- *      voice (characters.elevenlabs_voice_id) is what speaks on a call.
+ *      voice (characters.elevenlabs_voice_id) is what speaks on a call —
+ *      no voiceId override anywhere in this file, same as
+ *      message-bubble.tsx's own onPlayVoice call, so the two can't
+ *      diverge: both resolve through the character's one assigned
+ *      elevenlabs_voice_id by construction.
  *
- * PUSH-TO-TALK, NOT ALWAYS-ON DUPLEX: a continuously-listening mic would
- * pick up the character's own TTS audio as it plays (no echo
- * cancellation in this pipeline — that needs real WebRTC infrastructure,
- * which this does not attempt to build). Push-to-talk sidesteps the
- * whole echo problem by construction: the mic is only ever recording
- * while TTS playback is stopped. A full-duplex, interrupt-capable call
- * (closer to ElevenLabs' own Conversational AI agent product) is a
- * larger, separate follow-up, not this.
+ * TURN-TAKING-FIX: previously push-to-talk (hold the mic, release to
+ * send) — now hands-free. A real voice-activity detector (Web Audio
+ * API AnalyserNode reading live RMS volume off the same mic stream
+ * MediaRecorder is capturing) listens continuously once the call is in
+ * a listening-eligible state, waits out a short silence after it
+ * detects you've actually said something, and sends automatically —
+ * see startVadLoop below for the thresholds and reasoning. The mic
+ * button is now a mute toggle, not a hold target.
+ *
+ * STILL NOT ALWAYS-ON DUPLEX: VAD only ever runs while callState is
+ * "listening," which — same as the old push-to-talk boundary — never
+ * overlaps with "speaking." The mic is never open while the
+ * character's own TTS is playing, so there's still no echo-cancellation
+ * problem to solve (that would need real WebRTC infrastructure this
+ * does not attempt to build). A full-duplex, *interrupt*-capable call
+ * (talking over the character mid-reply) is a larger, separate
+ * follow-up, not this — this is "no button, but still one voice at a
+ * time."
+ *
+ * iOS AUDIO UNLOCK: with no more per-turn release gesture to hang
+ * unlockAudioPlayback() off of, it now runs once, from the explicit
+ * "tap to begin" gesture that starts the call (see beginCall below) —
+ * WebKit's unlock is page-session-scoped, not per-element, so one real
+ * gesture at call start is enough for every later auto-triggered
+ * playback in the same call.
  *
  * USAGE BILLING: ticks a POST /api/voice/call/usage call every
  * USAGE_TICK_MS while `callActive` is true, plus once more on explicit
@@ -46,6 +64,12 @@ import { useVoicePlayback } from "@/hooks/use-voice-playback";
  */
 
 const USAGE_TICK_MS = 20_000;
+
+// VAD tuning — see startVadLoop for how each is used.
+const VAD_RMS_THRESHOLD   = 0.02;   // amplitude (0-1) above which audio counts as "speech," not room noise
+const VAD_SILENCE_MS      = 1200;   // continuous silence after speech before auto-sending
+const VAD_MIN_SPEECH_MS   = 350;    // speech shorter than this is treated as a stray noise, not a turn
+const VAD_MAX_TURN_MS     = 30_000; // hard cap so a stuck/background mic can't record forever
 
 export type CallState = "idle" | "listening" | "transcribing" | "thinking" | "speaking" | "ended";
 
@@ -67,15 +91,15 @@ function getSttSupport(): boolean {
 // IOS-AUTOPLAY-FIX: iOS Safari only allows HTMLMediaElement.play() to
 // succeed when it's called synchronously inside a genuine user gesture
 // (tap/click) — by the time this call's audio is ready to play
-// (upload -> transcribe -> chat reply, all async), that window has long
-// closed, so play() gets silently rejected. The fix most mobile web apps
-// use: play (and immediately pause) a near-silent clip synchronously
+// (STT upload -> transcribe -> chat reply, all async), that window has
+// long closed, so play() gets silently rejected. The fix most mobile web
+// apps use: play (and immediately pause) a near-silent clip synchronously
 // inside the gesture itself — on WebKit this "unlocks" audio playback
 // for the rest of the page session, not just this one element, so the
-// later async-triggered play() in useVoicePlayback succeeds normally.
-// Call this at the very start of stopListeningAndSend, which — unlike
-// speak() — IS still running synchronously inside the mic button's own
-// onMouseUp/onTouchEnd handler.
+// later async-triggered play() in useVoicePlayback succeeds normally for
+// every turn afterward. Called once, from beginCall — the call's one
+// required tap, since hands-free listening has no per-turn
+// press/release gesture to hang this on anymore.
 function unlockAudioPlayback() {
   if (typeof window === "undefined" || typeof Audio === "undefined") return;
   try {
@@ -111,14 +135,32 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
   const [sttSupported] = useState(getSttSupport);
   const [error, setError] = useState<string | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  // Mute replaces the old hold-to-talk button — the mic is open and VAD
+  // is listening by default once a call is live; muting is the explicit
+  // "I don't want to be heard right now" action, not holding a button to
+  // opt IN to being heard.
+  const [micMuted, setMicMuted] = useState(false);
+  // Volume meter (0-1, smoothed) for the UI to react to — see
+  // startVadLoop. Not used for any VAD decision itself, purely cosmetic
+  // feedback so the screen visibly responds to the user's own voice.
+  const [liveVolume, setLiveVolume] = useState(0);
 
   const mediaStreamRef  = useRef<MediaStream | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const callActiveRef  = useRef(false);
+  const micMutedRef    = useRef(false);
   const unbilledSecondsRef = useRef(0);
   const tickTimerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // VAD plumbing — all torn down together in stopVadLoop.
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef     = useRef<AnalyserNode | null>(null);
+  const vadRafRef       = useRef<number | null>(null);
+  const speechStartedAtRef = useRef<number | null>(null);
+  const lastVoiceAtRef     = useRef<number | null>(null);
+  const turnStartedAtRef   = useRef<number>(0);
 
   const { sendMessage, onDoneRef } = useChatStreamForCall(conversationId, characterId);
   const { play, playingId, error: playbackError } = useVoicePlayback();
@@ -148,13 +190,95 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
     }
   }, [onInsufficientBalance]);
 
+  const stopVadLoop = useCallback(() => {
+    if (vadRafRef.current !== null) cancelAnimationFrame(vadRafRef.current);
+    vadRafRef.current = null;
+    analyserRef.current = null;
+    if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+      void audioContextRef.current.close().catch(() => {});
+    }
+    audioContextRef.current = null;
+    speechStartedAtRef.current = null;
+    lastVoiceAtRef.current = null;
+    setLiveVolume(0);
+  }, []);
+
   const stopMediaStream = useCallback(() => {
+    stopVadLoop();
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
     }
     mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     mediaStreamRef.current = null;
     mediaRecorderRef.current = null;
+  }, [stopVadLoop]);
+
+  /**
+   * Runs continuously while callState is "listening," reading live RMS
+   * volume off the same mic stream MediaRecorder is capturing. Three
+   * things it watches for, in order:
+   *   1. Volume crosses VAD_RMS_THRESHOLD for the first time -> marks
+   *      speech as started (speechStartedAtRef).
+   *   2. After speech has started, volume stays below threshold for
+   *      VAD_SILENCE_MS straight -> the user has stopped talking;
+   *      auto-sends, but only if total speech so far exceeds
+   *      VAD_MIN_SPEECH_MS (otherwise it was a stray noise/cough, not a
+   *      turn — reset and keep listening instead of sending nothing).
+   *   3. VAD_MAX_TURN_MS elapses regardless -> force-send whatever's
+   *      been said so far, so a stuck mic or a very long ramble can't
+   *      record forever.
+   * `stopListeningAndSend` (called from here) does the actual upload —
+   * same function the old push-to-talk release used, unchanged.
+   */
+  const startVadLoop = useCallback((stream: MediaStream, onTurnEnd: () => void) => {
+    const AudioCtx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return; // no Web Audio support — falls back to VAD_MAX_TURN_MS never firing; mute button is still the manual escape hatch
+
+    const audioContext = new AudioCtx();
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512;
+    audioContext.createMediaStreamSource(stream).connect(analyser);
+    audioContextRef.current = audioContext;
+    analyserRef.current = analyser;
+
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    speechStartedAtRef.current = null;
+    lastVoiceAtRef.current = null;
+    turnStartedAtRef.current = Date.now();
+
+    const tick = () => {
+      if (!analyserRef.current) return; // torn down mid-loop
+      analyserRef.current.getByteTimeDomainData(data);
+
+      // RMS of the centered (0 = silence at 128 in byte-domain) signal.
+      let sumSquares = 0;
+      for (let i = 0; i < data.length; i++) {
+        const centered = (data[i] - 128) / 128;
+        sumSquares += centered * centered;
+      }
+      const rms = Math.sqrt(sumSquares / data.length);
+      setLiveVolume((prev) => prev * 0.6 + Math.min(1, rms * 6) * 0.4); // smoothed, just for the UI meter
+
+      const now = Date.now();
+      if (!micMutedRef.current && rms > VAD_RMS_THRESHOLD) {
+        if (speechStartedAtRef.current === null) speechStartedAtRef.current = now;
+        lastVoiceAtRef.current = now;
+      }
+
+      const elapsedSinceTurnStart = now - turnStartedAtRef.current;
+      const hasSpokenLongEnough =
+        speechStartedAtRef.current !== null &&
+        (lastVoiceAtRef.current ?? speechStartedAtRef.current) - speechStartedAtRef.current >= VAD_MIN_SPEECH_MS;
+      const silenceLongEnough =
+        lastVoiceAtRef.current !== null && now - lastVoiceAtRef.current >= VAD_SILENCE_MS;
+
+      if ((hasSpokenLongEnough && silenceLongEnough) || elapsedSinceTurnStart >= VAD_MAX_TURN_MS) {
+        onTurnEnd();
+        return; // don't schedule another frame — the caller takes over
+      }
+      vadRafRef.current = requestAnimationFrame(tick);
+    };
+    vadRafRef.current = requestAnimationFrame(tick);
   }, []);
 
   const endCall = useCallback(() => {
@@ -256,11 +380,10 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
     if (speakingWatchdogRef.current) clearTimeout(speakingWatchdogRef.current);
   }, []);
 
-  // Hold-to-talk start: opens the mic and begins recording into memory.
-  // No live partial transcript — unlike SpeechRecognition, server-side
-  // transcription has nothing to show until the clip is actually
-  // uploaded, so `transcript` here is set only once, after release (see
-  // stopListeningAndSend), not updated continuously while held.
+  // Opens the mic, starts recording into memory, and starts the VAD
+  // loop watching for when to stop automatically — called whenever the
+  // call becomes listening-eligible (auto-resume effect below), not by
+  // a button press anymore.
   const startListening = useCallback(async () => {
     if (!sttSupported || callState === "speaking" || callState === "thinking" || callState === "transcribing") return;
     setError(null);
@@ -278,20 +401,18 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
       mediaRecorderRef.current = recorder;
       recorder.start();
       setCallState("listening");
+      startVadLoop(stream, () => stopListeningAndSendRef.current());
     } catch {
       setError("Microphone access was denied — check your browser's site permissions.");
     }
-  }, [sttSupported, callState]);
+  }, [sttSupported, callState, startVadLoop]);
 
-  // Release-to-send: stops the recording, uploads the clip for
-  // transcription, then hands the resulting text off to the exact same
-  // reply pipeline text chat uses.
+  // Called by the VAD loop once it decides the user has finished
+  // talking (or a mute mid-turn aborts it) — stops the recording,
+  // uploads the clip for transcription, then hands the resulting text
+  // off to the exact same reply pipeline text chat uses.
   const stopListeningAndSend = useCallback(() => {
-    // Still synchronous relative to the mic button's own release event
-    // at this point — see unlockAudioPlayback's own doc for why that
-    // matters on iOS.
-    unlockAudioPlayback();
-
+    stopVadLoop();
     const recorder = mediaRecorderRef.current;
     const stream = mediaStreamRef.current;
     if (!recorder || recorder.state === "inactive") {
@@ -358,13 +479,77 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
       })();
     };
     recorder.stop();
-  }, [sendMessage, onDoneRef, speak]);
+  }, [sendMessage, onDoneRef, speak, stopVadLoop]);
+
+  // Ref indirection so startVadLoop/startListening (defined above, for
+  // readability) can always call the CURRENT stopListeningAndSend
+  // without a circular useCallback dependency between the two.
+  const stopListeningAndSendRef = useRef(stopListeningAndSend);
+  useEffect(() => { stopListeningAndSendRef.current = stopListeningAndSend; }, [stopListeningAndSend]);
+
+  // Gates the auto-resume effect below until the explicit "tap to
+  // begin" gesture has unlocked audio playback (see beginCall) — without
+  // this, the hook would request mic access the instant startCall()
+  // runs, which the call screen currently does from a mount effect, not
+  // a tap. Requesting the mic before the user has done anything would
+  // both surprise them with a permission prompt on load and, for TTS
+  // playback specifically, happen outside any user gesture at all.
+  const canAutoListenRef = useRef(false);
+
+  /**
+   * TURN-TAKING-FIX / iOS AUDIO UNLOCK: the call screen's one required
+   * tap, replacing the old per-turn press-and-release gesture as the
+   * thing unlockAudioPlayback() hangs off of. Call this from a real
+   * onClick, not an effect.
+   */
+  const beginCall = useCallback(() => {
+    unlockAudioPlayback();
+    canAutoListenRef.current = true;
+    if (callState === "idle" && callActiveRef.current && !micMutedRef.current) {
+      void startListening();
+    }
+  }, [callState, startListening]);
+
+  // Auto-resume: once the call is live and unmuted, re-opens the mic
+  // every time callState returns to "idle" — right after beginCall's
+  // first tap, and again after every "speaking" finishes (the
+  // playingId effect above sets callState back to "idle", not
+  // "listening," specifically so this one effect is the single place
+  // that decides whether to start listening again, rather than
+  // duplicating that decision at every call site that can produce
+  // "idle").
+  useEffect(() => {
+    if (callState === "idle" && callActiveRef.current && !micMuted && canAutoListenRef.current) {
+      void startListening();
+    }
+  }, [callState, micMuted, startListening]);
+
+  const toggleMute = useCallback(() => {
+    setMicMuted((prev) => {
+      const next = !prev;
+      micMutedRef.current = next;
+      if (next && callState === "listening") {
+        // Muting mid-turn aborts rather than sends — the user muted
+        // because they don't want to be heard right now, not because
+        // they finished a thought.
+        stopVadLoop();
+        mediaRecorderRef.current?.stop();
+        mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+        mediaRecorderRef.current = null;
+        recordedChunksRef.current = [];
+        setCallState(callActiveRef.current ? "idle" : "ended");
+      }
+      return next;
+    });
+  }, [callState, stopVadLoop]);
 
   useEffect(() => () => endCall(), [endCall]);
 
   return {
     callState, transcript, error, sttSupported, elapsedSeconds,
-    startCall, endCall, startListening, stopListeningAndSend,
+    micMuted, liveVolume,
+    startCall, beginCall, endCall, toggleMute,
   };
 }
 
