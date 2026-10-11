@@ -170,6 +170,25 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
   const speakingStartedRef = useRef(false);
   const speakingWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // STABILITY-FIX: onInsufficientBalance is passed in as an inline arrow
+  // function from the call screen component, which means it's a NEW
+  // function identity on every single render of that component — not
+  // something this hook controls. Reading it through a ref instead of
+  // closing over it directly means reportUsage's own identity no longer
+  // depends on it, which matters a lot more than it looks: reportUsage's
+  // identity feeds endCall's, and endCall's identity feeds the
+  // unmount-cleanup effect further down (`useEffect(() => () => endCall(),
+  // [endCall])`), which does NOT only run on unmount — it re-runs the
+  // PREVIOUS render's cleanup every time `endCall` changes identity. With
+  // elapsedSeconds ticking a re-render every second, that meant endCall()
+  // — which tears down the mic stream and the VAD loop and sets
+  // callState to "ended" — was firing roughly once per second for the
+  // entire call, not just once at the real end. This is the actual
+  // reason the call never worked: the mic and VAD loop never survived
+  // long enough to complete a single turn before being torn down again.
+  const onInsufficientBalanceRef = useRef(onInsufficientBalance);
+  useEffect(() => { onInsufficientBalanceRef.current = onInsufficientBalance; }, [onInsufficientBalance]);
+
   const reportUsage = useCallback(async (seconds: number) => {
     if (seconds <= 0) return;
     try {
@@ -180,7 +199,7 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
       });
       const body = await res.json().catch(() => null);
       if (body?.insufficientTokens) {
-        onInsufficientBalance?.();
+        onInsufficientBalanceRef.current?.();
       }
     } catch {
       // Fail open client-side too — a billing-tick network hiccup
@@ -188,7 +207,7 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
       // simply folded into the next tick's report.
       unbilledSecondsRef.current += seconds;
     }
-  }, [onInsufficientBalance]);
+  }, []);
 
   const stopVadLoop = useCallback(() => {
     if (vadRafRef.current !== null) cancelAnimationFrame(vadRafRef.current);
@@ -544,7 +563,20 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
     });
   }, [callState, stopVadLoop]);
 
-  useEffect(() => () => endCall(), [endCall]);
+  // STABILITY-FIX (belt-and-suspenders): the fix above closes the one
+  // confirmed instability (onInsufficientBalance), but this pattern —
+  // depend on a ref to the LATEST callback, run the cleanup only once,
+  // on true unmount — is categorically immune to any other upstream
+  // identity churn (useChatStream's sendMessage, useVoicePlayback's
+  // play, etc.), rather than relying on every single dependency in the
+  // chain staying perfectly stable forever. `[endCall]` directly in the
+  // effect's own dependency array is exactly the pattern that caused
+  // this bug in the first place — every render where `endCall`'s
+  // identity changed re-ran the PREVIOUS render's cleanup immediately,
+  // not just on unmount.
+  const endCallRef = useRef(endCall);
+  useEffect(() => { endCallRef.current = endCall; }, [endCall]);
+  useEffect(() => () => endCallRef.current(), []);
 
   return {
     callState, transcript, error, sttSupported, elapsedSeconds,
