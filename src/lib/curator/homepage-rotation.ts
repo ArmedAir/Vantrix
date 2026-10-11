@@ -156,10 +156,26 @@ export async function runHomepageRotation(): Promise<RotationResult> {
   const now = Date.now();
 
   // 1. Which hero slots are ours?
+  // SLOTS-FIX: this used to select every is_featured=true row in the
+  // whole table with no order/limit — but the actual hero carousel
+  // (/api/discover/featured) only ever shows the top 5 by
+  // featured_position. With 25 characters marked is_featured=true
+  // (vs. 5 visible slots), `manualIds.size` was coming out as 25, so
+  // `slots = HERO_TOTAL_SLOTS - manualIds.size` went negative on every
+  // single run, tripping the "all hero slots are manually pinned" skip
+  // below unconditionally — this job had never once reached the brain
+  // call or logged a decision, which is why ai_brain_decisions was
+  // completely empty despite the cron running successfully on schedule.
+  // .order().limit(HERO_TOTAL_SLOTS) now mirrors that same query
+  // exactly, so this only counts characters that are ACTUALLY occupying
+  // one of the 5 visible hero slots, not every character anyone has
+  // ever flagged is_featured.
   const { data: featured, error: fErr } = await supabaseAdmin
     .from('characters')
     .select('id,featured_source')
-    .eq('is_featured', true);
+    .eq('is_featured', true)
+    .order('featured_position', { ascending: true })
+    .limit(HERO_TOTAL_SLOTS);
   if (fErr) throw new Error(`featured: ${fErr.message}`);
 
   const manualIds  = new Set((featured ?? []).filter(r => r.featured_source !== 'ai').map(r => r.id));
