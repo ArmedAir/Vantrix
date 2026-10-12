@@ -3,6 +3,7 @@
 import { useRef, type KeyboardEvent } from "react";
 import { Send, Camera, Video, Loader2, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { VoiceRecordButton } from "@/components/chat/voice-record-button";
 
 export function ChatComposer({
   value,
@@ -15,6 +16,7 @@ export function ChatComposer({
   onGenerateVideo,
   isGeneratingImage,
   isGeneratingVideo,
+  onVoiceTranscribed,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -29,6 +31,11 @@ export function ChatComposer({
   onGenerateVideo?: () => void;
   isGeneratingImage?: boolean;
   isGeneratingVideo?: boolean;
+  /** Receives the transcript once a held voice message is released — see
+   *  voice-record-button.tsx. Only shown (mic button rendered) when
+   *  provided, same optional-prop-gates-the-icon pattern onGenerateImage/
+   *  onGenerateVideo already use. */
+  onVoiceTranscribed?: (text: string) => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -149,6 +156,15 @@ export function ChatComposer({
           >
             <Square className="h-3.5 w-3.5 fill-current" />
           </Button>
+        ) : onVoiceTranscribed && !value.trim() ? (
+          // Mic replaces Send while the draft is empty — same "which
+          // control makes sense for what's currently in the box" logic
+          // as onStop replacing Send while streaming, just keyed off
+          // content instead of streaming state. Once the voice note is
+          // transcribed, onVoiceTranscribed fills `value` (see
+          // chat-window.tsx), which flips this back to the normal Send
+          // button so the user reviews/edits before it goes out.
+          <VoiceRecordButton onTranscribed={onVoiceTranscribed} disabled={disabled || isStreaming} />
         ) : (
           <Button
             size="icon"

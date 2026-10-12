@@ -1,6 +1,13 @@
 /**
- * POST /api/voice/call/transcribe — turns one push-to-talk recording into
- * text via ElevenLabs Scribe (POST https://api.elevenlabs.io/v1/speech-to-text).
+ * POST /api/voice/call/transcribe — turns one recorded clip into text via
+ * ElevenLabs Scribe (POST https://api.elevenlabs.io/v1/speech-to-text).
+ *
+ * SHARED, NOT CALL-ONLY: despite the path, this has no call-specific
+ * logic in it at all — just auth, an ElevenLabs key check, a size limit,
+ * and the forward-to-Scribe call. use-voice-message.ts (ordinary chat's
+ * hold-to-record voice messages) uses it too, same as the live call
+ * does. Kept at this one path rather than duplicating a second,
+ * near-identical route for the non-call case.
  *
  * STT-PLATFORM-FIX: the call feature originally used the browser's
  * built-in SpeechRecognition (webkitSpeechRecognition) client-side — it

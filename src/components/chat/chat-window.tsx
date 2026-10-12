@@ -103,6 +103,14 @@ export function ChatWindow({
     initialMessages.map(toLocal)
   );
   const [draft, setDraft] = useState("");
+  // VOICE-MESSAGES: true once a held voice recording has been
+  // transcribed into `draft` and hasn't been sent (or cleared) yet — see
+  // handleVoiceTranscribed/handleSend. Read-and-cleared at send time to
+  // decide whether this specific turn's reply should auto-play as voice,
+  // so "characters respond with voice" to a voice message without the
+  // user having to also tap the speaker icon — typed messages are
+  // unaffected, same as today.
+  const pendingVoiceReplyRef = useRef(false);
   const [lightboxMedia, setLightboxMedia] = useState<LightboxMedia | null>(null);
   const [lowQuota, setLowQuota] = useState<{ remaining: number; limit: number } | null>(null);
   // DELETE/REGENERATE (this revision): ids currently mid-delete, so their
@@ -281,16 +289,29 @@ export function ChatWindow({
     conversationId,
     characterId,
     onDone: (fullText, meta) => {
+      const assistantId = newId("assistant");
       setMessages((prev) => [
         ...prev,
         {
-          id: newId("assistant"),
+          id: assistantId,
           role: "assistant",
           content: fullText,
           status: "sent",
           createdAt: new Date().toISOString(),
         },
       ]);
+      // VOICE-MESSAGES: auto-play this reply as voice if it answers a
+      // voice message — reuses the exact same playVoice (useVoicePlayback)
+      // and /api/voice/tts path the speaker-icon button already calls,
+      // so the same per-character ElevenLabs voice, same relationship-
+      // stage gate, same token cost apply here too; this just triggers
+      // it automatically instead of waiting for a tap. Flag is read-and-
+      // cleared here, not at send time, so it survives exactly one reply
+      // and never leaks into the next (typed) turn.
+      if (pendingVoiceReplyRef.current) {
+        pendingVoiceReplyRef.current = false;
+        void playVoice(assistantId, fullText, characterId);
+      }
       // Nudge only once a free/capped user is close to the wall — not
       // worth showing at all for effectively-unlimited tiers, so this
       // only lights up on a genuinely low, finite remaining count.
@@ -465,6 +486,21 @@ export function ChatWindow({
     ]);
     setDraft("");
     void deliver(id, text);
+    // pendingVoiceReplyRef is read (and cleared) by onDone above, not
+    // here — this just leaves it as whatever handleVoiceTranscribed set
+    // it to, so the flag survives the gap between sending and the
+    // reply actually finishing streaming.
+  }
+
+  // VOICE-MESSAGES: fills the draft with the transcript rather than
+  // auto-sending — the user reviews/edits exactly like typed text before
+  // it goes anywhere, see voice-record-button.tsx's own doc on why this
+  // differs from the live call's auto-send-on-turn-end. Marks the next
+  // reply for auto-play so a voice message gets a voice reply without an
+  // extra tap on the speaker icon.
+  function handleVoiceTranscribed(text: string) {
+    pendingVoiceReplyRef.current = true;
+    setDraft(text);
   }
 
   // PERF: useCallback'd so `onRetry` is a stable prop reference across
@@ -782,7 +818,14 @@ export function ChatWindow({
       )}
       <ChatComposer
         value={draft}
-        onChange={setDraft}
+        onChange={(next) => {
+          // Editing the transcript away (including clearing it) means
+          // whatever gets sent next, if anything, is no longer the
+          // voice message that was just transcribed — don't carry the
+          // auto-play flag into an unrelated later send.
+          if (pendingVoiceReplyRef.current && next !== draft) pendingVoiceReplyRef.current = false;
+          setDraft(next);
+        }}
         onSend={handleSend}
         disabled={isStreaming}
         isStreaming={isStreaming}
@@ -791,6 +834,7 @@ export function ChatWindow({
         onGenerateVideo={handleGenerateVideo}
         isGeneratingImage={isGeneratingImage}
         isGeneratingVideo={isGeneratingVideo}
+        onVoiceTranscribed={handleVoiceTranscribed}
       />
       <MediaLightbox media={lightboxMedia} onClose={() => setLightboxMedia(null)} />
     </div>
