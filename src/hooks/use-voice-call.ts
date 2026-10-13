@@ -342,7 +342,13 @@ export function useVoiceCall({ conversationId, characterId, onInsufficientBalanc
     speakingMessageIdRef.current = id;
     speakingStartedRef.current = false;
     setCallState("speaking");
-    void play(id, text, characterId);
+    // CALL-GATE-FIX: context 'call' — see /api/voice/tts's own gate-check
+    // doc. Without this, every call's very first reply silently 403'd
+    // for any conversation still at "stranger" relationship stage (i.e.
+    // nearly every new call), regardless of anything else being fixed —
+    // this is the actual reason the character "didn't respond" even
+    // after the endCall-race-condition fix landed.
+    void play(id, text, characterId, undefined, "call");
 
     // WATCHDOG: covers every way playback can fail to ever start —
     // iOS Safari's autoplay-gesture policy rejecting audio.play() since

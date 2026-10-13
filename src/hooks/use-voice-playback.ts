@@ -123,7 +123,7 @@ export function useVoicePlayback() {
   useEffect(() => () => stop(), [stop]);
 
   const play = useCallback(
-    async (messageId: string, text: string, characterId: string, voiceId?: string) => {
+    async (messageId: string, text: string, characterId: string, voiceId?: string, context?: "message" | "call") => {
       // Tapping the currently-playing message's button again pauses it.
       if (playingId === messageId) {
         stop();
@@ -153,9 +153,16 @@ export function useVoicePlayback() {
         const res = await fetch("/api/voice/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            voiceId ? { text: speechText, characterId, voiceId } : { text: speechText, characterId }
-          ),
+          // CALL-GATE-FIX: context forwarded straight through to
+          // /api/voice/tts — see that route's schema/gate-check doc for
+          // why 'call' skips the relationship-stage gate and 'message'
+          // (the default either way, passed or not) doesn't.
+          body: JSON.stringify({
+            text: speechText,
+            characterId,
+            ...(voiceId ? { voiceId } : {}),
+            ...(context ? { context } : {}),
+          }),
         });
         const body = (await res.json().catch(() => null)) as TtsResponse | null;
 

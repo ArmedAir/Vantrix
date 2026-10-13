@@ -122,6 +122,12 @@ const schema = z.object({
   // Voice profile set at character creation
   voiceId:     z.string().max(100).optional(),  // ElevenLabs voice ID
   gender:      z.enum(['female', 'male', 'anime']).optional().default('female'),
+  // CALL-GATE-FIX: 'call' (set only by use-voice-call.ts's speak()) skips
+  // the relationship-stage gate below — see that block's own comment for
+  // why. Every other caller (the speaker-icon tap on a message bubble,
+  // and the new voice-messages auto-play reply in chat-window.tsx) stays
+  // 'message', the existing gated behavior, unchanged.
+  context:     z.enum(['message', 'call']).optional().default('message'),
 });
 
 function cacheKeyFor(text: string, voiceId: string, stability: number, style: number): string {
@@ -219,7 +225,21 @@ export async function POST(req: NextRequest) {
     // applied to voice messages. Admins bypass this the same way they
     // bypass the token wallet below — staff shouldn't need to grind a
     // relationship to test/use voice.
-    if (!isAdminProfile(profile)) {
+    //
+    // CALL-GATE-FIX: live voice calls (context: 'call') skip this too,
+    // not just admins. A call is already premium-gated AND metered
+    // per-minute (/api/voice/call/start + call-limits.ts) — a strictly
+    // stronger, more deliberate gate than relationship stage. Stacking
+    // this one on top meant every brand-new conversation (stage
+    // "stranger", rank 0, below the "acquaintance" floor this checks)
+    // silently failed on literally the first turn of every call, no
+    // matter how many other bugs got fixed — someone paying per-minute
+    // for a call shouldn't also have to grind chat messages first to
+    // make the feature they're paying for actually produce sound. The
+    // ordinary message-bubble speaker-icon tap and the new voice-message
+    // auto-play reply (chat-window.tsx) both still default to context
+    // 'message' and keep this gate exactly as designed.
+    if (!isAdminProfile(profile) && parsed.data.context !== 'call') {
       const relationship = await ensureRelationship(user.id, characterId);
       if (!canGenerateVoiceNote(relationship.stage)) {
         return NextResponse.json({
