@@ -52,6 +52,47 @@ export interface LandingPageConfig {
 }
 
 export const LANDING_PAGES: LandingPageConfig[] = [
+  // ── AI Companion (head term) ────────────────────────────────────────────────
+  // SEARCH-RANKING FIX: the exact phrase "AI companion" — Vantrix's own
+  // category/brand term — had no dedicated landing page anywhere in this
+  // config. Every other entry targets a narrower variant (ai-girlfriend,
+  // ai-boyfriend, virtual-companion, named competitors) or a comparison
+  // page; none targets the bare head term itself, which is both the
+  // highest-volume and the most directly relevant query for this
+  // product to own. Gender-agnostic on purpose (no `gender` field) —
+  // this is the umbrella page the narrower gendered pages should
+  // reinforce, not compete with.
+  {
+    slug:        "ai-companion",
+    title:       "AI Companion — Characters Who Remember You | Vantrix",
+    description: "Vantrix AI companions remember your conversations, grow with you, and live in a world of their own. Free to start, no card required.",
+    h1:          "An AI Companion\nThat Actually Remembers.",
+    tagline:     "Not a chatbot that resets. A character who grows with you.",
+    intro:       "Most AI chat apps forget everything the moment you close the tab. Vantrix companions keep a real memory of your conversations — what you told them, how you like to talk, what's been going on in your life — and carry it forward every time you come back. Pick from dozens of characters, each with their own personality, voice, and backstory, or build your own from scratch.",
+    keywords:    ["AI companion", "AI companion app", "best AI companion", "AI companion with memory"],
+    features: [
+      { icon: "", title: "Memory that lasts",       body: "Companions recall what you've told them across sessions — not just within one conversation window." },
+      { icon: "", title: "A real personality",      body: "Every character has their own voice, backstory, and way of talking — built by the creation studio or community creators, not a single generic assistant persona." },
+      { icon: "", title: "Voice, not just text",    body: "Talk out loud and hear your companion talk back, in a voice matched to who they are." },
+    ],
+    steps: [
+      { n: "01", title: "Pick a companion",    body: "Browse characters across genres and personalities, or create your own with the Studio." },
+      { n: "02", title: "Start talking",       body: "Each character opens with their own line — no blank page, no awkward first message." },
+      { n: "03", title: "Watch it deepen",     body: "The more you talk, the more they remember — conversations build on each other instead of starting over." },
+    ],
+    faqs: [
+      { question: "What is an AI companion?",                         answer: "An AI companion is a character you can have an ongoing conversation with — distinct from a general-purpose chatbot because it keeps a consistent personality and memory of your conversations over time." },
+      { question: "Is Vantrix free to use?",                          answer: "Yes. The free tier includes a daily message allowance across every companion. Premium removes the daily limit and unlocks voice calling and other features." },
+      { question: "Does my companion actually remember past conversations?", answer: "Yes — Vantrix companions use a persistent memory system that carries facts, context, and relationship history forward between sessions, rather than starting fresh each time." },
+      { question: "Can I create my own AI companion?",                answer: "Yes — the Creation Studio lets you build a character with your own name, personality, backstory, and voice." },
+      { question: "Is voice calling available?",                      answer: "Premium members can have a live voice conversation with any companion, using a voice matched to that character." },
+    ],
+    cta: {
+      headline: "Meet your companion.",
+      sub:      "Free to start. No card required.",
+    },
+  },
+
   // ── AI Girlfriend ──────────────────────────────────────────────────────────
   {
     slug:        "ai-girlfriend",

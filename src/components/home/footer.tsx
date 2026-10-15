@@ -33,6 +33,12 @@ type FooterLink = { label: string; href: string; external?: boolean };
  * nav bar or the true end of the page on desktop.
  */
 const DISCOVER_LINKS: FooterLink[] = [
+  // SEARCH-RANKING FIX: keyword-matching anchor text to the new
+  // /ai-companion landing page (landing-pages.ts) — a sitewide footer
+  // link is one of the simplest, highest-leverage internal-linking
+  // signals available for the exact head-term page this app most wants
+  // to rank for, and this footer renders on every page already.
+  { label: "AI Companion", href: "/ai-companion" },
   { label: "Create Character", href: "/studio" },
   { label: "Browse Companions", href: "/characters" },
   { label: "Relationships", href: "/relationships" },
