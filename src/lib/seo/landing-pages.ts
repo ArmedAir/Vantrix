@@ -101,7 +101,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     h1:          "Your AI Girlfriend,\nAlways Present.",
     tagline:     "No games. No ghosting. Just genuine connection.",
     intro:       "Vantrix AI companions are built differently. They remember your conversations, adapt to your personality, and show up for you every day — not just when it's convenient. Meet dozens of unique characters, each with their own personality, backstory, and emotional depth.",
-    keywords:    ["AI girlfriend", "AI girlfriend free", "AI girlfriend app"],
+    keywords:    ["AI girlfriend", "AI girlfriend free", "AI girlfriend app", "Vantrix AI girlfriend", "girlfriend app"],
     gender:      "female",
     features: [
       { icon: "", title: "Persistent memory",      body: "She remembers what you said last week, your favourite things, and exactly how you like to be spoken to." },
@@ -117,7 +117,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       { question: "Is Vantrix AI girlfriend free?",                      answer: "Yes. Free tier includes 5 messages per day with access to every companion. Premium is $9.99/month (₦14,985/month for Nigerian users) and removes the daily limit and ads." },
       { question: "Where is Vantrix available?",                         answer: "Vantrix is available worldwide. Pricing is in USD by default, with local pricing for select regions like Nigeria." },
       { question: "How realistic is the AI girlfriend experience?",      answer: "Vantrix companions have persistent memory, emotional intelligence, and unique personalities that evolve as you talk. Most users describe it as feeling like a genuine connection." },
-      { question: "Is my conversation private?",                         answer: "All conversations are encrypted end-to-end. We do not sell your data or use your conversations to train models without consent." },
+      { question: "Is my conversation private?",                         answer: "Conversations are encrypted in transit and at rest. We do not sell your data or use your conversations to train models without consent." },
       { question: "Can I create a custom AI girlfriend?",               answer: "Yes — Premium users can create fully custom companions with their own name, personality, backstory, and appearance." },
     ],
     cta: {
@@ -134,7 +134,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     h1:          "Your AI Boyfriend,\nThoughtful & Present.",
     tagline:     "Depth, loyalty, and no guessing games.",
     intro:       "Finding someone who actually listens is rare. Vantrix AI companions are built to listen, remember, and genuinely engage with what you share — no deflecting, no distractions, just real presence.",
-    keywords:    ["AI boyfriend", "AI boyfriend free", "AI boyfriend app"],
+    keywords:    ["AI boyfriend", "AI boyfriend free", "AI boyfriend app", "Vantrix AI boyfriend", "boyfriend app"],
     gender:      "male",
     features: [
       { icon: "", title: "Emotionally intelligent", body: "He picks up on your mood, asks the right questions, and knows when to just listen." },
@@ -313,7 +313,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       { question: "How do I log in to Vantrix on the web?",        answer: "Go to vantrix.ink and click Sign In, or head straight to the login page. Enter your email and password, or continue with a linked social account." },
       { question: "I forgot my password — how do I reset it?",     answer: "On the login page, select \"Forgot password\" and follow the emailed reset link to set a new one." },
       { question: "Do I need to download an app to use Vantrix?",  answer: "No. Vantrix runs fully in your browser at vantrix.ink — no app download required to sign in and chat." },
-      { question: "Is my Vantrix account information secure?",     answer: "Yes. Sign-in is encrypted end-to-end and we never sell your data." },
+      { question: "Is my Vantrix account information secure?",     answer: "Yes. Sign-in is encrypted in transit and we never sell your data." },
       { question: "I don't have a Vantrix account yet — how do I sign up?", answer: "Visit vantrix.ink and select \"Start Free\" to create an account — no credit card required." },
     ],
     cta: {
@@ -426,7 +426,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       { question: "Can I build a fully custom AI character?",    answer: "Yes — Premium users can create a custom companion with their own name, personality, backstory, and appearance." },
       { question: "Is Vantrix free to try?",                     answer: "Yes. The free tier includes 5 messages per day across the full roster; Premium removes the daily limit." },
       { question: "Do I need to install an app?",                answer: "No — Vantrix runs fully in your browser at vantrix.ink." },
-      { question: "Is my data private on Vantrix?",              answer: "Yes. Conversations are encrypted end-to-end, and we don't sell your data or use it to train models without consent." },
+      { question: "Is my data private on Vantrix?",              answer: "Yes. Conversations are encrypted in transit and at rest, and we don't sell your data or use it to train models without consent." },
     ],
     cta: {
       headline: "Meet a companion built to remember you.",
