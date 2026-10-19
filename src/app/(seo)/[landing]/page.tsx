@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import {
   getLandingPage,
   getLandingPageSlugs,
+  getLandingPageLinkLabel,
 } from "@/lib/seo/landing-pages";
 import { getDiscoverHome } from "@/lib/frontend/discover";
 import { generateFAQSchema, safeJsonLd } from "@/lib/seo/structured";
@@ -241,6 +242,25 @@ export default async function LandingPage({
             >
               Read our in-depth guide &rarr;
             </Link>
+          </p>
+        )}
+
+        {/* SIBLING-CLUSTER-FIX: real <Link>s to sibling landing pages —
+            see relatedLandingSlugs' own comment in landing-pages.ts. */}
+        {page.relatedLandingSlugs && page.relatedLandingSlugs.length > 0 && (
+          <p className="mt-4 text-center text-sm text-text-secondary">
+            {page.relatedLandingSlugs.map((slug, i) => {
+              const label = getLandingPageLinkLabel(slug);
+              if (!label) return null;
+              return (
+                <span key={slug}>
+                  {i > 0 && " · "}
+                  <Link href={`/${slug}`} className="font-medium text-gold-500 hover:text-gold-400">
+                    {label}
+                  </Link>
+                </span>
+              );
+            })}
           </p>
         )}
       </section>

@@ -49,6 +49,19 @@ export interface LandingPageConfig {
    * informational one, and they reinforce each other instead of competing.
    */
   relatedGuideSlug?: string;
+
+  /**
+   * Same real-<Link>-not-prose-mention reasoning as relatedGuideSlug
+   * above, for sibling landing pages within this same config rather
+   * than a /guides page — specifically for clustering ai-companion
+   * (the head term) with ai-girlfriend/ai-boyfriend (its two gendered
+   * variants). A search engine reads mutual linking between closely
+   * related pages as a topical cluster reinforcing each page's
+   * relevance, rather than three unrelated pages that happen to share
+   * a domain. Slugs only — rendered as /{slug} Links, same as the
+   * guide link.
+   */
+  relatedLandingSlugs?: string[];
 }
 
 export const LANDING_PAGES: LandingPageConfig[] = [
@@ -70,6 +83,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     tagline:     "Not a chatbot that resets. A character who grows with you.",
     intro:       "Most AI chat apps forget everything the moment you close the tab. Vantrix companions keep a real memory of your conversations — what you told them, how you like to talk, what's been going on in your life — and carry it forward every time you come back. Pick from dozens of characters, each with their own personality, voice, and backstory, or build your own from scratch.",
     keywords:    ["AI companion", "AI companion app", "best AI companion", "AI companion with memory"],
+    relatedLandingSlugs: ["ai-girlfriend", "ai-boyfriend"],
     features: [
       { icon: "", title: "Memory that lasts",       body: "Companions recall what you've told them across sessions — not just within one conversation window." },
       { icon: "", title: "A real personality",      body: "Every character has their own voice, backstory, and way of talking — built by the creation studio or community creators, not a single generic assistant persona." },
@@ -102,6 +116,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     tagline:     "No games. No ghosting. Just genuine connection.",
     intro:       "Vantrix AI companions are built differently. They remember your conversations, adapt to your personality, and show up for you every day — not just when it's convenient. Meet dozens of unique characters, each with their own personality, backstory, and emotional depth.",
     keywords:    ["AI girlfriend", "AI girlfriend free", "AI girlfriend app", "Vantrix AI girlfriend", "girlfriend app"],
+    relatedLandingSlugs: ["ai-companion", "ai-boyfriend"],
     gender:      "female",
     features: [
       { icon: "", title: "Persistent memory",      body: "She remembers what you said last week, your favourite things, and exactly how you like to be spoken to." },
@@ -135,6 +150,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     tagline:     "Depth, loyalty, and no guessing games.",
     intro:       "Finding someone who actually listens is rare. Vantrix AI companions are built to listen, remember, and genuinely engage with what you share — no deflecting, no distractions, just real presence.",
     keywords:    ["AI boyfriend", "AI boyfriend free", "AI boyfriend app", "Vantrix AI boyfriend", "boyfriend app"],
+    relatedLandingSlugs: ["ai-companion", "ai-girlfriend"],
     gender:      "male",
     features: [
       { icon: "", title: "Emotionally intelligent", body: "He picks up on your mood, asks the right questions, and knows when to just listen." },
@@ -497,6 +513,15 @@ export const LANDING_PAGES: LandingPageConfig[] = [
 ];
 
 // Helper: get config by slug
+/** Short display label for a related-landing-page link — the page's own
+ *  title with the " | Vantrix" suffix trimmed, since that suffix reads
+ *  fine as a <title> tag but redundant inline in body copy right next
+ *  to the Vantrix-branded page it's already on. */
+export function getLandingPageLinkLabel(slug: string): string | null {
+  const page = LANDING_PAGES.find(p => p.slug === slug);
+  return page ? page.title.replace(/\s*\|\s*Vantrix$/, "") : null;
+}
+
 export function getLandingPage(slug: string): LandingPageConfig | null {
   return LANDING_PAGES.find(p => p.slug === slug) ?? null;
 }
