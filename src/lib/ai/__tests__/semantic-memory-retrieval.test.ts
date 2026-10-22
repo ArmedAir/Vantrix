@@ -71,24 +71,27 @@ describe('retrieveRelevantMemories — widened contract', () => {
     expect(result.map(m => m.id)).toEqual(expect.arrayContaining(['c1', 'c2']));
   });
 
-  it('caps out-of-pool admissions at MAX_EXTRA_SIMILARITY_HITS (3)', async () => {
+  it('caps out-of-pool admissions at MAX_EXTRA_SIMILARITY_HITS (8)', async () => {
+    // STALE-TEST-FIX: was asserting a cap of 3 with 5 candidates (2 over).
+    // semantic-memory.ts's own "2026-09-14, recall-reliability pass"
+    // comment documents MAX_EXTRA_SIMILARITY_HITS being deliberately
+    // raised 3 -> 8 to fix exactly the kind of under-recall
+    // memory-recall-eval.test.ts's eval harness exists to catch — this
+    // test just hadn't been updated to match. Now exercises 10
+    // candidates (2 over the real cap of 8) so it still actually tests
+    // the boundary instead of trivially passing with every input in
+    // range.
     const candidates = [node({ id: 'c1' }), node({ id: 'c2' })];
-    mockedSearch.mockResolvedValue([
-      similarMemory({ id: 'outside-1' }),
-      similarMemory({ id: 'outside-2' }),
-      similarMemory({ id: 'outside-3' }),
-      similarMemory({ id: 'outside-4' }), // should be dropped — over the cap
-      similarMemory({ id: 'outside-5' }), // should be dropped — over the cap
-    ]);
+    mockedSearch.mockResolvedValue(
+      Array.from({ length: 10 }, (_, i) => similarMemory({ id: `outside-${i + 1}` })),
+    );
 
     const result = await retrieveRelevantMemories('u1', 'c1', candidates, 'message');
     const ids = result.map(m => m.id);
 
-    expect(ids).toContain('outside-1');
-    expect(ids).toContain('outside-2');
-    expect(ids).toContain('outside-3');
-    expect(ids).not.toContain('outside-4');
-    expect(ids).not.toContain('outside-5');
+    for (let i = 1; i <= 8; i++) expect(ids).toContain(`outside-${i}`);
+    expect(ids).not.toContain('outside-9');
+    expect(ids).not.toContain('outside-10');
   });
 
   it('still reorders in-pool candidates by similarity rank (pre-existing behavior)', async () => {

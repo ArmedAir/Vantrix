@@ -12,16 +12,30 @@ import { resolveVoiceId, VOICE_LIBRARY } from '@/lib/ai/voice-library';
 // ── resolveCharacterRole ─────────────────────────────────────────────────
 
 describe('resolveCharacterRole', () => {
-  it('matches each of the five roles from personality/backstory/occupation/category text', () => {
+  // STALE-TEST-FIX (reapplied — this file reverted to its pre-expansion
+  // state at some point after the original fix, per this session's deep
+  // audit): character-role.ts's ROLE_RULES doc documents a 2026-09-15
+  // archetype expansion from 5 roles to 12 (mentor, bad_boy,
+  // mysterious_stranger, best_friend, ice_queen, yandere, protector
+  // added), plus `archetype` becoming a first-class, highest-priority
+  // match input alongside personality/backstory/occupation/category.
+  it('matches each of the twelve roles from personality/backstory/occupation/category text/archetype', () => {
     expect(resolveCharacterRole({ occupation: 'novelist' })).toBe('poet');
     expect(resolveCharacterRole({ backstory: 'grew up gaming and streaming' })).toBe('gamer');
     expect(resolveCharacterRole({ occupation: 'research professor' })).toBe('professor');
     expect(resolveCharacterRole({ personality: 'sweet and bubbly' })).toBe('girl_next_door');
     expect(resolveCharacterRole({ personality: 'a gentle, nurturing companion' })).toBe('companion');
+    expect(resolveCharacterRole({ archetype: 'The Mentor', occupation: 'philosophy professor' })).toBe('mentor');
+    expect(resolveCharacterRole({ archetype: 'The Bad Boy' })).toBe('bad_boy');
+    expect(resolveCharacterRole({ personality: 'mysterious and aloof' })).toBe('mysterious_stranger');
+    expect(resolveCharacterRole({ archetype: 'Best Friend' })).toBe('best_friend');
+    expect(resolveCharacterRole({ archetype: 'Ice Queen / High Achiever' })).toBe('ice_queen');
+    expect(resolveCharacterRole({ personality: 'devoted, borderline possessive' })).toBe('yandere');
+    expect(resolveCharacterRole({ archetype: 'Sworn Protector' })).toBe('protector');
   });
 
   it('returns null — not a fallback key — when nothing matches', () => {
-    expect(resolveCharacterRole({ personality: 'mysterious and aloof' })).toBeNull();
+    expect(resolveCharacterRole({ personality: 'runs a bakery, loves jazz' })).toBeNull();
     expect(resolveCharacterRole({})).toBeNull();
   });
 });
@@ -88,7 +102,7 @@ describe('selectRoleAwareCandidates', () => {
 // ── isCharacterRoleKey ───────────────────────────────────────────────────
 
 describe('isCharacterRoleKey', () => {
-  it('accepts the five known roles and rejects anything else', () => {
+  it('accepts the twelve known roles and rejects anything else', () => {
     for (const key of CHARACTER_ROLE_KEYS) {
       expect(isCharacterRoleKey(key)).toBe(true);
     }

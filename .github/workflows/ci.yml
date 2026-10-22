@@ -1,0 +1,71 @@
+name: CI
+
+# verify and build must NEVER be conditional on E2E secrets — they prove
+# typecheck/lint/unit-tests/build itself still work, independent of whether
+# this repo has E2E credentials configured. Only the e2e job (and its
+# complementary e2e-skip-notice) are secret-gated — see ARCH-17.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test
+
+  build:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+        env:
+          CRON_TIER: free
+
+  e2e:
+    needs: build
+    if: ${{ secrets.E2E_TEST_EMAIL != '' && secrets.E2E_TEST_PASSWORD != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+        env:
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  e2e-skip-notice:
+    needs: build
+    if: ${{ !(secrets.E2E_TEST_EMAIL != '' && secrets.E2E_TEST_PASSWORD != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '') }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Skipping E2E — E2E_TEST_EMAIL/E2E_TEST_PASSWORD/NEXT_PUBLIC_SUPABASE_URL not all set as repo secrets. verify/build still ran and passed."

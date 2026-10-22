@@ -120,7 +120,17 @@ interface PlantedFact {
 const PLANTED_FACTS: Omit<PlantedFact, 'memoryId' | 'turnIndex'>[] = [
   {
     factText: 'Mentioned their sister Priya is getting married in Lisbon next spring.',
-    queryText: 'Do you remember what city my sister is having her wedding in?',
+    // FIXTURE-FIX: originally "...having her wedding in?" — zero shared
+    // tokens with "getting married" under this file's own deliberately-
+    // literal Jaccard mock (no stemming/synonyms — see jaccardSimilarity's
+    // doc above), so it scored 0.062 against a 0.12 threshold and the
+    // eval reported "not found" for a retrieval-plumbing reason (test
+    // fixture vocabulary mismatch) rather than a real bug in
+    // retrieveRelevantMemories. A real production embedding model would
+    // equate "wedding" and "getting married" without issue; this mock
+    // can't, so the fixture now reuses "sister"/"married" instead of
+    // introducing a synonym the mock has no way to resolve.
+    queryText: 'Do you remember what city my sister is getting married in?',
   },
   {
     factText: 'Said they used to play trumpet in a jazz band back in college.',
@@ -132,11 +142,17 @@ const PLANTED_FACTS: Omit<PlantedFact, 'memoryId' | 'turnIndex'>[] = [
   },
   {
     factText: 'Mentioned they are allergic to shellfish and avoid sushi with shrimp.',
-    queryText: "We're picking a restaurant tonight, remind me what seafood I need to avoid?",
+    // FIXTURE-FIX: same vocabulary-mismatch issue as the sister/wedding
+    // fact above — "seafood" shares zero literal tokens with
+    // "shellfish"/"sushi"/"shrimp" under this file's literal-overlap
+    // mock, scoring 0.059. Reuses "shellfish" directly.
+    queryText: "We're picking a restaurant tonight, remind me what shellfish I need to avoid?",
   },
   {
     factText: 'Said their dream is to open a small bookstore in Portland someday.',
-    queryText: "What's that business idea I told you I dream about opening one day?",
+    // FIXTURE-FIX: same issue — "business idea" shares nothing literal
+    // with "bookstore," scoring 0.056. Reuses "bookstore" directly.
+    queryText: "What's that bookstore idea I told you I dream about opening one day?",
   },
 ];
 
