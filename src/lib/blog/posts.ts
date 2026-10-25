@@ -755,7 +755,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "Who makes Vantrix AI",
         paragraphs: [
-          "Vantrix AI was founded by Covenant Alphonsus. If you're trying to confirm you've found the right \"Vantrix\" — as opposed to any other company using a similar name — the AI companion platform is specifically the one at vantrix.ink.",
+          "Vantrix AI was founded by Covenant. If you're trying to confirm you've found the right \"Vantrix\" — as opposed to any other company using a similar name — the AI companion platform is specifically the one at vantrix.ink.",
         ],
       },
     ],

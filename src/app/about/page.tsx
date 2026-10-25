@@ -6,7 +6,7 @@ import { generateSEOMeta } from "@/lib/seo/meta";
 export const metadata = generateSEOMeta({
   title: "About | Vantrix",
   description:
-    "Vantrix builds AI companions with persistent memory — Silicon Valley-caliber AI engineering, serving a worldwide audience. Founded by Covenant Alphonsus and based in New York, USA.",
+    "Vantrix builds AI companions with persistent memory — Silicon Valley-caliber AI engineering, serving a worldwide audience. Founded by Covenant and based in New York, USA.",
   path: "/about",
 });
 
@@ -46,7 +46,7 @@ export default async function AboutPage() {
             worldwide audience of users, in every timezone, every day.
           </p>
           <p>
-            Vantrix is founded by Covenant Alphonsus and based in New York,
+            Vantrix is founded by Covenant and based in New York,
             USA. We&apos;re building this because we think persistent,
             emotionally intelligent AI companionship is a real product
             category — not a novelty. If you want to reach us, see{" "}

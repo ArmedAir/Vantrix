@@ -1,7 +1,7 @@
 /**
  * referral-config.ts
  *
- * ECONOMICS PHILOSOPHY (per Alphonsus's brief: "pricing more to my end,
+ * ECONOMICS PHILOSOPHY (per Covenant's brief: "pricing more to my end,
  * less to advertisers"):
  *
  * Industry norm for SaaS affiliate programs is 20-30% LIFETIME recurring

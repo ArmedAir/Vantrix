@@ -45,7 +45,7 @@ export default async function PressPage() {
             each user, and exist inside a world that keeps advancing whether
             or not a conversation is active. Built to Silicon Valley-caliber
             engineering standards and serving a worldwide user base, Vantrix
-            is founded by Covenant Alphonsus and based in New York, USA.
+            is founded by Covenant and based in New York, USA.
           </p>
         </section>
 
@@ -64,7 +64,7 @@ export default async function PressPage() {
             Quick facts
           </h2>
           <ul className="mt-2 space-y-1.5 text-[15px] leading-relaxed text-text-secondary list-disc pl-5">
-            <li>Founder: Covenant Alphonsus</li>
+            <li>Founder: Covenant</li>
             <li>Headquarters: New York, USA</li>
             <li>Category: AI companion platform</li>
             <li>

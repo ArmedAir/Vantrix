@@ -90,7 +90,7 @@ export default async function BlogPostPage({
             month: "long",
             day: "numeric",
           })}{" "}
-          · {post.readingTime} · By Covenant Alphonsus
+          · {post.readingTime} · By Covenant
         </p>
 
         <div className="mt-8 space-y-6">

@@ -62,7 +62,7 @@ export function generateOrganizationSchema() {
     },
     founder: {
       "@type": "Person",
-      name: "Covenant Alphonsus",
+      name: "Covenant",
       sameAs: ["https://x.com/dxcovenant9"],
     },
     areaServed: {
@@ -220,7 +220,7 @@ export function generateArticleSchema(post: {
     dateModified: post.dateModified ?? post.datePublished,
     author: {
       "@type": "Person",
-      name: "Covenant Alphonsus",
+      name: "Covenant",
     },
     publisher: {
       "@type": "Organization",
@@ -258,7 +258,7 @@ export function generateSoftwareApplicationSchema() {
     alternateName: ["Vantrix AI", "Vantrix.ink"],
     creator: {
       "@type": "Person",
-      name: "Covenant Alphonsus",
+      name: "Covenant",
     },
     applicationCategory: "LifestyleApplication",
     applicationSubCategory: "AI Companion Platform",

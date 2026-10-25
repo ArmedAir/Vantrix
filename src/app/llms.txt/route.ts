@@ -38,7 +38,7 @@ import { getPublicCharacters } from "@/lib/seo/public-character";
  * every bot's parser may not implement the same way) defeated its own
  * purpose.
  *
- * ENTITY IDENTITY: founder (Covenant Alphonsus) and location (New York,
+ * ENTITY IDENTITY: founder (Covenant) and location (New York,
  * USA) are stated here and mirrored in generateOrganizationSchema() /
  * generateSoftwareApplicationSchema() (src/lib/seo/structured.ts) and
  * the /about page — keep all three in sync if either changes.
@@ -140,7 +140,7 @@ sessions, changes over time based on the relationship's history, and
 exists inside a world/story system that keeps advancing whether or not
 you're actively talking to them.
 
-Vantrix is founded by Covenant Alphonsus and based in New York, USA.
+Vantrix is founded by Covenant and based in New York, USA.
 
 ## What makes Vantrix different
 - Persistent, cross-session memory (not a per-session context window)

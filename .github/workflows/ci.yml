@@ -4,6 +4,17 @@ name: CI
 # typecheck/lint/unit-tests/build itself still work, independent of whether
 # this repo has E2E credentials configured. Only the e2e job (and its
 # complementary e2e-skip-notice) are secret-gated — see ARCH-17.
+#
+# SECRETS-IN-IF-FIX: the `secrets` context is not a valid named-value in a
+# job-level (or step-level) `if:` — GitHub rejects the ENTIRE workflow file
+# at validation time if it appears there ("Unrecognized named-value:
+# 'secrets'"), before a single job is ever scheduled. Confirmed live
+# against this exact file: an earlier version conditioned e2e/e2e-skip-
+# notice directly on secrets.* in their `if:` and every push produced a
+# run with conclusion "failure" and zero jobs — a parse-time rejection,
+# not a runtime failure. Fix: mirror each secret into a job-level `env:`
+# first (secrets ARE allowed in `env:`), then condition on `env.X` instead
+# of `secrets.X` — `env` is on GitHub's allowed-contexts list for `if:`.
 on:
   push:
     branches: [main]
@@ -39,9 +50,14 @@ jobs:
         env:
           CRON_TIER: free
 
+  # e2e/e2e-skip-notice: see SECRETS-IN-IF-FIX note at the top of this file.
   e2e:
     needs: build
-    if: ${{ secrets.E2E_TEST_EMAIL != '' && secrets.E2E_TEST_PASSWORD != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
+    env:
+      E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+    if: ${{ env.E2E_TEST_EMAIL != '' && env.E2E_TEST_PASSWORD != '' && env.NEXT_PUBLIC_SUPABASE_URL != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,10 +68,6 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
-        env:
-          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
-          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -65,7 +77,11 @@ jobs:
 
   e2e-skip-notice:
     needs: build
-    if: ${{ !(secrets.E2E_TEST_EMAIL != '' && secrets.E2E_TEST_PASSWORD != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '') }}
+    env:
+      E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+    if: ${{ !(env.E2E_TEST_EMAIL != '' && env.E2E_TEST_PASSWORD != '' && env.NEXT_PUBLIC_SUPABASE_URL != '') }}
     runs-on: ubuntu-latest
     steps:
       - run: echo "Skipping E2E — E2E_TEST_EMAIL/E2E_TEST_PASSWORD/NEXT_PUBLIC_SUPABASE_URL not all set as repo secrets. verify/build still ran and passed."

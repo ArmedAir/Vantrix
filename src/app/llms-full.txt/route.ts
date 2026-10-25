@@ -102,7 +102,7 @@ and exists inside a world/story system that keeps advancing whether or
 not the user is actively talking to them. Every character is disclosed
 as an AI system, not a person.
 
-Founded by Covenant Alphonsus. Based in New York, USA.
+Founded by Covenant. Based in New York, USA.
 
 ## Pricing (verified against the live product config)
 
