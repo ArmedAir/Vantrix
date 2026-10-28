@@ -5,16 +5,23 @@ name: CI
 # this repo has E2E credentials configured. Only the e2e job (and its
 # complementary e2e-skip-notice) are secret-gated — see ARCH-17.
 #
-# SECRETS-IN-IF-FIX: the `secrets` context is not a valid named-value in a
-# job-level (or step-level) `if:` — GitHub rejects the ENTIRE workflow file
-# at validation time if it appears there ("Unrecognized named-value:
-# 'secrets'"), before a single job is ever scheduled. Confirmed live
-# against this exact file: an earlier version conditioned e2e/e2e-skip-
-# notice directly on secrets.* in their `if:` and every push produced a
-# run with conclusion "failure" and zero jobs — a parse-time rejection,
-# not a runtime failure. Fix: mirror each secret into a job-level `env:`
-# first (secrets ARE allowed in `env:`), then condition on `env.X` instead
-# of `secrets.X` — `env` is on GitHub's allowed-contexts list for `if:`.
+# SECRETS-IN-IF-FIX: two attempts, two confirmed-live failures (push,
+# check the Actions run, see conclusion "failure" with zero jobs
+# scheduled — a parse-time rejection, not a runtime one), before landing
+# on the pattern below:
+#   1. `if: secrets.E2E_TEST_EMAIL != ''` directly on e2e/e2e-skip-notice
+#      — `secrets` is not a valid named-value in ANY `if:` (job or step).
+#   2. Mirroring secrets into a job-level `env:` and conditioning on
+#      `if: env.E2E_TEST_EMAIL != ''` instead — looks like the documented
+#      fix for #1 (and `env:` CAN read `secrets` fine), but GitHub's own
+#      context-availability table does not list `env` as available in a
+#      job-level `if:` either — only `github`, `needs`, `vars`, `inputs`
+#      are. Same rejection, same zero jobs.
+# The pattern that actually works: `secrets` IS always readable inside a
+# `run:` step (job-level `if:` is what's restricted, not step execution).
+# check-e2e-secrets below computes the boolean in a step, publishes it as
+# a job OUTPUT, and e2e/e2e-skip-notice condition on
+# needs.check-e2e-secrets.outputs.present — `needs` is on the allowed list.
 on:
   push:
     branches: [main]
@@ -50,14 +57,30 @@ jobs:
         env:
           CRON_TIER: free
 
-  # e2e/e2e-skip-notice: see SECRETS-IN-IF-FIX note at the top of this file.
-  e2e:
+  # check-e2e-secrets / e2e / e2e-skip-notice: see SECRETS-IN-IF-FIX note
+  # at the top of this file for why this is a separate job rather than a
+  # condition directly on e2e itself.
+  check-e2e-secrets:
     needs: build
-    env:
-      E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
-      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-    if: ${{ env.E2E_TEST_EMAIL != '' && env.E2E_TEST_PASSWORD != '' && env.NEXT_PUBLIC_SUPABASE_URL != '' }}
+    runs-on: ubuntu-latest
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "${E2E_TEST_EMAIL:-}" ] && [ -n "${E2E_TEST_PASSWORD:-}" ] && [ -n "${SUPABASE_URL:-}" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+
+  e2e:
+    needs: [build, check-e2e-secrets]
+    if: needs.check-e2e-secrets.outputs.present == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,6 +91,10 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
+        env:
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -76,12 +103,8 @@ jobs:
           retention-days: 14
 
   e2e-skip-notice:
-    needs: build
-    env:
-      E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
-      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-    if: ${{ !(env.E2E_TEST_EMAIL != '' && env.E2E_TEST_PASSWORD != '' && env.NEXT_PUBLIC_SUPABASE_URL != '') }}
+    needs: [build, check-e2e-secrets]
+    if: needs.check-e2e-secrets.outputs.present != 'true'
     runs-on: ubuntu-latest
     steps:
       - run: echo "Skipping E2E — E2E_TEST_EMAIL/E2E_TEST_PASSWORD/NEXT_PUBLIC_SUPABASE_URL not all set as repo secrets. verify/build still ran and passed."

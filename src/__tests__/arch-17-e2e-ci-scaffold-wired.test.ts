@@ -92,29 +92,31 @@ describe("ARCH-17 — ci.yml", () => {
 
   it("build requires verify, and e2e requires build", () => {
     expect(jobBlock("build")).toMatch(/needs:\s*verify/);
-    expect(jobBlock("e2e")).toMatch(/needs:\s*build/);
+    // needs: [build, check-e2e-secrets] — see SECRETS-IN-IF-FIX note in
+    // ci.yml for why e2e also needs check-e2e-secrets, not just build.
+    expect(jobBlock("e2e")).toMatch(/needs:\s*\[build, check-e2e-secrets\]/);
   });
 
   it("e2e and e2e-skip-notice conditions are complementary (exactly one runs)", () => {
+    const check = jobBlock("check-e2e-secrets");
     const e2e = jobBlock("e2e");
     const skip = jobBlock("e2e-skip-notice");
-    // SECRETS-IN-IF-FIX: `secrets` is not a valid named-value in a job-
-    // level `if:` — GitHub rejects the WHOLE workflow file at validation
-    // time if it appears there (confirmed live: the previous version of
-    // this assertion required exactly that invalid pattern, and pushing
-    // it produced a run with conclusion "failure" and zero jobs
-    // scheduled — a parse-time rejection, not a runtime failure). The
-    // fix ci.yml uses: mirror each secret into a job-level `env:` (where
-    // `secrets` IS allowed), then condition on `env.X` instead — `env`
-    // is on GitHub's allowed-contexts list for `if:`. These assertions
-    // now check for that valid pattern instead of the invalid one.
-    expect(e2e).toMatch(/E2E_TEST_EMAIL:\s*\$\{\{\s*secrets\.E2E_TEST_EMAIL\s*\}\}/);
-    expect(e2e).toMatch(/env\.E2E_TEST_EMAIL\s*!=\s*''/);
+    // SECRETS-IN-IF-FIX: `secrets`/`env` are not valid named-values in a
+    // job-level `if:` — GitHub rejects the WHOLE workflow file at
+    // validation time if either appears there (confirmed live, twice:
+    // two earlier versions of this assertion each required one of those
+    // invalid patterns, and pushing either produced a run with
+    // conclusion "failure" and zero jobs scheduled — a parse-time
+    // rejection, not a runtime failure). The fix ci.yml uses:
+    // check-e2e-secrets reads secrets inside a `run:` step (always
+    // allowed there) and publishes a job OUTPUT, which e2e/e2e-skip-
+    // notice then condition on via `needs.*.outputs.present` — `needs`
+    // IS on GitHub's allowed-contexts list for `if:`.
+    expect(check).toMatch(/E2E_TEST_EMAIL:\s*\$\{\{\s*secrets\.E2E_TEST_EMAIL\s*\}\}/);
+    expect(e2e).toContain("needs.check-e2e-secrets.outputs.present == 'true'");
     // The skip-notice job must negate the same condition, not a
     // different/looser one, or both (or neither) could run.
-    expect(skip).toContain(
-      "!(env.E2E_TEST_EMAIL != '' && env.E2E_TEST_PASSWORD != '' && env.NEXT_PUBLIC_SUPABASE_URL != '')"
-    );
+    expect(skip).toContain("needs.check-e2e-secrets.outputs.present != 'true'");
   });
 
   it("e2e job installs a browser binary before running tests", () => {
