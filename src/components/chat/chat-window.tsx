@@ -435,12 +435,40 @@ export function ChatWindow({
     const contentEl = contentRef.current;
     const scrollEl = scrollRef.current;
     if (!contentEl || !scrollEl || typeof ResizeObserver === "undefined") return;
+
+    // KEYBOARD-PIN FIX: this used to observe only `contentEl` — the
+    // CONTENT's height — but opening the iPhone keyboard doesn't change
+    // the content at all, it shrinks the SCROLL CONTAINER (scrollEl)
+    // from the bottom (the column is sized to --vvh, which drops by the
+    // keyboard's height). Content height unchanged -> observer never
+    // fired -> scrollTop unchanged -> the last message slid down behind
+    // the composer/keyboard, cut off mid-sentence, with the reader no
+    // longer at the bottom through no action of their own. Observing
+    // scrollEl too catches the container resize.
+    //
+    // prevClientHeight/wasNearBottomBeforeResize exist because the
+    // existing near-bottom ref is only refreshed by scroll events, and
+    // iOS may fire one mid-resize while it adjusts/clamps scrollTop —
+    // by which point the distance from the bottom already includes the
+    // keyboard's height and would read as "scrolled away." Deriving
+    // "were they at the bottom BEFORE the container shrank" from the
+    // previous height means a viewport-driven resize can never be
+    // mistaken for the reader scrolling up.
+    let prevClientHeight = scrollEl.clientHeight;
     const observer = new ResizeObserver(() => {
-      if (isNearBottomRef.current) {
+      const nowClientHeight = scrollEl.clientHeight;
+      const containerResized = nowClientHeight !== prevClientHeight;
+      const wasNearBottomBeforeResize =
+        scrollEl.scrollHeight - scrollEl.scrollTop - prevClientHeight < NEAR_BOTTOM_PX;
+      prevClientHeight = nowClientHeight;
+
+      if (isNearBottomRef.current || (containerResized && wasNearBottomBeforeResize)) {
         scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: "auto" });
+        isNearBottomRef.current = true;
       }
     });
     observer.observe(contentEl);
+    observer.observe(scrollEl);
     return () => observer.disconnect();
   }, []);
 

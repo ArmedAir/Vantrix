@@ -25,12 +25,13 @@ import { useEffect } from "react";
  * browsers with no visualViewport API at all, so nothing regresses there.
  *
  * PERF: three things kept this from being "just add a resize listener":
- *   1. No `scroll` listener. visualViewport fires `scroll` on every pinch-
- *      zoom pan / pixel of momentum scroll — it tracks the viewport's
- *      *offset*, not its height, which is the only thing our CSS var
- *      needs. We only ever cared about `resize` (fired on keyboard
- *      show/hide); the scroll listener in the original version was pure
- *      overhead with zero effect on correctness.
+ *   1. `resize` alone drives --vvh. visualViewport fires `scroll` on every
+ *      pinch-zoom pan / pixel of momentum scroll — it tracks the
+ *      viewport's *offset*, not its height, so height never needed it
+ *      (an earlier version had a scroll listener for height: pure
+ *      overhead). NOTE: a `scroll` listener was LATER re-added for a
+ *      different variable, --vvt (offsetTop) — see IOS-OFFSET-FIX below.
+ *      That's offset, not height, so this note still holds for --vvh.
  *   2. rAF-coalesced. iOS animates the keyboard in/out over several
  *      frames, firing `resize` repeatedly during that animation — each
  *      handled synchronously would mean a `style.setProperty` (a forced
@@ -68,6 +69,31 @@ import { useEffect } from "react";
  *      re-checks a frame later and once more after a short delay, since
  *      the corrected value can itself lag a frame or two behind the
  *      visibility/pageshow event on slower devices.
+ *
+ * IOS-OFFSET-FIX (`--vvt`): sizing a full-bleed screen to the visual
+ * viewport's HEIGHT is only half of staying on-screen — its POSITION has
+ * to follow too. When the keyboard opens, iOS Safari does two things:
+ * it shrinks the visual viewport (what `--vvh` tracks) AND, to keep the
+ * focused input visible, scrolls the visual viewport down within the
+ * layout viewport, so `visualViewport.offsetTop` becomes non-zero. A
+ * `position: fixed; top: 0; height: var(--vvh)` box is anchored to the
+ * LAYOUT viewport's top, which doesn't move — so its top `offsetTop`
+ * pixels end up scrolled out of view above the visible area, with a
+ * blank gap left over below it. That's exactly the "black screen with
+ * only the keyboard showing" / "latest message hidden behind the
+ * composer" symptom on iPhone while Android (whose Chromium honors
+ * `interactive-widget=resizes-content` and never offsets the visual
+ * viewport at all) was unaffected. `--vvt` mirrors `offsetTop` so the
+ * immersive wrapper (app-chrome.tsx) can pin its top edge to the
+ * visible area (`top-[var(--vvt)]`) instead of the layout viewport's.
+ *
+ * This DOES need the `scroll` listener the PERF note above removed:
+ * that note was right that height only needs `resize`, but offsetTop
+ * only ever changes through visualViewport `scroll` events (iOS fires
+ * one when it shifts the viewport to reveal an input). The original
+ * concern — scroll firing constantly during pinch-pan/momentum — is
+ * still handled by the same two guards: rAF coalescing, and skipping
+ * the write unless the whole-pixel offset actually changed.
  */
 export function ViewportHeightSync() {
   useEffect(() => {
@@ -80,6 +106,16 @@ export function ViewportHeightSync() {
     let settleRafId: number | null = null;
     let settleTimeoutId: number | null = null;
     let lastHeight = -1;
+    let lastTop = -1;
+
+    function readTop(): number | null {
+      const raw = vv?.offsetTop ?? 0;
+      if (!Number.isFinite(raw)) return null;
+      // Clamp at 0: iOS rubber-band overscroll can briefly report a
+      // negative offset, and a negative `top` would drag the wrapper
+      // down off the top edge of the screen.
+      return Math.max(0, Math.round(raw));
+    }
 
     function readHeight(): number | null {
       const raw = vv?.height ?? window.innerHeight;
@@ -95,11 +131,20 @@ export function ViewportHeightSync() {
       root.style.setProperty("--vvh", `${height}px`);
     }
 
+    function applyTop(opts?: { force?: boolean }) {
+      const top = readTop();
+      if (top === null) return;
+      if (!opts?.force && top === lastTop) return;
+      lastTop = top;
+      root.style.setProperty("--vvt", `${top}px`);
+    }
+
     function scheduleApply() {
       if (rafId !== null) return; // already coalescing this frame's burst
       rafId = requestAnimationFrame(() => {
         rafId = null;
         applyHeight();
+        applyTop();
       });
     }
 
@@ -119,13 +164,16 @@ export function ViewportHeightSync() {
     function forceRemeasure() {
       clearSettleTimers();
       applyHeight({ force: true });
+      applyTop({ force: true });
       settleRafId = requestAnimationFrame(() => {
         settleRafId = null;
         applyHeight({ force: true });
+        applyTop({ force: true });
       });
       settleTimeoutId = window.setTimeout(() => {
         settleTimeoutId = null;
         applyHeight({ force: true });
+        applyTop({ force: true });
       }, 150);
     }
 
@@ -138,14 +186,21 @@ export function ViewportHeightSync() {
     }
 
     applyHeight();
+    applyTop();
 
     const target: VisualViewport | Window = vv ?? window;
     target.addEventListener("resize", scheduleApply);
+    // See IOS-OFFSET-FIX above — offsetTop only changes via `scroll`.
+    // Only attached to a real VisualViewport: on the window-fallback path
+    // there's no offset to track, and window `scroll` would fire on every
+    // ordinary page scroll for nothing.
+    if (vv) vv.addEventListener("scroll", scheduleApply);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("pageshow", handlePageShow);
 
     return () => {
       target.removeEventListener("resize", scheduleApply);
+      if (vv) vv.removeEventListener("scroll", scheduleApply);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("pageshow", handlePageShow);
       if (rafId !== null) cancelAnimationFrame(rafId);

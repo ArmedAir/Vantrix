@@ -53,20 +53,38 @@ export function ChatComposer({
     }
   }
 
-  // KEYBOARD-VISIBILITY HARDENING: the real fix for the composer landing
-  // under the keyboard is ViewportHeightSync's --vvh (see that file) —
-  // this is a second, independent safety net on top of it, not a
-  // replacement. A focus can fire a beat before iOS finishes animating
-  // the keyboard in and --vvh's own resize-driven update lands, so this
-  // additionally asks the browser to keep the caret's element on-screen
-  // once focus lands. `scrollIntoView({ block: "nearest" })` on a
-  // sticky-bottom element already at the bottom of its scroll container
-  // is a cheap no-op the rest of the time — this never fights the normal
-  // layout, it only helps in the exact narrow race window above.
+  // KEYBOARD-VISIBILITY (iOS): the real fix for the composer landing under
+  // the keyboard is ViewportHeightSync's --vvh AND --vvt (see that file) —
+  // the wrapper is now sized to, and pinned to the top of, the VISIBLE
+  // area. This used to be a second "safety net" that called
+  // `scrollIntoView({ block: "nearest" })` on focus; it's now the
+  // opposite — a corrective net — because scrollIntoView is itself a
+  // known source of the very bug it was meant to guard against:
+  // `overflow: hidden` elements (the immersive wrapper, app-chrome.tsx)
+  // are still scrollable BY SCRIPT, and on iOS scrollIntoView will happily
+  // scroll one, sliding the whole chat column up inside its fixed box and
+  // leaving a blank gap below it (the "black screen with just the
+  // keyboard" symptom). With the wrapper correctly sized/pinned there's
+  // nothing for scrollIntoView to usefully do, so instead: after focus
+  // (and again once the keyboard animation has settled — iOS applies its
+  // own scroll AFTER the animation), put any overflow-hidden ancestor
+  // that got scrolled back to 0. Legitimate scrollers (the message list,
+  // overflow-y: auto) are left alone — only `hidden` ones, which should
+  // never be at a non-zero scroll position, are reset.
+  function resetStrayScroll() {
+    let node: HTMLElement | null = textareaRef.current?.parentElement ?? null;
+    while (node) {
+      if (node.scrollTop !== 0 && getComputedStyle(node).overflowY === "hidden") {
+        node.scrollTop = 0;
+      }
+      node = node.parentElement;
+    }
+    if (window.scrollY !== 0) window.scrollTo(0, 0);
+  }
+
   function handleFocus() {
-    requestAnimationFrame(() => {
-      textareaRef.current?.scrollIntoView({ block: "nearest" });
-    });
+    requestAnimationFrame(resetStrayScroll);
+    window.setTimeout(resetStrayScroll, 350);
   }
 
   const mediaBusy = Boolean(isGeneratingImage || isGeneratingVideo);
@@ -135,6 +153,10 @@ export function ChatComposer({
           }}
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
+          // Return key reads "send" on the iOS/Android keyboard — matches
+          // what Enter actually does here (see handleKeyDown), instead of
+          // the generic "return" that implies a newline.
+          enterKeyHint="send"
           rows={1}
           maxLength={4000}
           placeholder="Send a message..."
@@ -143,7 +165,13 @@ export function ChatComposer({
           // a thin default caret against bg-transparent can be easy to
           // lose track of on some Android WebViews; this makes it
           // unmistakable and doubles as a small premium touch.
-          className="flex-1 resize-none bg-transparent text-[15px] text-text-primary caret-gold-500 placeholder:text-text-tertiary outline-none max-h-40"
+          //
+          // 16px, not 15: iOS Safari auto-zooms the whole page when an
+          // input under 16px is focused, and that zoom shifts/scales the
+          // visual viewport and doesn't reliably reset on blur — one more
+          // source of "the screen jumped when I tapped the box" that
+          // Android (no such behavior) never showed.
+          className="flex-1 resize-none bg-transparent text-[16px] text-text-primary caret-gold-500 placeholder:text-text-tertiary outline-none max-h-40"
         />
         {isStreaming && onStop ? (
           <Button

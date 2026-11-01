@@ -83,10 +83,21 @@ export function AppChrome({
     // scrollIntoView to scroll — see chat/[id]/page.tsx and
     // roleplay-stage.tsx, which both already size their own root against
     // `h-[var(--vvh)]` for the same reason.
+    //
+    // IOS-OFFSET-FIX: `inset-0` (top: 0) pinned this to the LAYOUT
+    // viewport's top, but iOS scrolls the VISUAL viewport down within it
+    // to reveal a focused input (visualViewport.offsetTop > 0) — right-
+    // sized box, wrong position: its top offsetTop px ended up above the
+    // visible area with a blank gap below it (black screen over the
+    // keyboard; latest message hidden behind the composer). `top` now
+    // follows `--vvt` (ViewportHeightSync) so the box overlays exactly
+    // what's visible. `inset-x-0` + explicit top/height is identical to
+    // the old `inset-0` wherever offsetTop stays 0 (Android/Chromium, iOS
+    // with no keyboard), so nothing changes there.
     <div
       className={cn(
         "flex bg-base",
-        immersive ? "fixed inset-0 h-[var(--vvh)] overflow-hidden" : "min-h-screen"
+        immersive ? "fixed inset-x-0 top-[var(--vvt)] h-[var(--vvh)] overflow-hidden" : "min-h-screen"
       )}
     >
       <AnalyticsIdentify userId={profile.id} />

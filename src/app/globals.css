@@ -63,6 +63,14 @@
        trusted). `100dvh` is only a first-paint fallback for the instant
        before that effect runs. */
     --vvh: 100dvh;
+
+    /* IOS-OFFSET-FIX: visualViewport.offsetTop in px (see
+       ViewportHeightSync's IOS-OFFSET-FIX note) — how far iOS has
+       scrolled the visible area down within the layout viewport to
+       reveal a focused input. 0px is both the first-paint fallback and
+       the permanent value on browsers that never offset it (Chromium,
+       which resizes the layout viewport instead). */
+    --vvt: 0px;
   }
 
   /**
