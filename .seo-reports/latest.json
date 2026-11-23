@@ -1,14 +1,14 @@
 {
   "baseUrl": "https://vantrix.ink",
-  "crawledAt": "2026-11-16T19:28:53.618Z",
+  "crawledAt": "2026-11-23T21:07:48.198Z",
   "robotsFindings": [],
   "results": [
     {
       "url": "https://www.vantrix.ink/",
       "ok": true,
       "status": 200,
-      "ms": 3509,
-      "wordCount": 1609,
+      "ms": 899,
+      "wordCount": 1613,
       "findings": [
         {
           "severity": "warn",
@@ -20,7 +20,7 @@
       "url": "https://www.vantrix.ink/ai-companion",
       "ok": true,
       "status": 200,
-      "ms": 3108,
+      "ms": 1151,
       "wordCount": 536,
       "findings": []
     },
@@ -28,7 +28,7 @@
       "url": "https://www.vantrix.ink/ai-girlfriend",
       "ok": true,
       "status": 200,
-      "ms": 3059,
+      "ms": 2010,
       "wordCount": 482,
       "findings": []
     },
@@ -36,7 +36,7 @@
       "url": "https://www.vantrix.ink/ai-boyfriend",
       "ok": true,
       "status": 200,
-      "ms": 3147,
+      "ms": 2089,
       "wordCount": 443,
       "findings": []
     },
@@ -44,7 +44,7 @@
       "url": "https://www.vantrix.ink/anime-ai-chat",
       "ok": true,
       "status": 200,
-      "ms": 2478,
+      "ms": 2159,
       "wordCount": 378,
       "findings": []
     },
@@ -52,7 +52,7 @@
       "url": "https://www.vantrix.ink/ai-dating-app-africa",
       "ok": true,
       "status": 200,
-      "ms": 1174,
+      "ms": 633,
       "wordCount": 396,
       "findings": []
     },
@@ -60,7 +60,7 @@
       "url": "https://www.vantrix.ink/ai-friend",
       "ok": true,
       "status": 200,
-      "ms": 613,
+      "ms": 530,
       "wordCount": 385,
       "findings": []
     },
@@ -68,7 +68,7 @@
       "url": "https://www.vantrix.ink/virtual-companion",
       "ok": true,
       "status": 200,
-      "ms": 587,
+      "ms": 485,
       "wordCount": 373,
       "findings": []
     },
@@ -76,7 +76,7 @@
       "url": "https://www.vantrix.ink/web-login",
       "ok": true,
       "status": 200,
-      "ms": 604,
+      "ms": 501,
       "wordCount": 464,
       "findings": []
     },
@@ -84,7 +84,7 @@
       "url": "https://www.vantrix.ink/character-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 604,
+      "ms": 533,
       "wordCount": 490,
       "findings": [
         {
@@ -97,7 +97,7 @@
       "url": "https://www.vantrix.ink/candy-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 640,
+      "ms": 558,
       "wordCount": 469,
       "findings": []
     },
@@ -105,7 +105,7 @@
       "url": "https://www.vantrix.ink/kindroid-alternative",
       "ok": true,
       "status": 200,
-      "ms": 617,
+      "ms": 658,
       "wordCount": 463,
       "findings": []
     },
@@ -113,7 +113,7 @@
       "url": "https://www.vantrix.ink/replika-alternative",
       "ok": true,
       "status": 200,
-      "ms": 644,
+      "ms": 588,
       "wordCount": 533,
       "findings": []
     },
@@ -121,7 +121,7 @@
       "url": "https://www.vantrix.ink/janitor-ai-alternative",
       "ok": true,
       "status": 200,
-      "ms": 895,
+      "ms": 495,
       "wordCount": 488,
       "findings": []
     },
@@ -129,7 +129,7 @@
       "url": "https://www.vantrix.ink/login",
       "ok": true,
       "status": 200,
-      "ms": 568,
+      "ms": 393,
       "wordCount": 55,
       "findings": [
         {
@@ -146,7 +146,7 @@
       "url": "https://www.vantrix.ink/premium",
       "ok": true,
       "status": 200,
-      "ms": 496,
+      "ms": 480,
       "wordCount": 117,
       "findings": [
         {
@@ -159,7 +159,7 @@
       "url": "https://www.vantrix.ink/relationships",
       "ok": true,
       "status": 200,
-      "ms": 366,
+      "ms": 343,
       "wordCount": 176,
       "findings": [
         {
@@ -176,7 +176,7 @@
       "url": "https://www.vantrix.ink/best-ai-companion-apps",
       "ok": true,
       "status": 200,
-      "ms": 374,
+      "ms": 549,
       "wordCount": 850,
       "findings": []
     },
@@ -184,7 +184,7 @@
       "url": "https://www.vantrix.ink/discover",
       "ok": true,
       "status": 200,
-      "ms": 701,
+      "ms": 425,
       "wordCount": 436,
       "findings": []
     },
@@ -192,7 +192,7 @@
       "url": "https://www.vantrix.ink/about",
       "ok": true,
       "status": 200,
-      "ms": 265,
+      "ms": 279,
       "wordCount": 200,
       "findings": [
         {
@@ -209,7 +209,7 @@
       "url": "https://www.vantrix.ink/careers",
       "ok": true,
       "status": 200,
-      "ms": 260,
+      "ms": 246,
       "wordCount": 65,
       "findings": [
         {
@@ -222,7 +222,7 @@
       "url": "https://www.vantrix.ink/blog",
       "ok": true,
       "status": 200,
-      "ms": 301,
+      "ms": 404,
       "wordCount": 869,
       "findings": [
         {
@@ -235,7 +235,7 @@
       "url": "https://www.vantrix.ink/blog/why-most-ai-companions-forget-you",
       "ok": true,
       "status": 200,
-      "ms": 521,
+      "ms": 392,
       "wordCount": 524,
       "findings": []
     },
@@ -243,7 +243,7 @@
       "url": "https://www.vantrix.ink/blog/ai-companion-with-memory-what-to-look-for",
       "ok": true,
       "status": 200,
-      "ms": 337,
+      "ms": 277,
       "wordCount": 441,
       "findings": []
     },
@@ -251,7 +251,7 @@
       "url": "https://www.vantrix.ink/blog/the-case-for-ai-characters-that-have-a-life-of-their-own",
       "ok": true,
       "status": 200,
-      "ms": 338,
+      "ms": 407,
       "wordCount": 474,
       "findings": [
         {
@@ -264,7 +264,7 @@
       "url": "https://www.vantrix.ink/blog/how-ai-character-memory-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 313,
+      "ms": 573,
       "wordCount": 436,
       "findings": [
         {
@@ -277,7 +277,7 @@
       "url": "https://www.vantrix.ink/blog/signs-youre-talking-to-a-stateless-chatbot",
       "ok": true,
       "status": 200,
-      "ms": 550,
+      "ms": 352,
       "wordCount": 385,
       "findings": []
     },
@@ -285,7 +285,7 @@
       "url": "https://www.vantrix.ink/blog/why-persistent-memory-changes-how-you-write-characters",
       "ok": true,
       "status": 200,
-      "ms": 324,
+      "ms": 322,
       "wordCount": 340,
       "findings": []
     },
@@ -293,7 +293,7 @@
       "url": "https://www.vantrix.ink/blog/the-difference-between-a-chatbot-and-a-companion",
       "ok": true,
       "status": 200,
-      "ms": 317,
+      "ms": 398,
       "wordCount": 376,
       "findings": []
     },
@@ -301,7 +301,7 @@
       "url": "https://www.vantrix.ink/blog/what-a-living-universe-means-for-ai-characters",
       "ok": true,
       "status": 200,
-      "ms": 353,
+      "ms": 300,
       "wordCount": 384,
       "findings": []
     },
@@ -309,7 +309,7 @@
       "url": "https://www.vantrix.ink/blog/browse-companions-by-personality-tag",
       "ok": true,
       "status": 200,
-      "ms": 477,
+      "ms": 264,
       "wordCount": 348,
       "findings": []
     },
@@ -317,7 +317,7 @@
       "url": "https://www.vantrix.ink/blog/how-vantrix-approaches-search-and-discoverability",
       "ok": true,
       "status": 200,
-      "ms": 348,
+      "ms": 402,
       "wordCount": 332,
       "findings": [
         {
@@ -330,7 +330,7 @@
       "url": "https://www.vantrix.ink/blog/ai-companion-privacy-what-actually-happens-to-your-data",
       "ok": true,
       "status": 200,
-      "ms": 293,
+      "ms": 307,
       "wordCount": 418,
       "findings": []
     },
@@ -338,7 +338,7 @@
       "url": "https://www.vantrix.ink/blog/ai-girlfriend-vs-ai-boyfriend-apps-how-theyre-actually-different",
       "ok": true,
       "status": 200,
-      "ms": 277,
+      "ms": 363,
       "wordCount": 346,
       "findings": []
     },
@@ -346,7 +346,7 @@
       "url": "https://www.vantrix.ink/blog/how-ai-personality-engines-actually-work-ocean-model",
       "ok": true,
       "status": 200,
-      "ms": 301,
+      "ms": 449,
       "wordCount": 421,
       "findings": []
     },
@@ -354,7 +354,7 @@
       "url": "https://www.vantrix.ink/blog/what-is-a-digital-twin-ai-companion-explained",
       "ok": true,
       "status": 200,
-      "ms": 352,
+      "ms": 245,
       "wordCount": 370,
       "findings": [
         {
@@ -367,7 +367,7 @@
       "url": "https://www.vantrix.ink/blog/ai-voice-companions-how-text-to-speech-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 291,
+      "ms": 404,
       "wordCount": 353,
       "findings": []
     },
@@ -375,7 +375,7 @@
       "url": "https://www.vantrix.ink/blog/can-you-create-your-own-ai-character-a-guide-to-creator-tools",
       "ok": true,
       "status": 200,
-      "ms": 296,
+      "ms": 251,
       "wordCount": 369,
       "findings": []
     },
@@ -383,7 +383,7 @@
       "url": "https://www.vantrix.ink/blog/ai-companion-safety-what-good-moderation-actually-looks-like",
       "ok": true,
       "status": 200,
-      "ms": 300,
+      "ms": 361,
       "wordCount": 384,
       "findings": []
     },
@@ -391,7 +391,7 @@
       "url": "https://www.vantrix.ink/blog/freemium-ai-companion-apps-how-the-pricing-actually-works",
       "ok": true,
       "status": 200,
-      "ms": 527,
+      "ms": 374,
       "wordCount": 412,
       "findings": []
     },
@@ -399,7 +399,7 @@
       "url": "https://www.vantrix.ink/blog/how-vantrix-compares-to-other-ai-companion-apps",
       "ok": true,
       "status": 200,
-      "ms": 547,
+      "ms": 436,
       "wordCount": 1096,
       "findings": [
         {
@@ -412,7 +412,7 @@
       "url": "https://www.vantrix.ink/blog/what-is-vantrix-ai",
       "ok": true,
       "status": 200,
-      "ms": 299,
+      "ms": 283,
       "wordCount": 369,
       "findings": []
     },
@@ -420,7 +420,7 @@
       "url": "https://www.vantrix.ink/guides",
       "ok": true,
       "status": 200,
-      "ms": 281,
+      "ms": 264,
       "wordCount": 468,
       "findings": [
         {
@@ -433,7 +433,7 @@
       "url": "https://www.vantrix.ink/guides/best-ai-companions",
       "ok": true,
       "status": 200,
-      "ms": 339,
+      "ms": 281,
       "wordCount": 580,
       "findings": []
     },
@@ -441,7 +441,7 @@
       "url": "https://www.vantrix.ink/guides/ai-companions-with-memory",
       "ok": true,
       "status": 200,
-      "ms": 296,
+      "ms": 300,
       "wordCount": 474,
       "findings": []
     },
@@ -449,7 +449,7 @@
       "url": "https://www.vantrix.ink/guides/ai-companion-memory-test",
       "ok": true,
       "status": 200,
-      "ms": 306,
+      "ms": 637,
       "wordCount": 560,
       "findings": [
         {
@@ -462,7 +462,7 @@
       "url": "https://www.vantrix.ink/guides/ai-companion-character-creation",
       "ok": true,
       "status": 200,
-      "ms": 343,
+      "ms": 377,
       "wordCount": 555,
       "findings": [
         {
@@ -475,7 +475,7 @@
       "url": "https://www.vantrix.ink/guides/ai-companion-comparison",
       "ok": true,
       "status": 200,
-      "ms": 369,
+      "ms": 343,
       "wordCount": 533,
       "findings": []
     },
@@ -483,7 +483,7 @@
       "url": "https://www.vantrix.ink/guides/candy-ai-alternatives",
       "ok": true,
       "status": 200,
-      "ms": 334,
+      "ms": 308,
       "wordCount": 448,
       "findings": []
     },
@@ -491,7 +491,7 @@
       "url": "https://www.vantrix.ink/guides/character-ai-alternatives",
       "ok": true,
       "status": 200,
-      "ms": 276,
+      "ms": 279,
       "wordCount": 546,
       "findings": [
         {
@@ -508,7 +508,7 @@
       "url": "https://www.vantrix.ink/guides/nomi-alternatives",
       "ok": true,
       "status": 200,
-      "ms": 351,
+      "ms": 376,
       "wordCount": 459,
       "findings": [
         {
@@ -521,7 +521,7 @@
       "url": "https://www.vantrix.ink/guides/kindroid-alternatives",
       "ok": true,
       "status": 200,
-      "ms": 321,
+      "ms": 383,
       "wordCount": 451,
       "findings": []
     },
@@ -529,7 +529,7 @@
       "url": "https://www.vantrix.ink/guides/replika-alternatives",
       "ok": true,
       "status": 200,
-      "ms": 572,
+      "ms": 235,
       "wordCount": 553,
       "findings": []
     },
@@ -537,7 +537,7 @@
       "url": "https://www.vantrix.ink/support",
       "ok": true,
       "status": 200,
-      "ms": 251,
+      "ms": 262,
       "wordCount": 223,
       "findings": [
         {
@@ -550,7 +550,7 @@
       "url": "https://www.vantrix.ink/press",
       "ok": true,
       "status": 200,
-      "ms": 328,
+      "ms": 285,
       "wordCount": 296,
       "findings": [
         {
@@ -567,7 +567,7 @@
       "url": "https://www.vantrix.ink/terms",
       "ok": true,
       "status": 200,
-      "ms": 266,
+      "ms": 263,
       "wordCount": 625,
       "findings": [
         {
@@ -580,7 +580,7 @@
       "url": "https://www.vantrix.ink/privacy",
       "ok": true,
       "status": 200,
-      "ms": 298,
+      "ms": 398,
       "wordCount": 895,
       "findings": [
         {
@@ -593,7 +593,7 @@
       "url": "https://www.vantrix.ink/companions/3d48a930-8f40-483c-b68b-37f1900ec51c",
       "ok": true,
       "status": 200,
-      "ms": 427,
+      "ms": 327,
       "wordCount": 218,
       "findings": [
         {
@@ -606,7 +606,7 @@
       "url": "https://www.vantrix.ink/companions/02378d6a-371c-426e-ae2f-b23e3d68e79e",
       "ok": true,
       "status": 200,
-      "ms": 656,
+      "ms": 342,
       "wordCount": 179,
       "findings": [
         {
@@ -623,7 +623,7 @@
       "url": "https://www.vantrix.ink/companions/d4138c58-92b7-4328-b4a8-21fbcf92caaf",
       "ok": true,
       "status": 200,
-      "ms": 404,
+      "ms": 516,
       "wordCount": 203,
       "findings": [
         {
@@ -636,7 +636,7 @@
       "url": "https://www.vantrix.ink/companions/b11fac85-2678-48d4-b2e9-694460ad00f8",
       "ok": true,
       "status": 200,
-      "ms": 392,
+      "ms": 439,
       "wordCount": 178,
       "findings": [
         {
@@ -649,7 +649,7 @@
       "url": "https://www.vantrix.ink/companions/e6cec2c7-6ffa-486f-8b36-e0b2d69766a6",
       "ok": true,
       "status": 200,
-      "ms": 541,
+      "ms": 1034,
       "wordCount": 179,
       "findings": [
         {
@@ -662,7 +662,7 @@
       "url": "https://www.vantrix.ink/companions/2030d9d7-9e86-4c4b-938f-15f89bebf6b7",
       "ok": true,
       "status": 200,
-      "ms": 660,
+      "ms": 1000,
       "wordCount": 261,
       "findings": [
         {
@@ -675,7 +675,7 @@
       "url": "https://www.vantrix.ink/companions/e8413970-dbad-4dd7-88e4-3e0abb2ef675",
       "ok": true,
       "status": 200,
-      "ms": 350,
+      "ms": 853,
       "wordCount": 253,
       "findings": [
         {
@@ -688,7 +688,7 @@
       "url": "https://www.vantrix.ink/companions/126dc769-d0b0-4fc8-9b80-03ee8c9c7970",
       "ok": true,
       "status": 200,
-      "ms": 528,
+      "ms": 630,
       "wordCount": 260,
       "findings": [
         {
@@ -701,7 +701,7 @@
       "url": "https://www.vantrix.ink/companions/b1c77b1c-f923-46f8-8ab5-3d1da16ec73d",
       "ok": true,
       "status": 200,
-      "ms": 438,
+      "ms": 590,
       "wordCount": 232,
       "findings": [
         {
@@ -714,7 +714,7 @@
       "url": "https://www.vantrix.ink/companions/c9487a6b-9dda-4799-bb00-f6193ed22b4e",
       "ok": true,
       "status": 200,
-      "ms": 563,
+      "ms": 440,
       "wordCount": 220,
       "findings": [
         {
@@ -727,7 +727,7 @@
       "url": "https://www.vantrix.ink/companions/552e7bbd-53f1-467b-b4eb-754127625181",
       "ok": true,
       "status": 200,
-      "ms": 416,
+      "ms": 461,
       "wordCount": 212,
       "findings": [
         {
@@ -740,7 +740,7 @@
       "url": "https://www.vantrix.ink/companions/e35fcb8e-1b6d-43fb-9cb0-ee475357cbee",
       "ok": true,
       "status": 200,
-      "ms": 402,
+      "ms": 290,
       "wordCount": 231,
       "findings": [
         {
@@ -753,7 +753,7 @@
       "url": "https://www.vantrix.ink/companions/b4ece831-aae2-4a72-af94-22d34f19521c",
       "ok": true,
       "status": 200,
-      "ms": 332,
+      "ms": 496,
       "wordCount": 200,
       "findings": [
         {
@@ -766,7 +766,7 @@
       "url": "https://www.vantrix.ink/companions/6166db2c-99dc-4025-99a4-2da40dd0407e",
       "ok": true,
       "status": 200,
-      "ms": 362,
+      "ms": 276,
       "wordCount": 223,
       "findings": [
         {
@@ -779,7 +779,7 @@
       "url": "https://www.vantrix.ink/companions/790d69d7-cf49-4c34-8c63-b489ee06ec6e",
       "ok": true,
       "status": 200,
-      "ms": 378,
+      "ms": 388,
       "wordCount": 248,
       "findings": [
         {
@@ -792,7 +792,7 @@
       "url": "https://www.vantrix.ink/companions/528d3015-50dd-441c-aed8-96e566e0fda2",
       "ok": true,
       "status": 200,
-      "ms": 373,
+      "ms": 433,
       "wordCount": 220,
       "findings": [
         {
@@ -805,7 +805,7 @@
       "url": "https://www.vantrix.ink/companions/968b2b0f-0574-4968-8dd3-0bbe2d2bc4fc",
       "ok": true,
       "status": 200,
-      "ms": 351,
+      "ms": 292,
       "wordCount": 201,
       "findings": [
         {
@@ -818,7 +818,7 @@
       "url": "https://www.vantrix.ink/companions/ea700c95-7a64-4ebc-b46b-3ab45d258117",
       "ok": true,
       "status": 200,
-      "ms": 374,
+      "ms": 290,
       "wordCount": 237,
       "findings": [
         {
@@ -831,7 +831,7 @@
       "url": "https://www.vantrix.ink/companions/98bf6241-d4b7-4085-9e32-5b5e5faf16bb",
       "ok": true,
       "status": 200,
-      "ms": 320,
+      "ms": 382,
       "wordCount": 220,
       "findings": [
         {
@@ -844,7 +844,7 @@
       "url": "https://www.vantrix.ink/companions/78839bcc-5af5-4c0b-add3-c756b1d57e8a",
       "ok": true,
       "status": 200,
-      "ms": 408,
+      "ms": 387,
       "wordCount": 285,
       "findings": [
         {
@@ -857,7 +857,7 @@
       "url": "https://www.vantrix.ink/companions/1b8d43d8-8c8a-438d-96bc-fde255b35fc6",
       "ok": true,
       "status": 200,
-      "ms": 308,
+      "ms": 313,
       "wordCount": 217,
       "findings": [
         {
@@ -874,7 +874,7 @@
       "url": "https://www.vantrix.ink/companions/d30833ef-ba8f-41ac-8e6d-da773e2909de",
       "ok": true,
       "status": 200,
-      "ms": 373,
+      "ms": 372,
       "wordCount": 255,
       "findings": [
         {
@@ -887,7 +887,7 @@
       "url": "https://www.vantrix.ink/companions/47b4a177-d469-4004-aa69-606892bf88ab",
       "ok": true,
       "status": 200,
-      "ms": 368,
+      "ms": 487,
       "wordCount": 234,
       "findings": [
         {
@@ -900,7 +900,7 @@
       "url": "https://www.vantrix.ink/companions/bfd14dbc-1629-4293-91ef-aec42526a26c",
       "ok": true,
       "status": 200,
-      "ms": 473,
+      "ms": 314,
       "wordCount": 238,
       "findings": [
         {
@@ -913,7 +913,7 @@
       "url": "https://www.vantrix.ink/companions/6b79f90e-3020-4bba-ae84-a53f8f15e91c",
       "ok": true,
       "status": 200,
-      "ms": 532,
+      "ms": 384,
       "wordCount": 239,
       "findings": [
         {
@@ -926,7 +926,7 @@
       "url": "https://www.vantrix.ink/companions/b6de5ebc-b2ba-4a86-8536-ab780c9618b1",
       "ok": true,
       "status": 200,
-      "ms": 388,
+      "ms": 425,
       "wordCount": 236,
       "findings": [
         {
@@ -939,7 +939,7 @@
       "url": "https://www.vantrix.ink/companions/db0cf362-4e37-4463-83ad-f73b17245ba7",
       "ok": true,
       "status": 200,
-      "ms": 376,
+      "ms": 290,
       "wordCount": 249,
       "findings": [
         {
@@ -952,7 +952,7 @@
       "url": "https://www.vantrix.ink/companions/394d47a1-c6f8-46f9-aeb5-422b5975a8e3",
       "ok": true,
       "status": 200,
-      "ms": 346,
+      "ms": 329,
       "wordCount": 264,
       "findings": [
         {
@@ -965,7 +965,7 @@
       "url": "https://www.vantrix.ink/companions/3d273314-8a27-4d9f-9293-2b2e4d95797f",
       "ok": true,
       "status": 200,
-      "ms": 484,
+      "ms": 540,
       "wordCount": 289,
       "findings": [
         {
@@ -978,7 +978,7 @@
       "url": "https://www.vantrix.ink/companions/5ff3ab87-e70e-457b-9114-5fe8d7fbfe12",
       "ok": true,
       "status": 200,
-      "ms": 592,
+      "ms": 258,
       "wordCount": 213,
       "findings": [
         {
@@ -991,7 +991,7 @@
       "url": "https://www.vantrix.ink/locations/the-capital",
       "ok": true,
       "status": 200,
-      "ms": 463,
+      "ms": 739,
       "wordCount": 133,
       "findings": [
         {
@@ -1004,7 +1004,7 @@
       "url": "https://www.vantrix.ink/locations/iron-reach",
       "ok": true,
       "status": 200,
-      "ms": 477,
+      "ms": 463,
       "wordCount": 150,
       "findings": [
         {
@@ -1017,7 +1017,7 @@
       "url": "https://www.vantrix.ink/locations/the-undercroft",
       "ok": true,
       "status": 200,
-      "ms": 505,
+      "ms": 420,
       "wordCount": 133,
       "findings": [
         {
@@ -1030,7 +1030,7 @@
       "url": "https://www.vantrix.ink/locations/cloudspire",
       "ok": true,
       "status": 200,
-      "ms": 558,
+      "ms": 461,
       "wordCount": 122,
       "findings": [
         {
@@ -1043,7 +1043,7 @@
       "url": "https://www.vantrix.ink/locations/the-archive",
       "ok": true,
       "status": 200,
-      "ms": 617,
+      "ms": 328,
       "wordCount": 120,
       "findings": [
         {
@@ -1056,7 +1056,7 @@
       "url": "https://www.vantrix.ink/locations/obsidian-tower",
       "ok": true,
       "status": 200,
-      "ms": 398,
+      "ms": 442,
       "wordCount": 130,
       "findings": [
         {
@@ -1069,7 +1069,7 @@
       "url": "https://www.vantrix.ink/locations/the-ruins",
       "ok": true,
       "status": 200,
-      "ms": 377,
+      "ms": 350,
       "wordCount": 121,
       "findings": [
         {
@@ -1082,7 +1082,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-root",
       "ok": true,
       "status": 200,
-      "ms": 418,
+      "ms": 336,
       "wordCount": 160,
       "findings": [
         {
@@ -1099,7 +1099,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-drowned-court",
       "ok": true,
       "status": 200,
-      "ms": 712,
+      "ms": 425,
       "wordCount": 151,
       "findings": [
         {
@@ -1116,7 +1116,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-ash-camps",
       "ok": true,
       "status": 200,
-      "ms": 375,
+      "ms": 335,
       "wordCount": 146,
       "findings": [
         {
@@ -1129,7 +1129,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-long-sky",
       "ok": true,
       "status": 200,
-      "ms": 425,
+      "ms": 419,
       "wordCount": 150,
       "findings": [
         {
@@ -1142,7 +1142,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-fallen-stair",
       "ok": true,
       "status": 200,
-      "ms": 619,
+      "ms": 441,
       "wordCount": 160,
       "findings": [
         {
@@ -1159,7 +1159,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-crack",
       "ok": true,
       "status": 200,
-      "ms": 492,
+      "ms": 376,
       "wordCount": 162,
       "findings": [
         {
@@ -1176,7 +1176,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-crossroads",
       "ok": true,
       "status": 200,
-      "ms": 358,
+      "ms": 400,
       "wordCount": 160,
       "findings": [
         {
@@ -1202,7 +1202,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-storm-wall",
       "ok": true,
       "status": 200,
-      "ms": 445,
+      "ms": 356,
       "wordCount": 157,
       "findings": [
         {
@@ -1215,7 +1215,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-the-long-market",
       "ok": true,
       "status": 200,
-      "ms": 450,
+      "ms": 324,
       "wordCount": 155,
       "findings": [
         {
@@ -1232,7 +1232,7 @@
       "url": "https://www.vantrix.ink/locations/the-ashen-cloister",
       "ok": true,
       "status": 200,
-      "ms": 373,
+      "ms": 555,
       "wordCount": 147,
       "findings": [
         {
@@ -1245,7 +1245,7 @@
       "url": "https://www.vantrix.ink/locations/wing-of-hidden-names",
       "ok": true,
       "status": 200,
-      "ms": 396,
+      "ms": 329,
       "wordCount": 144,
       "findings": [
         {
@@ -1258,7 +1258,7 @@
       "url": "https://www.vantrix.ink/locations/the-fourth-wall-wing",
       "ok": true,
       "status": 200,
-      "ms": 430,
+      "ms": 407,
       "wordCount": 151,
       "findings": [
         {
@@ -1271,7 +1271,7 @@
       "url": "https://www.vantrix.ink/locations/the-research-wing",
       "ok": true,
       "status": 200,
-      "ms": 507,
+      "ms": 453,
       "wordCount": 149,
       "findings": [
         {
@@ -1284,7 +1284,7 @@
       "url": "https://www.vantrix.ink/tags/legendary",
       "ok": true,
       "status": 200,
-      "ms": 471,
+      "ms": 501,
       "wordCount": 316,
       "findings": []
     },
@@ -1292,7 +1292,7 @@
       "url": "https://www.vantrix.ink/tags/slow-burn",
       "ok": true,
       "status": 200,
-      "ms": 456,
+      "ms": 380,
       "wordCount": 281,
       "findings": [
         {
@@ -1305,7 +1305,7 @@
       "url": "https://www.vantrix.ink/tags/intellectual",
       "ok": true,
       "status": 200,
-      "ms": 420,
+      "ms": 443,
       "wordCount": 184,
       "findings": [
         {
@@ -1318,7 +1318,7 @@
       "url": "https://www.vantrix.ink/tags/profound",
       "ok": true,
       "status": 200,
-      "ms": 387,
+      "ms": 312,
       "wordCount": 176,
       "findings": [
         {
@@ -1331,7 +1331,7 @@
       "url": "https://www.vantrix.ink/tags/warm",
       "ok": true,
       "status": 200,
-      "ms": 581,
+      "ms": 417,
       "wordCount": 173,
       "findings": [
         {
@@ -1344,7 +1344,7 @@
       "url": "https://www.vantrix.ink/tags/mysterious",
       "ok": true,
       "status": 200,
-      "ms": 348,
+      "ms": 512,
       "wordCount": 158,
       "findings": [
         {
@@ -1357,7 +1357,7 @@
       "url": "https://www.vantrix.ink/tags/precise",
       "ok": true,
       "status": 200,
-      "ms": 342,
+      "ms": 309,
       "wordCount": 168,
       "findings": [
         {
@@ -1370,7 +1370,7 @@
       "url": "https://www.vantrix.ink/tags/anime",
       "ok": true,
       "status": 200,
-      "ms": 379,
+      "ms": 470,
       "wordCount": 153,
       "findings": [
         {
@@ -1383,7 +1383,7 @@
       "url": "https://www.vantrix.ink/tags/architect",
       "ok": true,
       "status": 200,
-      "ms": 398,
+      "ms": 659,
       "wordCount": 158,
       "findings": [
         {
@@ -1396,7 +1396,7 @@
       "url": "https://www.vantrix.ink/tags/direct",
       "ok": true,
       "status": 200,
-      "ms": 372,
+      "ms": 398,
       "wordCount": 154,
       "findings": [
         {
@@ -1409,7 +1409,7 @@
       "url": "https://www.vantrix.ink/tags/grief",
       "ok": true,
       "status": 200,
-      "ms": 386,
+      "ms": 311,
       "wordCount": 153,
       "findings": [
         {
@@ -1422,7 +1422,7 @@
       "url": "https://www.vantrix.ink/tags/wry",
       "ok": true,
       "status": 200,
-      "ms": 379,
+      "ms": 334,
       "wordCount": 159,
       "findings": [
         {
