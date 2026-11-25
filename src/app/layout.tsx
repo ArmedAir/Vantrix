@@ -127,6 +127,16 @@ export const viewport: Viewport = {
   // 100dvh recompute) when the keyboard opens, matching what
   // chat-window.tsx's calc() already assumed was happening.
   interactiveWidget: "resizes-content",
+  // IOS-ZOOM-FIX: iOS Safari auto-zooms the page when any input/textarea
+  // under 16px takes focus, and that zoom leaves fixed-position layouts
+  // (every immersive screen here) wider than the visible area — the
+  // "everything looks bigger than the screen, edges cut off" symptom.
+  // maximum-scale=1 is the documented way to stop the focus-zoom; iOS 10+
+  // still lets the user pinch-zoom deliberately, so this does not remove
+  // accessibility zoom the way user-scalable=no used to. Paired with the
+  // iOS-only 16px floor in globals.css, which stops the cause rather than
+  // only capping the effect.
+  maximumScale: 1,
 };
 
 export default function RootLayout({

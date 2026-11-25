@@ -444,3 +444,32 @@
     mask-position: center;
   }
 }
+
+/* IOS-ZOOM-FIX: iOS Safari zooms the whole page whenever an <input>,
+   <textarea> or <select> under 16px takes focus, and fixed-position
+   immersive screens (chat, roleplay, call) are left wider than the
+   visible area afterwards — cut-off edges, content "bigger than the
+   screen". The chat composer was fixed individually, but dozens of other
+   fields (community, settings, search, studio) use text-sm (14px) and
+   would each trigger it. This is the one global floor instead.
+   - Scoped with the -webkit-touch-callout feature query, which only iOS
+     WebKit supports, so desktop and Android typography is unchanged.
+   - Deliberately unlayered + !important: Tailwind's text-sm/text-xs
+     utilities have higher specificity than an element selector, so
+     without !important they would silently win and this would do nothing.
+   - Excludes checkbox/radio/range/color/file, where font-size is
+     meaningless and 16px could distort the native control's sizing. */
+@supports (-webkit-touch-callout: none) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Keeps iOS from re-scaling text on orientation change, which can also
+   leave the layout wider than the viewport after rotating back. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
